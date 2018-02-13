@@ -4,8 +4,10 @@ version = "0.1.0"
 authors = ["Matheus Lessa <matheuslessarodrigues@gmail.com>"]
 build = "build.rs"
 
+[[bin]]
+name = "platformer-make"
+path = "src/main.rs"
 
-[dependencies.sdl2]
-version = "0.31"
-default-features = false
-features = ["ttf","image","mixer"]
+[dependencies]
+sdl2 = {version = "0.31", default-features = false,features = ["ttf","image","mixer"]}
+
