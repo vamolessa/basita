@@ -1,0 +1,11 @@
+[package]
+name = "platformer-maker-rs"
+version = "0.1.0"
+authors = ["Matheus Lessa <matheuslessarodrigues@gmail.com>"]
+build = "build.rs"
+
+
+[dependencies.sdl2]
+version = "0.31"
+default-features = false
+features = ["ttf","image","mixer"]
