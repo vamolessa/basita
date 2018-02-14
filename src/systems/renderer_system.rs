@@ -1,21 +1,54 @@
+use std::cmp::Ordering;
+use sdl2::rect::Rect;
+
 use application::Application;
 use components::sprite::Sprite;
 use components::component::ComponentCollection;
-use sdl2::rect::Rect;
 
-pub struct RendererSystem<'a> {
-	pub sprite_collection: &'a ComponentCollection<Sprite<'a>>,
+pub struct RendererSystem {}
+
+impl<'a> PartialEq for Sprite<'a> {
+	fn eq(&self, other: &Self) -> bool {
+		return self.depth == other.depth;
+	}
 }
 
-impl<'a> RendererSystem<'a> {
-	pub fn update(&self, app: &mut Application) {
-		for sprite in &self.sprite_collection.all {
+impl<'a> Eq for Sprite<'a> {}
+
+impl<'a> PartialOrd for Sprite<'a> {
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		Some(self.cmp(other))
+	}
+}
+
+impl<'a> Ord for Sprite<'a> {
+	fn cmp(&self, other: &Self) -> Ordering {
+		self.depth.cmp(&other.depth)
+	}
+}
+
+impl<'a> RendererSystem {
+	pub fn update(
+		&mut self,
+		app: &mut Application,
+		sprite_collection: &mut ComponentCollection<Sprite<'a>>,
+	) {
+		sprite_collection.all.sort_unstable();
+
+		for sprite in &sprite_collection.all {
 			let query = sprite.image.texture.query();
+			let transform = sprite.transform;
+
 			app.canvas
 				.copy(
 					&sprite.image.texture,
 					None,
-					Rect::from((sprite.x, sprite.y, query.width, query.height)),
+					Rect::from((
+						transform.position.x as i32,
+						transform.position.y as i32,
+						query.width,
+						query.height,
+					)),
 				)
 				.unwrap();
 		}
