@@ -1,20 +1,36 @@
 extern crate sdl2;
 
-use sdl2::pixels::Color;
+use std::path::Path;
+
+use sdl2::rect::Rect;
 
 mod application;
 mod input;
+mod image_resources;
+
+use input::Input;
+use image_resources::ImageResources;
 
 pub fn main() {
-	let app = application::init("platform maker", 400, 300);
-	let mut i = input::Input {};
+	let mut app = application::init("platform maker", 400, 300);
+
+	let mut input = Input::new();
+	let mut image_resources = ImageResources::new(&mut app);
+
+	let player_image = image_resources.load(Path::new("resources/sprites/player.png"));
 
 	application::run(
 		app,
-		|e| i.handle_event(e),
-		|a| {
-			a.canvas.set_draw_color(Color::RGB(0, 64, 255));
-			a.canvas.clear();
+		|event| input.handle_event(event),
+		|app| {
+			let query = player_image.texture.query();
+			app.canvas
+				.copy(
+					&player_image.texture,
+					None,
+					Rect::from((0, 0, query.width, query.height)),
+				)
+				.unwrap();
 			true
 		},
 	);

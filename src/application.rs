@@ -50,6 +50,8 @@ where
 			}
 		}
 
+		app.canvas.clear();
+
 		if !frame_callback(&mut app) {
 			break;
 		}
