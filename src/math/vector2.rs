@@ -7,6 +7,7 @@ pub struct Vector2 {
 }
 
 impl Vector2 {
+	/*
 	pub fn one() -> Vector2 {
 		Vector2 { x: 1.0, y: 1.0 }
 	}
@@ -18,12 +19,20 @@ impl Vector2 {
 	pub fn magnitude(&self) -> f32 {
 		self.sqr_magnitude().sqrt()
 	}
+	*/
 }
 
-impl<'a, 'b> Add<&'b Vector2> for &'a Vector2 {
+impl From<(f32, f32)> for Vector2 {
+	fn from(values: (f32, f32)) -> Vector2 {
+		let (x, y) = values;
+		Vector2 { x: x, y: y }
+	}
+}
+
+impl Add<Vector2> for Vector2 {
 	type Output = Vector2;
 
-	fn add(self, other: &'b Vector2) -> Vector2 {
+	fn add(self, other: Vector2) -> Vector2 {
 		Vector2 {
 			x: self.x + other.x,
 			y: self.y + other.y,
@@ -31,10 +40,10 @@ impl<'a, 'b> Add<&'b Vector2> for &'a Vector2 {
 	}
 }
 
-impl<'a, 'b> Sub<&'b Vector2> for &'a Vector2 {
+impl Sub<Vector2> for Vector2 {
 	type Output = Vector2;
 
-	fn sub(self, other: &'b Vector2) -> Vector2 {
+	fn sub(self, other: Vector2) -> Vector2 {
 		Vector2 {
 			x: self.x - other.x,
 			y: self.y - other.y,
@@ -42,10 +51,10 @@ impl<'a, 'b> Sub<&'b Vector2> for &'a Vector2 {
 	}
 }
 
-impl<'a, 'b> Mul<&'b Vector2> for &'a Vector2 {
+impl Mul<Vector2> for Vector2 {
 	type Output = Vector2;
 
-	fn mul(self, other: &'b Vector2) -> Vector2 {
+	fn mul(self, other: Vector2) -> Vector2 {
 		Vector2 {
 			x: self.x * other.x,
 			y: self.y * other.y,
@@ -53,7 +62,7 @@ impl<'a, 'b> Mul<&'b Vector2> for &'a Vector2 {
 	}
 }
 
-impl<'a> Mul<f32> for &'a Vector2 {
+impl Mul<f32> for Vector2 {
 	type Output = Vector2;
 
 	fn mul(self, num: f32) -> Vector2 {
@@ -64,10 +73,10 @@ impl<'a> Mul<f32> for &'a Vector2 {
 	}
 }
 
-impl<'a, 'b> Div<&'b Vector2> for &'a Vector2 {
+impl Div<Vector2> for Vector2 {
 	type Output = Vector2;
 
-	fn div(self, other: &'b Vector2) -> Vector2 {
+	fn div(self, other: Vector2) -> Vector2 {
 		Vector2 {
 			x: self.x * other.x,
 			y: self.y * other.y,
@@ -75,7 +84,7 @@ impl<'a, 'b> Div<&'b Vector2> for &'a Vector2 {
 	}
 }
 
-impl<'a> Div<f32> for &'a Vector2 {
+impl Div<f32> for Vector2 {
 	type Output = Vector2;
 
 	fn div(self, num: f32) -> Vector2 {

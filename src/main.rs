@@ -23,9 +23,10 @@ pub fn main() {
 	let player_image = image_resources.load(Path::new("resources/sprites/player.png"));
 
 	let mut transform_collection = ComponentCollection::new();
+	let mut sprite_collection = ComponentCollection::new();
+
 	let transform = transform_collection.add(Transform::default());
 
-	let mut sprite_collection = ComponentCollection::new();
 	sprite_collection.add(Sprite {
 		transform: transform,
 		depth: 0,

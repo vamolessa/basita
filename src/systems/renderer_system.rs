@@ -23,7 +23,7 @@ impl<'a> PartialOrd for Sprite<'a> {
 
 impl<'a> Ord for Sprite<'a> {
 	fn cmp(&self, other: &Self) -> Ordering {
-		self.depth.cmp(&other.depth)
+		other.depth.cmp(&self.depth)
 	}
 }
 
