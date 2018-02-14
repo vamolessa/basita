@@ -1,22 +1,25 @@
+use std::collections::BTreeSet;
+
 pub trait Component {}
 
 pub struct ComponentCollection<T>
 where
 	T: Component,
 {
-	pub all: Vec<T>,
+	pub all: BTreeSet<T>,
 }
 
 impl<T> ComponentCollection<T>
 where
-	T: Component,
+	T: Component + Ord,
 {
 	pub fn new() -> ComponentCollection<T> {
-		ComponentCollection { all: Vec::new() }
+		ComponentCollection {
+			all: BTreeSet::new(),
+		}
 	}
 
-	pub fn add(&mut self, component: T) -> &T {
-		self.all.push(component);
-		&self.all[self.all.len() - 1]
+	pub fn add(&mut self, component: T) {
+		self.all.insert(component);
 	}
 }

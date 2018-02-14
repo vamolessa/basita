@@ -27,6 +27,7 @@ pub fn main() {
 	sprite_collection.add(Sprite {
 		x: 0,
 		y: 10,
+		z: 0,
 		image: &player_image,
 	});
 
