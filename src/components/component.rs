@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-pub trait Component {}
+pub trait Component: Ord {}
 
 pub struct ComponentCollection<T>
 where
@@ -11,7 +11,7 @@ where
 
 impl<T> ComponentCollection<T>
 where
-	T: Component + Ord,
+	T: Component,
 {
 	pub fn new() -> ComponentCollection<T> {
 		ComponentCollection {
