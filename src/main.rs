@@ -11,6 +11,7 @@ mod image_resources;
 
 use input::Input;
 
+use components::component::ComponentCollection;
 use components::sprite::Sprite;
 use image_resources::ImageResources;
 
@@ -22,14 +23,16 @@ pub fn main() {
 
 	let player_image = image_resources.load(Path::new("resources/sprites/player.png"));
 
-	let mut sprites = components::sprite::Sprites::new();
-	sprites.add(Sprite {
+	let mut sprite_collection = ComponentCollection::new();
+	sprite_collection.add(Sprite {
 		x: 0,
 		y: 10,
 		image: &player_image,
 	});
 
-	let renderer_system = systems::renderer_system::RendererSystem { sprites: &sprites };
+	let renderer_system = systems::renderer_system::RendererSystem {
+		sprite_collection: &sprite_collection,
+	};
 
 	application::run(
 		app,
