@@ -1,2 +1,2 @@
 pub mod vector2;
-pub use math::vector2::*;
+pub use self::vector2::*;

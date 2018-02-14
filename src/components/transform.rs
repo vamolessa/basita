@@ -1,5 +1,6 @@
-use components::Component;
 use math::Vector2;
+
+use super::Component;
 
 pub struct Transform {
 	pub position: Vector2,

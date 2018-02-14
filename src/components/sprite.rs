@@ -1,5 +1,6 @@
-use components::{Component, Transform};
 use resources::Image;
+
+use super::{Component, Transform};
 
 pub struct Sprite<'a> {
 	pub depth: i32,
