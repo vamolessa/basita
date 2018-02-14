@@ -11,7 +11,8 @@ mod systems;
 mod resources;
 
 use input::Input;
-use components::{ComponentCollection, Sprite, Transform};
+use math::Vector2;
+use components::{BoxCollider, ComponentCollection, Sprite, Transform};
 use resources::ImageResources;
 
 pub fn main() {
@@ -24,6 +25,7 @@ pub fn main() {
 
 	let mut transform_collection = ComponentCollection::new();
 	let mut sprite_collection = ComponentCollection::new();
+	let mut box_collider_collection = ComponentCollection::new();
 
 	let transform = transform_collection.add(Transform::default());
 
@@ -33,13 +35,19 @@ pub fn main() {
 		image: &player_image,
 	});
 
+	box_collider_collection.add(BoxCollider {
+		transform: transform,
+		size: Vector2::from((32.0, 32.0)),
+		offset: Vector2::default(),
+	});
+
 	let mut renderer_system = systems::renderer_system::RendererSystem {};
 
 	application::run(
 		app,
 		|event| input.handle_event(event),
 		|app| {
-			renderer_system.update(app, &mut sprite_collection);
+			renderer_system.update(app, &mut sprite_collection, &mut box_collider_collection);
 			true
 		},
 	);

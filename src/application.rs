@@ -40,6 +40,8 @@ where
 	FE: FnMut(Event) -> bool,
 	FF: FnMut(&mut Application) -> bool,
 {
+	let clear_color = Color::RGB(0, 0, 0);
+
 	'main: loop {
 		for event in app.event_pump.poll_iter() {
 			match event {
@@ -50,6 +52,7 @@ where
 			}
 		}
 
+		app.canvas.set_draw_color(clear_color);
 		app.canvas.clear();
 
 		if !frame_callback(&mut app) {

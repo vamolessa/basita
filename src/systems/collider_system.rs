@@ -10,5 +10,4 @@ pub mod collision {
 	) -> Option<Vector2> {
 		None
 	}
-
 }

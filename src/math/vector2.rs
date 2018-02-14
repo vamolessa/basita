@@ -23,8 +23,7 @@ impl Vector2 {
 }
 
 impl From<(f32, f32)> for Vector2 {
-	fn from(values: (f32, f32)) -> Vector2 {
-		let (x, y) = values;
+	fn from((x,y): (f32, f32)) -> Vector2 {
 		Vector2 { x: x, y: y }
 	}
 }

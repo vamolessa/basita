@@ -1,9 +1,9 @@
 use std::cmp::Ordering;
 use sdl2::rect::Rect;
+use sdl2::pixels::Color;
 
 use application::Application;
-use components::sprite::Sprite;
-use components::component::ComponentCollection;
+use components::{BoxCollider, ComponentCollection, Sprite};
 
 pub struct RendererSystem {}
 
@@ -32,6 +32,7 @@ impl<'a> RendererSystem {
 		&mut self,
 		app: &mut Application,
 		sprite_collection: &mut ComponentCollection<Sprite<'a>>,
+		box_collider_collection: &mut ComponentCollection<BoxCollider>,
 	) {
 		sprite_collection.all.sort_unstable();
 
@@ -43,13 +44,27 @@ impl<'a> RendererSystem {
 				.copy(
 					&sprite.image.texture,
 					None,
-					Rect::from((
+					Rect::new(
 						transform.position.x as i32,
 						transform.position.y as i32,
 						query.width,
 						query.height,
-					)),
+					),
 				)
+				.unwrap();
+		}
+
+		for box_collider in &box_collider_collection.all {
+			let transform = box_collider.transform;
+
+			app.canvas.set_draw_color(Color::RGBA(0, 255, 0, 100));
+			app.canvas
+				.draw_rect(Rect::new(
+					transform.position.x as i32,
+					transform.position.y as i32,
+					box_collider.size.x as u32,
+					box_collider.size.x as u32,
+				))
 				.unwrap();
 		}
 	}
