@@ -4,7 +4,7 @@ use sdl2;
 use sdl2::image::{LoadTexture, INIT_JPG, INIT_PNG};
 use sdl2::render::{Texture, TextureCreator};
 
-use application::Application;
+use sdl_context::SdlContext;
 
 pub struct Image<'a> {
 	pub texture: Texture<'a>,
@@ -15,9 +15,9 @@ pub struct ImageResources {
 }
 
 impl ImageResources {
-	pub fn new(app: &mut Application) -> ImageResources {
+pub fn new(sdl: &SdlContext) -> ImageResources {
 		let _image_context = sdl2::image::init(INIT_PNG | INIT_JPG).unwrap();
-		let texture_creator = app.canvas.texture_creator();
+		let texture_creator = sdl.canvas.texture_creator();
 
 		ImageResources {
 			texture_creator: texture_creator,

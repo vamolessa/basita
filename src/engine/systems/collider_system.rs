@@ -1,4 +1,5 @@
 pub mod collision {
+	/*
 	use components::BoxCollider;
 	use math::Vector2;
 
@@ -10,4 +11,5 @@ pub mod collision {
 	) -> Option<Vector2> {
 		None
 	}
+	*/
 }

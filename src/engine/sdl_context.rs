@@ -4,7 +4,7 @@ use sdl2::pixels::Color;
 
 use std::time::Duration;
 
-pub struct Application {
+pub struct SdlContext {
 	pub sdl_context: sdl2::Sdl,
 	pub canvas: sdl2::render::Canvas<sdl2::video::Window>,
 	pub event_pump: sdl2::EventPump,
@@ -12,8 +12,8 @@ pub struct Application {
 	pub frames_per_second: u32,
 }
 
-impl Application {
-	pub fn new(window_title: &str, window_width: u32, window_height: u32) -> Application {
+impl SdlContext {
+	pub fn new(window_title: &str, window_width: u32, window_height: u32) -> SdlContext {
 		let sdl_context = sdl2::init().unwrap();
 		let video_subsystem = sdl_context.video().unwrap();
 
@@ -28,7 +28,7 @@ impl Application {
 		canvas.clear();
 		canvas.present();
 
-		Application {
+		SdlContext {
 			event_pump: sdl_context.event_pump().unwrap(),
 			sdl_context: sdl_context,
 			canvas: canvas,
@@ -39,7 +39,7 @@ impl Application {
 	pub fn run<FE, FF>(&mut self, mut event_callback: FE, mut frame_callback: FF)
 	where
 		FE: FnMut(Event) -> bool,
-		FF: FnMut(&mut Application) -> bool,
+		FF: FnMut() -> bool,
 	{
 		let clear_color = Color::RGB(0, 0, 0);
 
@@ -56,7 +56,7 @@ impl Application {
 			self.canvas.set_draw_color(clear_color);
 			self.canvas.clear();
 
-			if !frame_callback(&mut self) {
+			if !frame_callback() {
 				break;
 			}
 

@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use sdl2::rect::Rect;
 
-use application::Application;
+use sdl_context::SdlContext;
 use components::{ComponentCollection, Sprite};
 
 pub struct RendererSystem {}
@@ -29,7 +29,7 @@ impl<'a> Ord for Sprite<'a> {
 impl<'a> RendererSystem {
 	pub fn update(
 		&self,
-		app: &mut Application,
+		sdl: &mut SdlContext,
 		sprite_collection: &mut ComponentCollection<Sprite<'a>>,
 	) {
 		sprite_collection.all.sort_unstable();
@@ -38,7 +38,7 @@ impl<'a> RendererSystem {
 			let query = sprite.image.texture.query();
 			let transform = sprite.transform;
 
-			app.canvas
+			sdl.canvas
 				.copy(
 					&sprite.image.texture,
 					None,

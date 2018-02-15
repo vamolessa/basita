@@ -1,46 +1,46 @@
 extern crate sdl2;
 
 use std::path::Path;
+use std::time::Duration;
+
+use sdl2::event::Event;
+use sdl2::pixels::Color;
 
 mod engine;
 mod game;
 
 use engine::*;
+use sdl_context::SdlContext;
 
-use application::Application;
-use input::Input;
 use math::Vector2;
-use components::{BoxCollider, ComponentCollection, Sprite, Transform};
-use resources::ImageResources;
+use components::{BoxCollider, Sprite, Transform};
 
 use game::*;
 use player_system::PlayerSystem;
 
 pub fn main() {
-	let mut application = Application::new("platform maker", 400, 300);
+	let sdl_context = SdlContext::new("platform maker", 400, 300);
+	let mut engine = Engine::new(sdl_context);
 
-	let mut input = Input::new();
-	let mut image_resources = ImageResources::new(&mut application);
+	let player_image = engine
+		.image_resources
+		.load(Path::new("resources/sprites/player.png"));
 
-	let player_image = image_resources.load(Path::new("resources/sprites/player.png"));
+	engine.transforms.add(Transform::default());
 
-	let mut transform_collection = ComponentCollection::new();
-	let mut sprite_collection = ComponentCollection::new();
-	let mut box_collider_collection = ComponentCollection::new();
-
-	transform_collection.add(Transform::default());
-
-	let last_transform_index = transform_collection.all.len() - 1;
-	let transform = &mut transform_collection.all[last_transform_index];
+	let last_transform_index = engine.transforms.all.len() - 1;
+	let transform = &mut engine.transforms.all[last_transform_index];
 	transform.position = Vector2::new(10.0, 10.0);
 
-	sprite_collection.add(Sprite {
+	/*
+	engine.sprites.add(Sprite {
 		transform: transform,
 		depth: 0,
 		image: &player_image,
 	});
+	*/
 
-	box_collider_collection.add(BoxCollider {
+	engine.box_colliders.add(BoxCollider {
 		transform: transform,
 		size: Vector2::from((32.0, 32.0)),
 		offset: Vector2::default(),
@@ -49,15 +49,38 @@ pub fn main() {
 	let renderer_system = systems::RendererSystem {};
 	let collider_renderer_system = systems::ColliderRendererSystem {};
 
-	let mut player_system = PlayerSystem::new(&mut input);
+	let mut _player_system = PlayerSystem::new(&mut engine.input);
 
-	application.run(
-		|event| input.handle_event(event),
-		|app| {
-			player_system.update(&input, transform);
-			renderer_system.update(app, &mut sprite_collection);
-			collider_renderer_system.update(app, &box_collider_collection);
-			true
-		},
-	);
+	{
+		let clear_color = Color::RGB(0, 0, 0);
+
+		'main: loop {
+			for event in engine.sdl_context.event_pump.poll_iter() {
+				match event {
+					Event::Quit { .. } => break 'main,
+					_ => {
+						if !engine.input.handle_event(event) {
+							break 'main;
+						}
+					}
+				}
+			}
+
+			engine.sdl_context.canvas.set_draw_color(clear_color);
+			engine.sdl_context.canvas.clear();
+
+			{
+				//player_system.update(&input, transform);
+
+				renderer_system.update(&mut engine.sdl_context, &mut engine.sprites);
+				collider_renderer_system.update(&mut engine.sdl_context, &engine.box_colliders);
+			}
+
+			engine.sdl_context.canvas.present();
+			::std::thread::sleep(Duration::new(
+				0,
+				1_000_000_000u32 / engine.sdl_context.frames_per_second,
+			));
+		}
+	}
 }
