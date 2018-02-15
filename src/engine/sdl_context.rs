@@ -2,12 +2,18 @@ use sdl2;
 use sdl2::event::Event;
 use sdl2::pixels::Color;
 
+use sdl2::image::{INIT_JPG, INIT_PNG};
+use sdl2::render::TextureCreator;
+
 use std::time::Duration;
 
 pub struct SdlContext {
-	pub sdl_context: sdl2::Sdl,
+	sdl: sdl2::Sdl,
+
 	pub canvas: sdl2::render::Canvas<sdl2::video::Window>,
 	pub event_pump: sdl2::EventPump,
+
+	pub texture_creator: TextureCreator<sdl2::video::WindowContext>,
 
 	pub frames_per_second: u32,
 }
@@ -28,10 +34,14 @@ impl SdlContext {
 		canvas.clear();
 		canvas.present();
 
+		let _image_context = sdl2::image::init(INIT_PNG | INIT_JPG).unwrap();
+		let texture_creator = canvas.texture_creator();
+
 		SdlContext {
 			event_pump: sdl_context.event_pump().unwrap(),
-			sdl_context: sdl_context,
+			sdl: sdl_context,
 			canvas: canvas,
+			texture_creator: texture_creator,
 			frames_per_second: 60,
 		}
 	}

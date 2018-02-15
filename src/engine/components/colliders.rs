@@ -1,11 +1,10 @@
 use math::Vector2;
 
-use super::{Component, Transform};
+use super::Component;
 
-pub struct BoxCollider<'a> {
+pub struct BoxCollider {
 	pub size: Vector2,
 	pub offset: Vector2,
-	pub transform: &'a Transform,
 }
 
-impl<'a> Component for BoxCollider<'a> {}
+impl Component for BoxCollider {}

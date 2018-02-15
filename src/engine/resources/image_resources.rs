@@ -1,32 +1,56 @@
 use std::path::Path;
 
-use sdl2;
-use sdl2::image::{LoadTexture, INIT_JPG, INIT_PNG};
-use sdl2::render::{Texture, TextureCreator};
+use sdl2::image::LoadTexture;
+use sdl2::render::Texture;
 
 use sdl_context::SdlContext;
 
-pub struct Image<'a> {
-	pub texture: Texture<'a>,
+use super::super::{Engine, EngineResources};
+
+#[derive(Copy, Clone)]
+pub struct ImageResource {
+	index: usize,
 }
 
-pub struct ImageResources {
-	texture_creator: TextureCreator<sdl2::video::WindowContext>,
+pub struct ImageResources<'a> {
+	textures: Vec<Texture<'a>>,
 }
 
-impl ImageResources {
-pub fn new(sdl: &SdlContext) -> ImageResources {
-		let _image_context = sdl2::image::init(INIT_PNG | INIT_JPG).unwrap();
-		let texture_creator = sdl.canvas.texture_creator();
-
+impl<'a> ImageResources<'a> {
+	pub fn new() -> ImageResources<'a> {
 		ImageResources {
-			texture_creator: texture_creator,
+			textures: Vec::new(),
 		}
 	}
 
-	pub fn load<'a>(&'a mut self, image_path: &Path) -> Image<'a> {
-		Image {
-			texture: self.texture_creator.load_texture(image_path).unwrap(),
+	pub fn load(&mut self, _sdl: &'a SdlContext, _image_path: &Path) -> ImageResource {
+		//let texture = sdl.texture_creator.load_texture(image_path).unwrap();
+		//self.textures.push(texture);
+
+		ImageResource {
+			index: self.textures.len() - 1,
 		}
+	}
+
+	pub fn get_texture(&self, image: ImageResource) -> &Texture {
+		&self.textures[image.index]
+	}
+}
+
+pub fn load<'a, 'b>(
+	engine: &'a Engine,
+	engine_resources: &mut EngineResources<'a>,
+	image_path: &Path,
+) -> ImageResource {
+	let texture = engine
+		.sdl_context
+		.texture_creator
+		.load_texture(image_path)
+		.unwrap();
+
+	engine_resources.image_resources.textures.push(texture);
+
+	ImageResource {
+		index: engine_resources.image_resources.textures.len() - 1,
 	}
 }

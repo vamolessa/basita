@@ -13,19 +13,23 @@ use engine::*;
 use sdl_context::SdlContext;
 
 use math::Vector2;
-use components::{BoxCollider, Sprite, Transform};
+use components::{BoxCollider, Transform};
 
-use game::*;
-use player_system::PlayerSystem;
+//use game::*;
+//use player_system::PlayerSystem;
 
 pub fn main() {
 	let sdl_context = SdlContext::new("platform maker", 400, 300);
 	let mut engine = Engine::new(sdl_context);
+	let mut engine_resources = EngineResources::new();
 
-	let player_image = engine
-		.image_resources
-		.load(Path::new("resources/sprites/player.png"));
+	let _player_image = engine::resources::load(
+		&engine,
+		&mut engine_resources,
+		Path::new("resources/sprites/player.png"),
+	);
 
+	/*
 	engine.transforms.add(Transform::default());
 
 	let last_transform_index = engine.transforms.all.len() - 1;
@@ -41,15 +45,12 @@ pub fn main() {
 	*/
 
 	engine.box_colliders.add(BoxCollider {
-		transform: transform,
 		size: Vector2::from((32.0, 32.0)),
 		offset: Vector2::default(),
 	});
+	*/
 
-	let renderer_system = systems::RendererSystem {};
-	let collider_renderer_system = systems::ColliderRendererSystem {};
-
-	let mut _player_system = PlayerSystem::new(&mut engine.input);
+	//let mut _player_system = PlayerSystem::new(&mut engine.input);
 
 	{
 		let clear_color = Color::RGB(0, 0, 0);
@@ -72,8 +73,14 @@ pub fn main() {
 			{
 				//player_system.update(&input, transform);
 
-				renderer_system.update(&mut engine.sdl_context, &mut engine.sprites);
+				/*
+				renderer_system.update(
+					&mut engine.sdl_context,
+					&engine_resources.image_resources,
+					&mut engine.sprites,
+				);
 				collider_renderer_system.update(&mut engine.sdl_context, &engine.box_colliders);
+				*/
 			}
 
 			engine.sdl_context.canvas.present();

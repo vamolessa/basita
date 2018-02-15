@@ -4,29 +4,27 @@ use resources::ImageResources;
 use systems::{ColliderRendererSystem, RendererSystem};
 use components::*;
 
-pub struct Engine<'a> {
+pub struct Engine {
 	// core
 	pub sdl_context: SdlContext,
 	pub input: Input,
-
-	// resources
-	pub image_resources: ImageResources,
 
 	// systems
 	pub renderer_system: RendererSystem,
 	pub collider_renderer_system: ColliderRendererSystem,
 
 	// components
-	pub box_colliders: ComponentCollection<BoxCollider<'a>>,
-	pub sprites: ComponentCollection<Sprite<'a>>,
+	pub box_colliders: ComponentCollection<BoxCollider>,
+	pub sprites: ComponentCollection<Sprite>,
 	pub transforms: ComponentCollection<Transform>,
 }
 
-impl<'a> Engine<'a> {
-	pub fn new(sdl_context: SdlContext) -> Engine<'a> {
+impl Engine {
+	pub fn new(sdl_context: SdlContext) -> Engine {
 		Engine {
-			// resources
-			image_resources: ImageResources::new(&sdl_context),
+			// core
+			sdl_context: sdl_context,
+			input: Input::new(),
 
 			// systems
 			renderer_system: RendererSystem {},
@@ -36,10 +34,18 @@ impl<'a> Engine<'a> {
 			box_colliders: ComponentCollection::new(),
 			sprites: ComponentCollection::new(),
 			transforms: ComponentCollection::new(),
+		}
+	}
+}
 
-			// core
-			sdl_context: sdl_context,
-			input: Input::new(),
+pub struct EngineResources<'a> {
+	pub image_resources: ImageResources<'a>,
+}
+
+impl<'a> EngineResources<'a> {
+	pub fn new() -> EngineResources<'a> {
+		EngineResources {
+			image_resources: ImageResources::new(),
 		}
 	}
 }

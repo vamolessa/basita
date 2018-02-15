@@ -13,7 +13,9 @@ impl<'a> ColliderRendererSystem {
 		box_collider_collection: &ComponentCollection<BoxCollider>,
 	) {
 		for box_collider in &box_collider_collection.all {
-			let transform = box_collider.transform;
+			let transform = super::super::components::Transform {
+				position: super::super::math::Vector2::new(0.0, 0.0),
+			};
 
 			sdl.canvas.set_draw_color(Color::RGBA(0, 255, 0, 100));
 			sdl.canvas

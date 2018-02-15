@@ -1,11 +1,10 @@
-use resources::Image;
+use resources::ImageResource;
 
-use super::{Component, Transform};
+use super::Component;
 
-pub struct Sprite<'a> {
+pub struct Sprite {
 	pub depth: i32,
-	pub image: &'a Image<'a>,
-	pub transform: &'a Transform,
+	pub image: ImageResource,
 }
 
-impl<'a> Component for Sprite<'a> {}
+impl Component for Sprite {}
