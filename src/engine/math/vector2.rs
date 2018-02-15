@@ -7,6 +7,10 @@ pub struct Vector2 {
 }
 
 impl Vector2 {
+	pub fn new(x: f32, y: f32) -> Vector2 {
+		Vector2 { x: x, y: y }
+	}
+
 	/*
 	pub fn one() -> Vector2 {
 		Vector2 { x: 1.0, y: 1.0 }
@@ -23,7 +27,7 @@ impl Vector2 {
 }
 
 impl From<(f32, f32)> for Vector2 {
-	fn from((x,y): (f32, f32)) -> Vector2 {
+	fn from((x, y): (f32, f32)) -> Vector2 {
 		Vector2 { x: x, y: y }
 	}
 }

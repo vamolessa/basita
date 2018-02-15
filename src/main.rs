@@ -2,13 +2,9 @@ extern crate sdl2;
 
 use std::path::Path;
 
-mod application;
-mod input;
-mod math;
+mod engine;
 
-mod components;
-mod systems;
-mod resources;
+use engine::*;
 
 use input::Input;
 use math::Vector2;
@@ -27,7 +23,11 @@ pub fn main() {
 	let mut sprite_collection = ComponentCollection::new();
 	let mut box_collider_collection = ComponentCollection::new();
 
-	let transform = transform_collection.add(Transform::default());
+	transform_collection.add(Transform::default());
+
+	let last_transform_index = transform_collection.all.len() - 1;
+	let transform = &mut transform_collection.all[last_transform_index];
+	transform.position = Vector2::new(10.0, 10.0);
 
 	sprite_collection.add(Sprite {
 		transform: transform,

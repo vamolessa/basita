@@ -15,8 +15,7 @@ where
 		ComponentCollection { all: Vec::new() }
 	}
 
-	pub fn add(&mut self, component: T) -> &T {
+	pub fn add(&mut self, component: T) {
 		self.all.push(component);
-		&self.all[self.all.len() - 1]
 	}
 }
