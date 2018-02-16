@@ -6,19 +6,18 @@ use super::System;
 pub struct SdlEventSystem {}
 
 impl System for SdlEventSystem {
-	fn update(&mut self, state: &mut EngineState) -> bool {
+	fn update(&mut self, state: &mut EngineState) {
+		state.input.update();
+
 		let mut event_pump = state.sdl_context.event_pump.borrow_mut();
 		for event in event_pump.poll_iter() {
-			let should_continue = match event {
-				Event::Quit { .. } => false,
+			match event {
+				Event::Quit { .. } => {
+					state.running = false;
+					break;
+				}
 				_ => state.input.handle_event(event),
 			};
-
-			if !should_continue {
-				return false;
-			}
 		}
-
-		true
 	}
 }

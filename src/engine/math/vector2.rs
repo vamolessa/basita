@@ -11,6 +11,10 @@ impl Vector2 {
 		Vector2 { x: x, y: y }
 	}
 
+	pub fn zero() -> Vector2 {
+		Vector2 { x: 0.0, y: 0.0 }
+	}
+
 	/*
 	pub fn one() -> Vector2 {
 		Vector2 { x: 1.0, y: 1.0 }

@@ -24,6 +24,10 @@ impl Input {
 		}
 	}
 
+	pub fn set_event_matcher(&mut self, button: Button, event_matcher: Keycode) {
+		self.buttons[button.index].event_matcher = event_matcher;
+	}
+
 	pub fn is_pressed(&self, button: Button) -> bool {
 		self.buttons[button.index].state
 	}
@@ -38,7 +42,13 @@ impl Input {
 		!button_state.state && button_state.previous_state
 	}
 
-	pub fn handle_event(&mut self, event: Event) -> bool {
+	pub fn update(&mut self) {
+		for button in &mut self.buttons {
+			button.previous_state = button.state;
+		}
+	}
+
+	pub fn handle_event(&mut self, event: Event) {
 		match event {
 			Event::KeyDown { keycode, .. } => if let Some(keycode) = keycode {
 				self.handle_button_change(keycode, true)
@@ -48,14 +58,11 @@ impl Input {
 			},
 			_ => (),
 		};
-
-		true
 	}
 
 	fn handle_button_change(&mut self, keycode: Keycode, state: bool) {
 		for button in &mut self.buttons {
 			if button.event_matcher == keycode {
-				button.previous_state = button.state;
 				button.state = state;
 			}
 		}

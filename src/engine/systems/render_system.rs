@@ -30,7 +30,7 @@ impl<'a> Ord for Sprite<'a> {
 pub struct RenderSystem {}
 
 impl System for RenderSystem {
-	fn update(&mut self, state: &mut EngineState) -> bool {
+	fn update(&mut self, state: &mut EngineState) {
 		state.sprites.all.sort_unstable();
 
 		let mut canvas = state.sdl_context.canvas.borrow_mut();
@@ -39,9 +39,7 @@ impl System for RenderSystem {
 			let texture = &state.image_resources.get(sprite.image_resource).texture;
 			let query = texture.query();
 
-			let transform = super::super::components::Transform {
-				position: super::super::math::Vector2::new(0.0, 0.0),
-			};
+			let transform = state.transforms.get(sprite.transform);
 
 			canvas
 				.copy(
@@ -56,7 +54,5 @@ impl System for RenderSystem {
 				)
 				.unwrap();
 		}
-
-		true
 	}
 }

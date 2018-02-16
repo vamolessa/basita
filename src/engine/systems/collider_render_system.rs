@@ -7,13 +7,11 @@ use super::System;
 pub struct ColliderRenderSystem {}
 
 impl System for ColliderRenderSystem {
-	fn update(&mut self, state: &mut EngineState)-> bool {
+	fn update(&mut self, state: &mut EngineState) {
 		let mut canvas = state.sdl_context.canvas.borrow_mut();
 
 		for box_collider in &state.box_colliders.all {
-			let transform = super::super::components::Transform {
-				position: super::super::math::Vector2::new(0.0, 0.0),
-			};
+			let transform = state.transforms.get(box_collider.transform);
 
 			canvas.set_draw_color(Color::RGBA(0, 255, 0, 100));
 			canvas
@@ -25,7 +23,5 @@ impl System for ColliderRenderSystem {
 				))
 				.unwrap();
 		}
-
-		true
 	}
 }
