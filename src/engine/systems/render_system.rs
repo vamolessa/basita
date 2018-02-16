@@ -2,11 +2,10 @@ use std::cmp::Ordering;
 
 use sdl2::rect::Rect;
 
-use SdlContext;
-use resources::ImageResources;
-use components::{ComponentCollection, Sprite};
+use super::super::EngineState;
+use super::System;
 
-pub struct RenderSystem {}
+use components::Sprite;
 
 impl<'a> PartialEq for Sprite<'a> {
 	fn eq(&self, other: &Self) -> bool {
@@ -28,19 +27,16 @@ impl<'a> Ord for Sprite<'a> {
 	}
 }
 
-impl<'a> RenderSystem {
-	pub fn update(
-		&self,
-		sdl: &SdlContext,
-		image_resources: &ImageResources<'a>,
-		sprite_collection: &mut ComponentCollection<Sprite>,
-	) {
-		sprite_collection.all.sort_unstable();
+pub struct RenderSystem {}
 
-		let mut canvas = sdl.canvas.borrow_mut();
+impl System for RenderSystem {
+	fn update(&mut self, engine: &mut EngineState) {
+		engine.sprites.all.sort_unstable();
 
-		for sprite in &sprite_collection.all {
-			let texture = &image_resources.get(sprite.image_resource).texture;
+		let mut canvas = engine.sdl_context.canvas.borrow_mut();
+
+		for sprite in &engine.sprites.all {
+			let texture = &engine.image_resources.get(sprite.image_resource).texture;
 			let query = texture.query();
 
 			let transform = super::super::components::Transform {
