@@ -1,7 +1,7 @@
 use sdl_context::SdlContext;
 use input::Input;
 use resources::ImageResources;
-use systems::{ColliderRenderSystem, RenderSystem};
+use systems::*;
 use components::*;
 
 pub struct Engine<'a> {
@@ -51,6 +51,9 @@ impl<'a> EngineState<'a> {
 }
 
 pub struct EngineSystems {
+	pub sdl_event_system: SdlEventSystem,
+	pub sdl_presenter_system: SdlPresenterSystem,
+
 	pub render_system: RenderSystem,
 	pub collider_render_system: ColliderRenderSystem,
 }
@@ -58,6 +61,9 @@ pub struct EngineSystems {
 impl EngineSystems {
 	pub fn new() -> Self {
 		EngineSystems {
+			sdl_event_system: SdlEventSystem {},
+			sdl_presenter_system: SdlPresenterSystem {},
+
 			render_system: RenderSystem {},
 			collider_render_system: ColliderRenderSystem {},
 		}

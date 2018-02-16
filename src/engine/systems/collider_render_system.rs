@@ -7,7 +7,7 @@ use super::System;
 pub struct ColliderRenderSystem {}
 
 impl System for ColliderRenderSystem {
-	fn update(&mut self, state: &mut EngineState) {
+	fn update(&mut self, state: &mut EngineState)-> bool {
 		let mut canvas = state.sdl_context.canvas.borrow_mut();
 
 		for box_collider in &state.box_colliders.all {
@@ -25,5 +25,7 @@ impl System for ColliderRenderSystem {
 				))
 				.unwrap();
 		}
+
+		true
 	}
 }

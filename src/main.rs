@@ -1,10 +1,5 @@
 extern crate sdl2;
 
-use std::time::Duration;
-
-use sdl2::event::Event;
-use sdl2::pixels::Color;
-
 mod engine;
 mod game;
 
@@ -30,8 +25,8 @@ pub fn main() {
 
 	engine.state.transforms.add(Transform::default());
 
-	let last_transform_index = engine.state.transforms.all.len() - 1;
-	//let transform = &mut state.transforms.all[last_transform_index];
+	let _last_transform_index = engine.state.transforms.all.len() - 1;
+	//let transform = &mut state.transforms.all[_last_transform_index];
 	//transform.position = Vector2::new(10.0, 10.0);
 
 	engine.state.sprites.add(Sprite {
@@ -48,27 +43,9 @@ pub fn main() {
 		player_system: PlayerSystem::new(&mut engine.state.input),
 	};
 
-	let clear_color = Color::RGB(0, 0, 0);
-
-	'main: loop {
-		{
-			let mut event_pump = engine.state.sdl_context.event_pump.borrow_mut();
-			for event in event_pump.poll_iter() {
-				match event {
-					Event::Quit { .. } => break 'main,
-					_ => {
-						if !engine.state.input.handle_event(event) {
-							break 'main;
-						}
-					}
-				}
-			}
-		}
-
-		{
-			let mut canvas = engine.state.sdl_context.canvas.borrow_mut();
-			canvas.set_draw_color(clear_color);
-			canvas.clear();
+	loop {
+		if !engine.systems.sdl_event_system.update(&mut engine.state) {
+			break;
 		}
 
 		//game.player_system.update(&state.input, transform);
@@ -79,13 +56,9 @@ pub fn main() {
 			.collider_render_system
 			.update(&mut engine.state);
 
-		{
-			let mut canvas = engine.state.sdl_context.canvas.borrow_mut();
-			canvas.present();
-			::std::thread::sleep(Duration::new(
-				0,
-				1_000_000_000u32 / engine.state.sdl_context.frames_per_second,
-			));
-		}
+		engine
+			.systems
+			.sdl_presenter_system
+			.update(&mut engine.state);
 	}
 }

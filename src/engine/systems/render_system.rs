@@ -30,13 +30,13 @@ impl<'a> Ord for Sprite<'a> {
 pub struct RenderSystem {}
 
 impl System for RenderSystem {
-	fn update(&mut self, engine: &mut EngineState) {
-		engine.sprites.all.sort_unstable();
+	fn update(&mut self, state: &mut EngineState) -> bool {
+		state.sprites.all.sort_unstable();
 
-		let mut canvas = engine.sdl_context.canvas.borrow_mut();
+		let mut canvas = state.sdl_context.canvas.borrow_mut();
 
-		for sprite in &engine.sprites.all {
-			let texture = &engine.image_resources.get(sprite.image_resource).texture;
+		for sprite in &state.sprites.all {
+			let texture = &state.image_resources.get(sprite.image_resource).texture;
 			let query = texture.query();
 
 			let transform = super::super::components::Transform {
@@ -56,5 +56,7 @@ impl System for RenderSystem {
 				)
 				.unwrap();
 		}
+
+		true
 	}
 }
