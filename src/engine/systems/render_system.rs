@@ -1,13 +1,12 @@
 use std::cmp::Ordering;
 
-use sdl2::render::Canvas;
-use sdl2::video::Window;
 use sdl2::rect::Rect;
 
+use SdlContext;
 use resources::ImageResources;
 use components::{ComponentCollection, Sprite};
 
-pub struct RendererSystem {}
+pub struct RenderSystem {}
 
 impl<'a> PartialEq for Sprite {
 	fn eq(&self, other: &Self) -> bool {
@@ -29,14 +28,16 @@ impl<'a> Ord for Sprite {
 	}
 }
 
-impl<'a> RendererSystem {
+impl<'a> RenderSystem {
 	pub fn update(
 		&self,
-		sdl_canvas: &mut Canvas<Window>,
+		sdl: &SdlContext,
 		image_resources: &ImageResources<'a>,
 		sprite_collection: &mut ComponentCollection<Sprite>,
 	) {
 		sprite_collection.all.sort_unstable();
+
+		let mut canvas = sdl.canvas.borrow_mut();
 
 		for sprite in &sprite_collection.all {
 			let texture = &image_resources.get(sprite.image_resource).texture;
@@ -46,7 +47,7 @@ impl<'a> RendererSystem {
 				position: super::super::math::Vector2::new(0.0, 0.0),
 			};
 
-			sdl_canvas
+			canvas
 				.copy(
 					texture,
 					None,

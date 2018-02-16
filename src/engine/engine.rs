@@ -1,17 +1,20 @@
 use sdl_context::SdlContext;
 use input::Input;
 use resources::ImageResources;
-use systems::{ColliderRendererSystem, RendererSystem};
+use systems::{ColliderRenderSystem, RenderSystem};
 use components::*;
 
-pub struct Engine {
+pub struct Engine<'a> {
 	// core
-	pub sdl_context: SdlContext,
+	pub sdl_context: &'a SdlContext,
 	pub input: Input,
 
+	// resources
+	pub image_resources: ImageResources<'a>,
+
 	// systems
-	pub render_system: RendererSystem,
-	pub collider_render_system: ColliderRendererSystem,
+	pub render_system: RenderSystem,
+	pub collider_render_system: ColliderRenderSystem,
 
 	// components
 	pub box_colliders: ComponentCollection<BoxCollider>,
@@ -19,16 +22,19 @@ pub struct Engine {
 	pub transforms: ComponentCollection<Transform>,
 }
 
-impl Engine {
-	pub fn new(sdl_context: SdlContext) -> Self {
+impl<'a> Engine<'a> {
+	pub fn new(sdl_context: &'a SdlContext) -> Self {
 		Engine {
 			// core
 			sdl_context: sdl_context,
 			input: Input::new(),
 
+			// resources
+			image_resources: ImageResources::new(sdl_context),
+
 			// systems
-			render_system: RendererSystem {},
-			collider_render_system: ColliderRendererSystem {},
+			render_system: RenderSystem {},
+			collider_render_system: ColliderRenderSystem {},
 
 			// components
 			box_colliders: ComponentCollection::new(),
@@ -38,6 +44,3 @@ impl Engine {
 	}
 }
 
-pub struct EngineResources<'a> {
-	pub image_resources: ImageResources<'a>,
-}

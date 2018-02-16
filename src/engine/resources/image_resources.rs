@@ -1,18 +1,19 @@
-use sdl2::video::WindowContext;
 use sdl2::image::LoadTexture;
-use sdl2::render::{Texture, TextureCreator};
+use sdl2::render::Texture;
 
+use SdlContext;
 use super::{ResourceLoader, ResourceManager};
 
 pub struct ImageResource<'a> {
 	pub texture: Texture<'a>,
 }
 
-pub type ImageResources<'a> = ResourceManager<'a, ImageResource<'a>, TextureCreator<WindowContext>>;
+pub type ImageResources<'a> = ResourceManager<'a, ImageResource<'a>, SdlContext>;
 
-impl<'a, T> ResourceLoader<'a, ImageResource<'a>> for TextureCreator<T> {
+impl<'a> ResourceLoader<'a, ImageResource<'a>> for SdlContext {
 	fn load(&'a self, path: &str) -> Result<ImageResource, String> {
-		self.load_texture(path)
+		self.texture_creator
+			.load_texture(path)
 			.map(|texture| ImageResource { texture: texture })
 	}
 }

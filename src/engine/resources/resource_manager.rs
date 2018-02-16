@@ -52,6 +52,6 @@ where
 	}
 }
 
-pub trait ResourceLoader<'l, R> {
-	fn load(&'l self, path: &str) -> Result<R, String>;
+pub trait ResourceLoader<'a, R> {
+	fn load(&'a self, path: &str) -> Result<R, String>;
 }
