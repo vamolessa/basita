@@ -1,7 +1,9 @@
 use std::cmp::Ordering;
+
+use sdl2::render::Canvas;
+use sdl2::video::Window;
 use sdl2::rect::Rect;
 
-use sdl_context::SdlContext;
 use resources::ImageResources;
 use components::{ComponentCollection, Sprite};
 
@@ -30,21 +32,21 @@ impl<'a> Ord for Sprite {
 impl<'a> RendererSystem {
 	pub fn update(
 		&self,
-		sdl: &mut SdlContext,
+		sdl_canvas: &mut Canvas<Window>,
 		image_resources: &ImageResources<'a>,
 		sprite_collection: &mut ComponentCollection<Sprite>,
 	) {
 		sprite_collection.all.sort_unstable();
 
 		for sprite in &sprite_collection.all {
-			let texture = image_resources.get_texture(sprite.image);
-
+			let texture = &image_resources.get(sprite.image_resource).texture;
 			let query = texture.query();
+
 			let transform = super::super::components::Transform {
 				position: super::super::math::Vector2::new(0.0, 0.0),
 			};
 
-			sdl.canvas
+			sdl_canvas
 				.copy(
 					texture,
 					None,

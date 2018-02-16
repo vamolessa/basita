@@ -7,7 +7,7 @@ pub struct Vector2 {
 }
 
 impl Vector2 {
-	pub fn new(x: f32, y: f32) -> Vector2 {
+	pub fn new(x: f32, y: f32) -> Self {
 		Vector2 { x: x, y: y }
 	}
 
@@ -27,15 +27,15 @@ impl Vector2 {
 }
 
 impl From<(f32, f32)> for Vector2 {
-	fn from((x, y): (f32, f32)) -> Vector2 {
+	fn from((x, y): (f32, f32)) -> Self {
 		Vector2 { x: x, y: y }
 	}
 }
 
 impl Add<Vector2> for Vector2 {
-	type Output = Vector2;
+	type Output = Self;
 
-	fn add(self, other: Vector2) -> Vector2 {
+	fn add(self, other: Self) -> Self {
 		Vector2 {
 			x: self.x + other.x,
 			y: self.y + other.y,
@@ -44,9 +44,9 @@ impl Add<Vector2> for Vector2 {
 }
 
 impl Sub<Vector2> for Vector2 {
-	type Output = Vector2;
+	type Output = Self;
 
-	fn sub(self, other: Vector2) -> Vector2 {
+	fn sub(self, other: Self) -> Self {
 		Vector2 {
 			x: self.x - other.x,
 			y: self.y - other.y,
@@ -57,7 +57,7 @@ impl Sub<Vector2> for Vector2 {
 impl Mul<Vector2> for Vector2 {
 	type Output = Vector2;
 
-	fn mul(self, other: Vector2) -> Vector2 {
+	fn mul(self, other: Self) -> Self {
 		Vector2 {
 			x: self.x * other.x,
 			y: self.y * other.y,
@@ -66,9 +66,9 @@ impl Mul<Vector2> for Vector2 {
 }
 
 impl Mul<f32> for Vector2 {
-	type Output = Vector2;
+	type Output = Self;
 
-	fn mul(self, num: f32) -> Vector2 {
+	fn mul(self, num: f32) -> Self {
 		Vector2 {
 			x: self.x * num,
 			y: self.y * num,
@@ -77,9 +77,9 @@ impl Mul<f32> for Vector2 {
 }
 
 impl Div<Vector2> for Vector2 {
-	type Output = Vector2;
+	type Output = Self;
 
-	fn div(self, other: Vector2) -> Vector2 {
+	fn div(self, other: Self) -> Self {
 		Vector2 {
 			x: self.x * other.x,
 			y: self.y * other.y,
@@ -88,9 +88,9 @@ impl Div<Vector2> for Vector2 {
 }
 
 impl Div<f32> for Vector2 {
-	type Output = Vector2;
+	type Output = Self;
 
-	fn div(self, num: f32) -> Vector2 {
+	fn div(self, num: f32) -> Self {
 		Vector2 {
 			x: self.x * num,
 			y: self.y * num,

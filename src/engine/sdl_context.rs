@@ -1,25 +1,25 @@
 use sdl2;
 use sdl2::event::Event;
 use sdl2::pixels::Color;
-
 use sdl2::image::{INIT_JPG, INIT_PNG};
-use sdl2::render::TextureCreator;
+use sdl2::render::{Canvas,TextureCreator};
+use sdl2::video::{Window, WindowContext};
 
 use std::time::Duration;
 
 pub struct SdlContext {
 	sdl: sdl2::Sdl,
 
-	pub canvas: sdl2::render::Canvas<sdl2::video::Window>,
+	pub canvas: Canvas<Window>,
 	pub event_pump: sdl2::EventPump,
 
-	pub texture_creator: TextureCreator<sdl2::video::WindowContext>,
+	pub texture_creator: TextureCreator<WindowContext>,
 
 	pub frames_per_second: u32,
 }
 
 impl SdlContext {
-	pub fn new(window_title: &str, window_width: u32, window_height: u32) -> SdlContext {
+	pub fn new(window_title: &str, window_width: u32, window_height: u32) -> Self {
 		let sdl_context = sdl2::init().unwrap();
 		let video_subsystem = sdl_context.video().unwrap();
 

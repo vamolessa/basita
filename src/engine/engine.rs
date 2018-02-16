@@ -10,8 +10,8 @@ pub struct Engine {
 	pub input: Input,
 
 	// systems
-	pub renderer_system: RendererSystem,
-	pub collider_renderer_system: ColliderRendererSystem,
+	pub render_system: RendererSystem,
+	pub collider_render_system: ColliderRendererSystem,
 
 	// components
 	pub box_colliders: ComponentCollection<BoxCollider>,
@@ -20,15 +20,15 @@ pub struct Engine {
 }
 
 impl Engine {
-	pub fn new(sdl_context: SdlContext) -> Engine {
+	pub fn new(sdl_context: SdlContext) -> Self {
 		Engine {
 			// core
 			sdl_context: sdl_context,
 			input: Input::new(),
 
 			// systems
-			renderer_system: RendererSystem {},
-			collider_renderer_system: ColliderRendererSystem {},
+			render_system: RendererSystem {},
+			collider_render_system: ColliderRendererSystem {},
 
 			// components
 			box_colliders: ComponentCollection::new(),
@@ -40,12 +40,4 @@ impl Engine {
 
 pub struct EngineResources<'a> {
 	pub image_resources: ImageResources<'a>,
-}
-
-impl<'a> EngineResources<'a> {
-	pub fn new() -> EngineResources<'a> {
-		EngineResources {
-			image_resources: ImageResources::new(),
-		}
-	}
 }

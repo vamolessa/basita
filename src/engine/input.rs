@@ -6,7 +6,7 @@ pub struct Input {
 }
 
 impl Input {
-	pub fn new() -> Input {
+	pub fn new() -> Self {
 		Input {
 			buttons: Vec::new(),
 		}

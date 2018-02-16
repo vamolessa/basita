@@ -11,7 +11,7 @@ impl<T> ComponentCollection<T>
 where
 	T: Component,
 {
-	pub fn new() -> ComponentCollection<T> {
+	pub fn new() -> Self {
 		ComponentCollection { all: Vec::new() }
 	}
 

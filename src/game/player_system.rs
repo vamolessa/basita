@@ -10,7 +10,7 @@ pub struct PlayerSystem {
 }
 
 impl PlayerSystem {
-	pub fn new(input: &mut Input) -> PlayerSystem {
+	pub fn new(input: &mut Input) -> Self {
 		PlayerSystem {
 			left_button: input.new_button(Keycode::Left),
 			right_button: input.new_button(Keycode::Right),

@@ -1,56 +1,18 @@
-use std::path::Path;
-
+use sdl2::video::WindowContext;
 use sdl2::image::LoadTexture;
-use sdl2::render::Texture;
+use sdl2::render::{Texture, TextureCreator};
 
-use sdl_context::SdlContext;
+use super::{ResourceLoader, ResourceManager};
 
-use super::super::{Engine, EngineResources};
-
-#[derive(Copy, Clone)]
-pub struct ImageResource {
-	index: usize,
+pub struct ImageResource<'a> {
+	pub texture: Texture<'a>,
 }
 
-pub struct ImageResources<'a> {
-	textures: Vec<Texture<'a>>,
-}
+pub type ImageResources<'a> = ResourceManager<'a, ImageResource<'a>, TextureCreator<WindowContext>>;
 
-impl<'a> ImageResources<'a> {
-	pub fn new() -> ImageResources<'a> {
-		ImageResources {
-			textures: Vec::new(),
-		}
-	}
-
-	pub fn load(&mut self, _sdl: &'a SdlContext, _image_path: &Path) -> ImageResource {
-		//let texture = sdl.texture_creator.load_texture(image_path).unwrap();
-		//self.textures.push(texture);
-
-		ImageResource {
-			index: self.textures.len() - 1,
-		}
-	}
-
-	pub fn get_texture(&self, image: ImageResource) -> &Texture {
-		&self.textures[image.index]
-	}
-}
-
-pub fn load<'a, 'b>(
-	engine: &'a Engine,
-	engine_resources: &mut EngineResources<'a>,
-	image_path: &Path,
-) -> ImageResource {
-	let texture = engine
-		.sdl_context
-		.texture_creator
-		.load_texture(image_path)
-		.unwrap();
-
-	engine_resources.image_resources.textures.push(texture);
-
-	ImageResource {
-		index: engine_resources.image_resources.textures.len() - 1,
+impl<'a, T> ResourceLoader<'a, ImageResource<'a>> for TextureCreator<T> {
+	fn load(&'a self, path: &str) -> Result<ImageResource, String> {
+		self.load_texture(path)
+			.map(|texture| ImageResource { texture: texture })
 	}
 }
