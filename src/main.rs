@@ -13,8 +13,8 @@ use engine::*;
 use math::Vector2;
 use components::{BoxCollider, Sprite, Transform};
 
-//use game::*;
-//use player_system::PlayerSystem;
+use game::*;
+use game::player_system::PlayerSystem;
 
 pub fn main() {
 	let sdl_context = SdlContext::new("platform maker", 400, 300);
@@ -42,52 +42,52 @@ pub fn main() {
 		offset: Vector2::default(),
 	});
 
-	//let mut _player_system = PlayerSystem::new(&mut engine.input);
+	let game = Game {
+		player_system: PlayerSystem::new(&mut engine.input),
+	};
 
-	{
-		let clear_color = Color::RGB(0, 0, 0);
+	let clear_color = Color::RGB(0, 0, 0);
 
-		'main: loop {
-			{
-				let mut event_pump = engine.sdl_context.event_pump.borrow_mut();
-				for event in event_pump.poll_iter() {
-					match event {
-						Event::Quit { .. } => break 'main,
-						_ => {
-							if !engine.input.handle_event(event) {
-								break 'main;
-							}
+	'main: loop {
+		{
+			let mut event_pump = engine.sdl_context.event_pump.borrow_mut();
+			for event in event_pump.poll_iter() {
+				match event {
+					Event::Quit { .. } => break 'main,
+					_ => {
+						if !engine.input.handle_event(event) {
+							break 'main;
 						}
 					}
 				}
 			}
+		}
 
-			{
-				let mut canvas = engine.sdl_context.canvas.borrow_mut();
-				canvas.set_draw_color(clear_color);
-				canvas.clear();
-			}
+		{
+			let mut canvas = engine.sdl_context.canvas.borrow_mut();
+			canvas.set_draw_color(clear_color);
+			canvas.clear();
+		}
 
-			//player_system.update(&input, transform);
+		game.player_system.update(&engine.input, transform);
 
-			engine.render_system.update(
-				&engine.sdl_context,
-				&engine.image_resources,
-				&mut engine.sprites,
-			);
+		engine.render_system.update(
+			&engine.sdl_context,
+			&engine.image_resources,
+			&mut engine.sprites,
+		);
 
-			engine
-				.collider_render_system
-				.update(&engine.sdl_context, &engine.box_colliders);
+		engine
+			.collider_render_system
+			.update(&engine.sdl_context, &engine.box_colliders);
 
-			{
-				let mut canvas = engine.sdl_context.canvas.borrow_mut();
-				canvas.present();
-				::std::thread::sleep(Duration::new(
-					0,
-					1_000_000_000u32 / engine.sdl_context.frames_per_second,
-				));
-			}
+		{
+			let mut canvas = engine.sdl_context.canvas.borrow_mut();
+			canvas.present();
+			::std::thread::sleep(Duration::new(
+				0,
+				1_000_000_000u32 / engine.sdl_context.frames_per_second,
+			));
 		}
 	}
 }

@@ -18,7 +18,7 @@ pub struct Engine<'a> {
 
 	// components
 	pub box_colliders: ComponentCollection<BoxCollider>,
-	pub sprites: ComponentCollection<Sprite>,
+	pub sprites: ComponentCollection<Sprite<'a>>,
 	pub transforms: ComponentCollection<Transform>,
 }
 
@@ -43,4 +43,3 @@ impl<'a> Engine<'a> {
 		}
 	}
 }
-

@@ -1,10 +1,10 @@
 use super::Component;
 
-use resources::ResourceHandle;
+use resources::ImageResourceHandle;
 
-pub struct Sprite {
+pub struct Sprite<'a> {
 	pub depth: i32,
-	pub image_resource: ResourceHandle,
+	pub image_resource: ImageResourceHandle<'a>,
 }
 
-impl Component for Sprite {}
+impl<'a> Component for Sprite<'a> {}

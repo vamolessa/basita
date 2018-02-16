@@ -8,21 +8,21 @@ use components::{ComponentCollection, Sprite};
 
 pub struct RenderSystem {}
 
-impl<'a> PartialEq for Sprite {
+impl<'a> PartialEq for Sprite<'a> {
 	fn eq(&self, other: &Self) -> bool {
 		return self.depth == other.depth;
 	}
 }
 
-impl<'a> Eq for Sprite {}
+impl<'a> Eq for Sprite<'a> {}
 
-impl<'a> PartialOrd for Sprite {
+impl<'a> PartialOrd for Sprite<'a> {
 	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
 		Some(self.cmp(other))
 	}
 }
 
-impl<'a> Ord for Sprite {
+impl<'a> Ord for Sprite<'a> {
 	fn cmp(&self, other: &Self) -> Ordering {
 		other.depth.cmp(&self.depth)
 	}

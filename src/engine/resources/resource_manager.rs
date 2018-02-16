@@ -1,22 +1,34 @@
 use std::collections::HashMap;
+use std::marker::PhantomData;
 
-#[derive(Copy, Clone)]
-pub struct ResourceHandle {
+pub struct ResourceHandle<R> {
 	index: usize,
+	_phantom: PhantomData<R>,
 }
+
+impl<R> Clone for ResourceHandle<R> {
+	fn clone(&self) -> Self {
+		ResourceHandle {
+			index: self.index,
+			_phantom: self._phantom,
+		}
+	}
+}
+
+impl<R> Copy for ResourceHandle<R> {}
 
 pub struct ResourceManager<'a, R, L>
 where
 	L: 'a + ResourceLoader<'a, R>,
 {
 	loader: &'a L,
-	path_map: HashMap<String, ResourceHandle>,
+	path_map: HashMap<String, ResourceHandle<R>>,
 	resources: Vec<R>,
 }
 
 impl<'a, R, L> ResourceManager<'a, R, L>
 where
-	L: ResourceLoader<'a, R>,
+	L: 'a + ResourceLoader<'a, R>,
 {
 	pub fn new(loader: &'a L) -> Self {
 		ResourceManager {
@@ -26,9 +38,9 @@ where
 		}
 	}
 
-	pub fn load(&mut self, path: &String) -> Result<ResourceHandle, String>
+	pub fn load(&mut self, path: &String) -> Result<ResourceHandle<R>, String>
 	where
-		L: ResourceLoader<'a, R>,
+		L: 'a + ResourceLoader<'a, R>,
 	{
 		match self.path_map.get(path).cloned() {
 			Some(handle) => Ok(handle),
@@ -38,6 +50,7 @@ where
 
 				let handle = ResourceHandle {
 					index: self.resources.len() - 1,
+					_phantom: PhantomData,
 				};
 
 				self.path_map.insert(path.clone(), handle);
@@ -47,7 +60,7 @@ where
 		}
 	}
 
-	pub fn get(&self, handle: ResourceHandle) -> &R {
+	pub fn get(&self, handle: ResourceHandle<R>) -> &R {
 		&self.resources[handle.index]
 	}
 }
