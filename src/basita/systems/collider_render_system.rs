@@ -3,9 +3,14 @@ use sdl2::pixels::Color;
 
 use super::super::EngineState;
 use super::System;
-use super::super::SomeEngineSignal;
 
 pub struct ColliderRenderSystem {}
+
+impl ColliderRenderSystem {
+	pub fn test(&self, state: &mut EngineState, _data: &()) {
+		println!("ADASDASDASD!!!");
+	}
+}
 
 impl System for ColliderRenderSystem {
 	fn update(&self, state: &mut EngineState) {
@@ -24,11 +29,5 @@ impl System for ColliderRenderSystem {
 				))
 				.unwrap();
 		}
-	}
-}
-
-impl SomeEngineSignal for ColliderRenderSystem {
-	fn handle(&self, _data: &()) {
-		println!("ADASDASDSADASD!!!");
 	}
 }

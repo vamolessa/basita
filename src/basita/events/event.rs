@@ -1,5 +1,32 @@
 use std::rc::Rc;
 
+use super::super::EngineState;
+use super::super::systems::System;
+
+pub struct Event<D> {
+	callbacks: Vec<fn(&System, &mut EngineState, &D) -> ()>,
+}
+
+impl<D> Event<D> {
+	pub fn new() -> Self {
+		Event {
+			callbacks: Vec::new(),
+		}
+	}
+
+	pub fn subscribe(&mut self, callback: fn(&System, &mut EngineState, &D) -> ()) {
+		self.callbacks.push(callback);
+	}
+
+	pub fn raise(&self, state: &mut EngineState, data: &D) {
+		/*
+		for callback in &self.callbacks {
+			callback(state, data);
+		}
+		*/
+	}
+}
+
 pub trait Signal<C, D>
 where
 	C: ?Sized,
@@ -12,7 +39,7 @@ pub struct Slot<S>
 where
 	S: ?Sized,
 {
-	listeners: Vec<Rc<S>>,
+	listeners: Vec<Rc<Box<S>>>,
 }
 
 impl<S> Slot<S>
@@ -25,7 +52,7 @@ where
 		}
 	}
 
-	pub fn subscribe(&mut self, listener: Rc<S>) {
+	pub fn subscribe(&mut self, listener: Rc<Box<S>>) {
 		self.listeners.push(listener);
 	}
 

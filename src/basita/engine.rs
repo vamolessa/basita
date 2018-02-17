@@ -76,6 +76,26 @@ impl EngineSystems {
 	}
 }
 
+signal!(SomeEngineSignal, ());
+
+#[derive(Default)]
+pub struct EngineSlots {
+	pub some_slot: Slot<SomeEngineSignal>,
+}
+
+fn test(_s: &System, _st: &mut EngineState, _d: &()) {}
+
+struct A {}
+impl A {
+	pub fn f(_s: &System, _st: &mut EngineState, _d: &()) {
+		let _a = _s as &A;
+	}
+	pub fn f2(&self, _st: &mut EngineState, _d: &()) {}
+}
+impl System for A {
+	fn update(&self, _state: &mut EngineState) {}
+}
+
 impl System for EngineSystems {
 	fn init(&self, state: &mut EngineState) {
 		self.render_systems.init(state);
@@ -83,11 +103,23 @@ impl System for EngineSystems {
 		self.sdl_presenter_system.init(state);
 		self.sdl_event_system.init(state);
 
-		state.slots.some_slot.subscribe(Rc::clone(
-			&(self.collider_render_system as SomeEngineSignal),
-		));
+		let mut some_event: Event<()> = Event::new();
+		some_event.subscribe(|_system, _state, _data| println!("ADASDASDAS"));
+		some_event.subscribe(test);
+		some_event.subscribe(A::f);
+		//some_event.raise(state, &());
+
+		/*
+		let callback = |state, data| self.collider_render_system.test(state, data);
+		let boxed_callback = Box::new(callback);
+
+		state
+			.slots
+			.some_slot
+			.subscribe(Rc::clone(&(self.a as Box<SomeEngineSignal>)));
 		let data = ();
 		state.slots.some_slot.raise(&data);
+		*/
 	}
 
 	fn update(&self, state: &mut EngineState) {
@@ -96,13 +128,6 @@ impl System for EngineSystems {
 		self.sdl_presenter_system.update(state);
 		self.sdl_event_system.update(state);
 	}
-}
-
-signal!(SomeEngineSignal, ());
-
-#[derive(Default)]
-pub struct EngineSlots {
-	pub some_slot: Slot<SomeEngineSignal>,
 }
 
 /*
