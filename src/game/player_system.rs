@@ -1,10 +1,10 @@
 use sdl2::keyboard::Keycode;
 
-use engine::EngineState;
-use engine::systems::System;
-use engine::input::Button;
-use engine::math::Vector2;
-use engine::components::*;
+use basita::EngineState;
+use basita::systems::System;
+use basita::input::Button;
+use basita::math::Vector2;
+use basita::components::*;
 
 pub struct PlayerSystem {
 	left_button: Button,

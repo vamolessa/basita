@@ -1,7 +1,9 @@
-pub mod engine;
+pub extern crate sdl2;
+
+mod engine;
 pub use self::engine::*;
 
-pub mod sdl_context;
+mod sdl_context;
 pub use sdl_context::*;
 
 pub mod components;

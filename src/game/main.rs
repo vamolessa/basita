@@ -1,12 +1,10 @@
-extern crate sdl2;
+extern crate basita;
 
-mod engine;
-mod game;
+use basita::*;
+use basita::systems::System;
 
-use engine::*;
-use engine::systems::System;
-
-use game::player_system::PlayerSystem;
+mod player_system;
+use player_system::PlayerSystem;
 
 pub fn main() {
 	let mut sdl_context = SdlContext::new("platform maker", 400, 300);
