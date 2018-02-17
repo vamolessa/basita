@@ -1,11 +1,11 @@
-pub mod component;
+mod component;
 pub use self::component::*;
 
-pub mod transform;
+mod transform;
 pub use self::transform::*;
 
-pub mod sprite;
+mod sprite;
 pub use self::sprite::*;
 
-pub mod colliders;
+mod colliders;
 pub use self::colliders::*;
