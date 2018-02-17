@@ -1,11 +1,11 @@
 [package]
-name = "platformer-maker-rs"
+name = "platformer-maker"
 version = "0.1.0"
 authors = ["Matheus Lessa <matheuslessarodrigues@gmail.com>"]
 build = "build.rs"
 
 [[bin]]
-name = "platformer-make"
+name = "platformer-maker"
 path = "src/main.rs"
 
 [dependencies]
