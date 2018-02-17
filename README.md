@@ -1,1 +1,1 @@
-# platformer-maker-rs
+# Basita + Platformer Maker
