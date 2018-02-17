@@ -4,10 +4,6 @@ version = "0.1.0"
 authors = ["Matheus Lessa <matheuslessarodrigues@gmail.com>"]
 build = "build.rs"
 
-[lib]
-name = "basita"
-path = "src/basita/lib.rs"
-
 [[bin]]
 name = "platformer-maker"
 path = "src/main.rs"

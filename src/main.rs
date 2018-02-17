@@ -1,9 +1,13 @@
-extern crate basita;
-//mod basita;
+//extern crate basita;
+mod basita;
 use basita::*;
 
 mod game;
 use game::*;
+
+struct A {
+	pub val: i32,
+}
 
 pub fn main() {
 	let mut sdl_context = SdlContext::new("platform maker", 400, 300);
