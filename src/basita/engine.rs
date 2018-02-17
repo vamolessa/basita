@@ -7,7 +7,7 @@ use systems::*;
 
 pub struct Engine<'a> {
 	pub state: EngineState<'a>,
-	pub systems: EngineSystems,
+	pub systems: EngineSystems<'a>,
 }
 
 impl<'a> Engine<'a> {
@@ -27,6 +27,12 @@ impl<'a> Engine<'a> {
 			for system in &mut self.systems.all {
 				system.update(&mut self.state);
 			}
+
+			// let length = self.systems.all.len();
+			// for i in 0..length {
+			// 	let system = &mut self.systems.all[i];
+			// 	system.test(&mut self.systems, &());
+			// }
 		}
 	}
 }
@@ -65,26 +71,26 @@ impl<'a> EngineState<'a> {
 	}
 }
 
-pub struct EngineSystems {
-	all: Vec<Box<System>>,
+pub struct EngineSystems<'a> {
+	all: Vec<Box<System + 'a>>,
 }
 
-impl EngineSystems {
+impl<'a> EngineSystems<'a> {
 	pub fn new() -> Self {
 		EngineSystems { all: Vec::new() }
 	}
 
-	pub fn add_default_and_custom_systems(&mut self, systems: &mut Vec<Box<System>>) {
-		self.all.push(Box::from(SdlEventSystem {}));
-		self.all.push(Box::from(SdlPresenterSystem {}));
-
-		self.add_systems(systems);
-
-		self.all.push(Box::from(RenderSystem {}));
-		self.all.push(Box::from(ColliderRenderSystem {}));
+	pub fn add<T>(&mut self, system: T)
+	where
+		T: 'a + System,
+	{
+		self.all.push(Box::new(system));
 	}
 
-	pub fn add_systems(&mut self, systems: &mut Vec<Box<System>>) {
-		self.all.append(systems);
+	pub fn add_defaults(&mut self) {
+		self.add(RenderSystem {});
+		self.add(ColliderRenderSystem {});
+		self.add(SdlPresenterSystem {});
+		self.add(SdlEventSystem {});
 	}
 }

@@ -24,9 +24,11 @@ impl Input {
 		}
 	}
 
+	/*
 	pub fn set_event_matcher(&mut self, button: Button, event_matcher: Keycode) {
 		self.buttons[button.index].event_matcher = event_matcher;
 	}
+	*/
 
 	pub fn is_pressed(&self, button: Button) -> bool {
 		self.buttons[button.index].state
