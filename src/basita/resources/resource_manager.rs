@@ -38,7 +38,20 @@ where
 		}
 	}
 
-	pub fn load(&mut self, path: &String) -> Result<ResourceHandle<R>, String>
+	pub fn load(&mut self, path: &String) -> ResourceHandle<R>
+	where
+		L: 'a + ResourceLoader<'a, R>,
+	{
+		match self.try_load(path) {
+			Ok(handle) => handle,
+			Err(message) => panic!(
+				"Could not load resource at '{}'. Error: '{}'",
+				path, message
+			),
+		}
+	}
+
+	pub fn try_load(&mut self, path: &String) -> Result<ResourceHandle<R>, String>
 	where
 		L: 'a + ResourceLoader<'a, R>,
 	{

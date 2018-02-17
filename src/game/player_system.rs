@@ -30,8 +30,7 @@ impl System for PlayerSystem {
 	fn init(&mut self, state: &mut EngineState) {
 		let player_image = state
 			.image_resources
-			.load(&String::from("resources/sprites/player.png"))
-			.unwrap();
+			.load(&String::from("resources/sprites/player.png"));
 
 		let transform = state.transforms.get_mut(self.player_transform_handle);
 		transform.position = Vector2::new(10.0, 200.0);
