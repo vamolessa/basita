@@ -1,19 +1,13 @@
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 
-use super::super::EngineState;
+use super::super::{EngineState,EngineEvents};
 use super::System;
 
 pub struct ColliderRenderSystem {}
 
-impl ColliderRenderSystem {
-	pub fn test(&self, state: &mut EngineState, _data: &()) {
-		println!("ADASDASDASD!!!");
-	}
-}
-
 impl System for ColliderRenderSystem {
-	fn update(&self, state: &mut EngineState) {
+	fn update(state: &mut EngineState, events: &EngineEvents) {
 		let mut canvas = state.sdl_context.canvas.borrow_mut();
 
 		for box_collider in &state.box_colliders.all {

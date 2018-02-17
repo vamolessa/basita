@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 
 use sdl2::rect::Rect;
 
-use super::super::EngineState;
+use super::super::{EngineState,EngineEvents};
 use super::System;
 
 use components::Sprite;
@@ -10,7 +10,7 @@ use components::Sprite;
 pub struct RenderSystem {}
 
 impl System for RenderSystem {
-	fn update(&self, state: &mut EngineState) {
+	fn update(state: &mut EngineState, events: &EngineEvents) {
 		state.sprites.all.sort_unstable();
 
 		let mut canvas = state.sdl_context.canvas.borrow_mut();

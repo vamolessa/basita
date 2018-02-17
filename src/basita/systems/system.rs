@@ -1,36 +1,40 @@
-use super::super::EngineState;
+use super::super::{EngineEvents, EngineState};
 
 pub trait System {
-	fn init(&self, _state: &mut EngineState) {}
-
-	fn update(&self, state: &mut EngineState);
+	fn init(_state: &mut EngineState, _events: &mut EngineEvents) {}
+	fn update(state: &mut EngineState, events: &EngineEvents);
 }
 
-/*
-#[derive(Clone, Copy)]
-pub struct SystemHandle {
-	index: usize,
+pub struct SystemCollection {
+	inits: Vec<fn(&mut EngineState, &mut EngineEvents) -> ()>,
+	updates: Vec<fn(&mut EngineState, &EngineEvents) -> ()>,
 }
 
-pub struct SystemCollection<'a> {
-	pub all: Vec<Box<'a + System>>,
-}
-
-impl<'a> SystemCollection<'a> {
+impl SystemCollection {
 	pub fn new() -> Self {
-		SystemCollection { all: Vec::new() }
-	}
-
-	pub fn add<T: System + 'a>(&mut self, system: T) -> SystemHandle {
-		self.all.push(Box::new(system));
-
-		SystemHandle {
-			index: self.all.len() - 1,
+		SystemCollection {
+			inits: Vec::new(),
+			updates: Vec::new(),
 		}
 	}
 
-	pub fn get(&self, handle: SystemHandle) -> &Box<'a + System> {
-		&self.all[handle.index]
+	pub fn add<S>(&mut self)
+	where
+		S: System,
+	{
+		self.inits.push(S::init);
+		self.updates.push(S::update);
+	}
+
+	pub fn init(&self, state: &mut EngineState, events: &mut EngineEvents) {
+		for f in &self.inits {
+			f(state, events);
+		}
+	}
+
+	pub fn update(&self, state: &mut EngineState, events: &EngineEvents) {
+		for f in &self.updates {
+			f(state, events);
+		}
 	}
 }
-*/

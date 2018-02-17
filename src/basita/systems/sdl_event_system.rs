@@ -1,12 +1,12 @@
 use sdl2::event::Event;
 
-use super::super::EngineState;
+use super::super::{EngineState,EngineEvents};
 use super::System;
 
 pub struct SdlEventSystem {}
 
 impl System for SdlEventSystem {
-	fn update(&self, state: &mut EngineState) {
+	fn update(state: &mut EngineState, events: &EngineEvents) {
 		state.input.update();
 
 		let mut event_pump = state.sdl_context.event_pump.borrow_mut();

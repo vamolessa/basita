@@ -1,6 +1,6 @@
 use sdl2::keyboard::Keycode;
 
-use basita::EngineState;
+use basita::{EngineEvents, EngineState};
 use basita::systems::System;
 use basita::input::Button;
 use basita::math::Vector2;
@@ -24,10 +24,18 @@ impl PlayerSystem {
 			player_transform_handle: state.transforms.add(Transform::identity()),
 		}
 	}
+
+	pub fn event_test(state: &mut EngineState, data: &String) {
+		let _v = Vector2::zero();
+		println!("ADASDASDASD!!! {}", data);
+	}
 }
 
 impl System for PlayerSystem {
-	fn init(&self, state: &mut EngineState) {
+	fn init(state: &mut EngineState, events: &mut EngineEvents) {
+		events.some_event.subscribe(Self::event_test);
+
+		/*
 		let player_image = state
 			.image_resources
 			.load(&String::from("resources/sprites/player.png"));
@@ -46,9 +54,11 @@ impl System for PlayerSystem {
 			offset: Vector2::zero(),
 			transform: self.player_transform_handle,
 		});
+		*/
 	}
 
-	fn update(&self, state: &mut EngineState) {
+	fn update(state: &mut EngineState, events: &EngineEvents) {
+		/*
 		let player_transform = state.transforms.get_mut(self.player_transform_handle);
 
 		if state.input.is_pressed(self.left_button) {
@@ -65,5 +75,6 @@ impl System for PlayerSystem {
 		if state.input.was_released(self.jump_button) {
 			player_transform.position.y += 10.0;
 		}
+		*/
 	}
 }
