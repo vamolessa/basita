@@ -1,5 +1,4 @@
-use systems::System;
-use super::super::EngineSystems;
+use systems::{System, SystemCollection};
 
 pub struct Event {
 	pub system_indexes: Vec<usize>,

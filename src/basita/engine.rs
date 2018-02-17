@@ -8,14 +8,14 @@ use components::*;
 use systems::*;
 use events::*;
 
-pub fn play<'a>(state: &mut EngineState<'a>, systems: &EngineSystems<'a>) {
+pub fn play<'a>(mut state: EngineState<'a>, systems: Rc<SystemCollection<'a>>) {
 	for system in &systems.all {
-		system.init(state);
+		system.init(&mut state);
 	}
 
 	while state.running {
 		for system in &systems.all {
-			system.update(state);
+			system.update(&mut state);
 		}
 	}
 }
@@ -54,28 +54,9 @@ impl<'a> EngineState<'a> {
 	}
 }
 
-pub struct EngineSystems<'a> {
-	all: Vec<Box<System + 'a>>,
-}
-
-impl<'a> EngineSystems<'a> {
-	pub fn new() -> Self {
-		EngineSystems { all: Vec::new() }
-	}
-
-	pub fn add<T>(&mut self, system: T)
-	where
-		T: 'a + System,
-	{
-		self.all.push(Box::new(system));
-	}
-
-	pub fn add_defaults(&mut self) {
-		self.add(RenderSystem {});
-		self.add(ColliderRenderSystem {});
-		self.add(SdlPresenterSystem {});
-
-		self.add(SdlEventSystem {});
-		// physics here
-	}
+pub fn add_default_systems(systems: &mut SystemCollection) {
+	systems.add(RenderSystem {});
+	systems.add(ColliderRenderSystem {});
+	systems.add(SdlPresenterSystem {});
+	systems.add(SdlEventSystem {});
 }
