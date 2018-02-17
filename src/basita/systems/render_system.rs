@@ -7,30 +7,10 @@ use super::System;
 
 use components::Sprite;
 
-impl<'a> PartialEq for Sprite<'a> {
-	fn eq(&self, other: &Self) -> bool {
-		return self.depth == other.depth;
-	}
-}
-
-impl<'a> Eq for Sprite<'a> {}
-
-impl<'a> PartialOrd for Sprite<'a> {
-	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-		Some(self.cmp(other))
-	}
-}
-
-impl<'a> Ord for Sprite<'a> {
-	fn cmp(&self, other: &Self) -> Ordering {
-		other.depth.cmp(&self.depth)
-	}
-}
-
 pub struct RenderSystem {}
 
 impl System for RenderSystem {
-	fn update(&mut self, state: &mut EngineState) {
+	fn update(&self, state: &mut EngineState) {
 		state.sprites.all.sort_unstable();
 
 		let mut canvas = state.sdl_context.canvas.borrow_mut();
@@ -54,5 +34,25 @@ impl System for RenderSystem {
 				)
 				.unwrap();
 		}
+	}
+}
+
+impl<'a> PartialEq for Sprite<'a> {
+	fn eq(&self, other: &Self) -> bool {
+		return self.depth == other.depth;
+	}
+}
+
+impl<'a> Eq for Sprite<'a> {}
+
+impl<'a> PartialOrd for Sprite<'a> {
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		Some(self.cmp(other))
+	}
+}
+
+impl<'a> Ord for Sprite<'a> {
+	fn cmp(&self, other: &Self) -> Ordering {
+		other.depth.cmp(&self.depth)
 	}
 }

@@ -6,7 +6,7 @@ use super::System;
 pub struct SdlEventSystem {}
 
 impl System for SdlEventSystem {
-	fn update(&mut self, state: &mut EngineState) {
+	fn update(&self, state: &mut EngineState) {
 		state.input.update();
 
 		let mut event_pump = state.sdl_context.event_pump.borrow_mut();

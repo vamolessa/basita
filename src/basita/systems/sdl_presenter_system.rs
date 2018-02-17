@@ -8,7 +8,7 @@ use super::System;
 pub struct SdlPresenterSystem {}
 
 impl System for SdlPresenterSystem {
-	fn update(&mut self, state: &mut EngineState) {
+	fn update(&self, state: &mut EngineState) {
 		let clear_color = Color::RGB(0, 0, 0);
 
 		let mut canvas = state.sdl_context.canvas.borrow_mut();

@@ -19,20 +19,14 @@ impl<'a> Engine<'a> {
 	}
 
 	pub fn play(&mut self) {
-		for system in &mut self.systems.all {
+		for system in &self.systems.all {
 			system.init(&mut self.state);
 		}
 
 		while self.state.running {
-			for system in &mut self.systems.all {
+			for system in &self.systems.all {
 				system.update(&mut self.state);
 			}
-
-			// let length = self.systems.all.len();
-			// for i in 0..length {
-			// 	let system = &mut self.systems.all[i];
-			// 	system.test(&mut self.systems, &());
-			// }
 		}
 	}
 }

@@ -27,7 +27,7 @@ impl PlayerSystem {
 }
 
 impl System for PlayerSystem {
-	fn init(&mut self, state: &mut EngineState) {
+	fn init(&self, state: &mut EngineState) {
 		let player_image = state
 			.image_resources
 			.load(&String::from("resources/sprites/player.png"));
@@ -48,7 +48,7 @@ impl System for PlayerSystem {
 		});
 	}
 
-	fn update(&mut self, state: &mut EngineState) {
+	fn update(&self, state: &mut EngineState) {
 		let player_transform = state.transforms.get_mut(self.player_transform_handle);
 
 		if state.input.is_pressed(self.left_button) {
