@@ -6,6 +6,7 @@ pub trait System {
 	fn update(&self, state: &mut EngineState);
 }
 
+/*
 #[derive(Clone, Copy)]
 pub struct SystemHandle {
 	index: usize,
@@ -32,3 +33,4 @@ impl<'a> SystemCollection<'a> {
 		&self.all[handle.index]
 	}
 }
+*/

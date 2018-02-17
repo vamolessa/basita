@@ -1,4 +1,5 @@
 use std::rc::Rc;
+use std::cell::RefCell;
 
 use SdlContext;
 use input::Input;
@@ -8,6 +9,7 @@ use components::*;
 use systems::*;
 use events::*;
 
+/*
 pub fn play<'a>(mut state: EngineState<'a>, systems: Rc<SystemCollection<'a>>) {
 	for system in &systems.all {
 		system.init(&mut state);
@@ -19,6 +21,7 @@ pub fn play<'a>(mut state: EngineState<'a>, systems: Rc<SystemCollection<'a>>) {
 		}
 	}
 }
+*/
 
 pub struct EngineState<'a> {
 	// core
@@ -54,9 +57,45 @@ impl<'a> EngineState<'a> {
 	}
 }
 
+pub struct EngineSystems {
+	pub render_systems: Rc<RenderSystem>,
+	pub collider_render_system: Rc<ColliderRenderSystem>,
+	pub sdl_presenter_system: Rc<SdlPresenterSystem>,
+	pub sdl_event_system: Rc<SdlEventSystem>,
+}
+
+impl EngineSystems {
+	pub fn new() -> Self {
+		EngineSystems {
+			render_systems: Rc::new(RenderSystem {}),
+			collider_render_system: Rc::new(ColliderRenderSystem {}),
+			sdl_presenter_system: Rc::new(SdlPresenterSystem {}),
+			sdl_event_system: Rc::new(SdlEventSystem {}),
+		}
+	}
+}
+
+impl System for EngineSystems {
+	fn init(&self, state: &mut EngineState) {
+		self.render_systems.init(state);
+		self.collider_render_system.init(state);
+		self.sdl_presenter_system.init(state);
+		self.sdl_event_system.init(state);
+	}
+
+	fn update(&self, state: &mut EngineState) {
+		self.render_systems.update(state);
+		self.collider_render_system.update(state);
+		self.sdl_presenter_system.update(state);
+		self.sdl_event_system.update(state);
+	}
+}
+
+/*
 pub fn add_default_systems(systems: &mut SystemCollection) {
 	systems.add(RenderSystem {});
 	systems.add(ColliderRenderSystem {});
 	systems.add(SdlPresenterSystem {});
 	systems.add(SdlEventSystem {});
 }
+*/
