@@ -3,6 +3,7 @@ use sdl2::pixels::Color;
 
 use super::super::EngineState;
 use super::System;
+use super::super::SomeEngineSignal;
 
 pub struct ColliderRenderSystem {}
 
@@ -23,5 +24,11 @@ impl System for ColliderRenderSystem {
 				))
 				.unwrap();
 		}
+	}
+}
+
+impl SomeEngineSignal for ColliderRenderSystem {
+	fn handle(&self, _data: &()) {
+		println!("ADASDASDSADASD!!!");
 	}
 }

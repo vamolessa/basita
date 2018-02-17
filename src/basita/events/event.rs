@@ -8,7 +8,7 @@ where
 	fn handle(&self, data: &D);
 }
 
-struct Slot<S>
+pub struct Slot<S>
 where
 	S: ?Sized,
 {
@@ -40,6 +40,16 @@ where
 	}
 }
 
+impl<S> Default for Slot<S>
+where
+	S: ?Sized,
+{
+	fn default() -> Self {
+		Slot::new()
+	}
+}
+
+#[macro_export]
 macro_rules! signal {
 	($signal_name:ident, $signal_data:ty) => {
 		pub trait $signal_name {

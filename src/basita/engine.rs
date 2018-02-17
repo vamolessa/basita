@@ -1,5 +1,4 @@
 use std::rc::Rc;
-use std::cell::RefCell;
 
 use SdlContext;
 use input::Input;
@@ -28,6 +27,7 @@ pub struct EngineState<'a> {
 	pub running: bool,
 	pub sdl_context: &'a SdlContext,
 	pub input: Input,
+	pub slots: EngineSlots,
 
 	// resources
 	pub image_resources: ImageResources<'a>,
@@ -45,6 +45,7 @@ impl<'a> EngineState<'a> {
 			running: true,
 			sdl_context: sdl_context,
 			input: Input::new(),
+			slots: EngineSlots::default(),
 
 			// resources
 			image_resources: ImageResources::new(sdl_context),
@@ -81,6 +82,12 @@ impl System for EngineSystems {
 		self.collider_render_system.init(state);
 		self.sdl_presenter_system.init(state);
 		self.sdl_event_system.init(state);
+
+		state.slots.some_slot.subscribe(Rc::clone(
+			&(self.collider_render_system as SomeEngineSignal),
+		));
+		let data = ();
+		state.slots.some_slot.raise(&data);
 	}
 
 	fn update(&self, state: &mut EngineState) {
@@ -89,6 +96,13 @@ impl System for EngineSystems {
 		self.sdl_presenter_system.update(state);
 		self.sdl_event_system.update(state);
 	}
+}
+
+signal!(SomeEngineSignal, ());
+
+#[derive(Default)]
+pub struct EngineSlots {
+	pub some_slot: Slot<SomeEngineSignal>,
 }
 
 /*

@@ -1,14 +1,16 @@
 pub extern crate sdl2;
 
-mod engine;
-pub use self::engine::*;
+#[macro_use]
+pub mod events;
+
+pub mod components;
+pub mod systems;
+pub mod resources;
+pub mod input;
+pub mod math;
 
 mod sdl_context;
 pub use self::sdl_context::*;
 
-pub mod components;
-pub mod systems;
-pub mod events;
-pub mod resources;
-pub mod input;
-pub mod math;
+mod engine;
+pub use self::engine::*;
