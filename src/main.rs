@@ -7,10 +7,11 @@ use game::*;
 
 pub fn main() {
 	let mut sdl_context = SdlContext::new("platform maker", 400, 300);
-	let mut engine = Engine::new(&mut sdl_context);
+	let mut state = EngineState::new(&mut sdl_context);
+	let mut systems = EngineSystems::new();
 
-	engine.systems.add(PlayerSystem::new(&mut engine.state));
-	engine.systems.add_defaults();
+	systems.add_defaults();
+	systems.add(PlayerSystem::new(&mut state));
 
-	engine.play();
+	play(&mut state, &systems);
 }

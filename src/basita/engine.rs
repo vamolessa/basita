@@ -1,32 +1,21 @@
+use std::rc::Rc;
+
 use SdlContext;
 use input::Input;
 
 use resources::*;
 use components::*;
 use systems::*;
+use events::*;
 
-pub struct Engine<'a> {
-	pub state: EngineState<'a>,
-	pub systems: EngineSystems<'a>,
-}
-
-impl<'a> Engine<'a> {
-	pub fn new(sdl_context: &'a SdlContext) -> Self {
-		Engine {
-			state: EngineState::new(sdl_context),
-			systems: EngineSystems::new(),
-		}
+pub fn play<'a>(state: &mut EngineState<'a>, systems: &EngineSystems<'a>) {
+	for system in &systems.all {
+		system.init(state);
 	}
 
-	pub fn play(&mut self) {
-		for system in &self.systems.all {
-			system.init(&mut self.state);
-		}
-
-		while self.state.running {
-			for system in &self.systems.all {
-				system.update(&mut self.state);
-			}
+	while state.running {
+		for system in &systems.all {
+			system.update(state);
 		}
 	}
 }
@@ -85,6 +74,8 @@ impl<'a> EngineSystems<'a> {
 		self.add(RenderSystem {});
 		self.add(ColliderRenderSystem {});
 		self.add(SdlPresenterSystem {});
+
 		self.add(SdlEventSystem {});
+		// physics here
 	}
 }
