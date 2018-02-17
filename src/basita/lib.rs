@@ -4,7 +4,7 @@ mod engine;
 pub use self::engine::*;
 
 mod sdl_context;
-pub use sdl_context::*;
+pub use self::sdl_context::*;
 
 pub mod components;
 pub mod systems;

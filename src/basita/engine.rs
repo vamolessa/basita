@@ -1,4 +1,4 @@
-use sdl_context::SdlContext;
+use SdlContext;
 use input::Input;
 
 use resources::*;

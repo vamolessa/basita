@@ -10,7 +10,7 @@ path = "src/basita/lib.rs"
 
 [[bin]]
 name = "platformer-maker"
-path = "src/game/main.rs"
+path = "src/main.rs"
 
 [dependencies]
 sdl2 = {version = "0.31", default-features = false,features = ["ttf","image","mixer"]}
