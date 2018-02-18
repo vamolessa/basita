@@ -70,6 +70,10 @@ impl<T: Component> ComponentCollection<T> {
 		&mut self.all[handle.index]
 	}
 
+	pub fn get_handle(&self, index: usize) -> ComponentHandle<T> {
+		ComponentHandle::new(index)
+	}
+
 	pub fn iter(&self) -> ComponentCollectionIter<T> {
 		ComponentCollectionIter {
 			collection: self,

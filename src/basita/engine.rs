@@ -68,6 +68,7 @@ pub struct EngineEvents<S, E>
 where
 	E: ContainsEngineEvents<S, E>,
 {
+	pub collision: collision_system::CollisionEvents<S, E>,
 	pub _some_event: Event<S, E, String>,
 }
 
@@ -77,6 +78,7 @@ where
 {
 	pub fn new() -> Self {
 		EngineEvents {
+			collision: collision_system::CollisionEvents::new(),
 			_some_event: Event::default(),
 		}
 	}
@@ -89,6 +91,7 @@ where
 {
 	pub fn add_default_systems(&mut self) {
 		self.add_system(None, physics_system::update);
+		self.add_system(None, collision_system::update);
 		self.add_system(None, render_system::update);
 		self.add_system(None, collider_render_system::update);
 		self.add_system(None, sdl_presenter_system::update);

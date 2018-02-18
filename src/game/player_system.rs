@@ -49,6 +49,7 @@ pub fn init(state: &mut GameState, _events: &mut GameEvents) {
 		half_size: Vector2::from((16.0, 16.0)),
 		offset: Vector2::zero(),
 		transform: state.player_system_data.player_transform_handle,
+		physic_body: None,
 	});
 }
 

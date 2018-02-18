@@ -3,6 +3,12 @@ pub struct Event<S, E, D> {
 }
 
 impl<S, E, D> Event<S, E, D> {
+	pub fn new() -> Self {
+		Event {
+			callbacks: Vec::new(),
+		}
+	}
+
 	pub fn subscribe(&mut self, callback: fn(&mut S, &E, &D) -> ()) {
 		self.callbacks.push(callback);
 	}
@@ -16,8 +22,6 @@ impl<S, E, D> Event<S, E, D> {
 
 impl<S, E, D> Default for Event<S, E, D> {
 	fn default() -> Self {
-		Event {
-			callbacks: Vec::new(),
-		}
+		Event::new()
 	}
 }
