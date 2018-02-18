@@ -41,6 +41,11 @@ impl<'a> EngineState<'a> {
 }
 
 #[derive(Default)]
+pub struct EngineEvents2<S, E> {
+	pub some_event: Event<S, E, String>,
+}
+
+#[derive(Default)]
 pub struct EngineEvents<'a> {
 	pub some_event: Event<EngineState<'a>, EngineEvents<'a>, String>,
 }
