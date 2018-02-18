@@ -20,6 +20,15 @@ pub fn play<'a>(mut state: EngineState<'a>, systems: Rc<SystemCollection<'a>>) {
 }
 */
 
+pub trait ContainsEngineState<'a> {
+	fn get_engine_state_mut(&mut self) -> &mut EngineState<'a>;
+}
+
+pub trait ContainsEngineEvents {
+	fn get_engine_events(&self) -> &EngineEvents;
+	fn get_engine_events_mut(&mut self) -> &mut EngineEvents;
+}
+
 pub struct EngineState<'a> {
 	// core
 	pub running: bool,
@@ -65,11 +74,15 @@ impl EngineEvents {
 	}
 }
 
-impl SystemCollection {
-	pub fn add_defaults(&mut self) {
-		self.add::<RenderSystem>();
-		self.add::<ColliderRenderSystem>();
-		self.add::<SdlPresenterSystem>();
-		self.add::<SdlEventSystem>();
+impl<'a, S, E> SystemCollection<S, E>
+where
+	S: ContainsEngineState<'a>,
+	E: ContainsEngineEvents,
+{
+	pub fn add_default_systems(&mut self) {
+		self.add_system(None, render_system::update);
+		self.add_system(None, collider_render_system::update);
+		self.add_system(None, sdl_presenter_system::update);
+		self.add_system(None, sdl_event_system::update);
 	}
 }

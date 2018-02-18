@@ -1,22 +1,23 @@
 use sdl2::keyboard::Keycode;
 
-use basita::{EngineEvents, EngineState};
-use basita::systems::System;
+use basita::EngineState;
 use basita::input::Button;
 use basita::math::Vector2;
 use basita::components::*;
 
-pub struct PlayerSystem {
-	left_button: Button,
-	right_button: Button,
-	jump_button: Button,
+use game::*;
 
-	player_transform_handle: ComponentHandle<Transform>,
+pub struct PlayerSystemData {
+	pub left_button: Button,
+	pub right_button: Button,
+	pub jump_button: Button,
+
+	pub player_transform_handle: ComponentHandle<Transform>,
 }
 
-impl PlayerSystem {
+impl PlayerSystemData {
 	pub fn new(state: &mut EngineState) -> Self {
-		PlayerSystem {
+		PlayerSystemData {
 			left_button: state.input.new_button(Keycode::Left),
 			right_button: state.input.new_button(Keycode::Right),
 			jump_button: state.input.new_button(Keycode::Space),
@@ -24,57 +25,74 @@ impl PlayerSystem {
 			player_transform_handle: state.transforms.add(Transform::identity()),
 		}
 	}
-
-	pub fn event_test(state: &mut EngineState, data: &String) {
-		let _v = Vector2::zero();
-		println!("ADASDASDASD!!! {}", data);
-	}
 }
 
-impl System for PlayerSystem {
-	fn init(state: &mut EngineState, events: &mut EngineEvents) {
-		events.some_event.subscribe(Self::event_test);
+fn event_test(_state: &mut EngineState, data: &String) {
+	let _v = Vector2::zero();
+	println!("ADASDASDASD!!! {}", data);
+}
 
-		/*
-		let player_image = state
-			.image_resources
-			.load(&String::from("resources/sprites/player.png"));
+pub fn init(state: &mut GameState, events: &mut GameEvents) {
+	events.engine_events.some_event.subscribe(event_test);
 
-		let transform = state.transforms.get_mut(self.player_transform_handle);
-		transform.position = Vector2::new(10.0, 200.0);
+	let player_image = state
+		.engine_state
+		.image_resources
+		.load(&String::from("resources/sprites/player.png"));
 
-		state.sprites.add(Sprite {
-			depth: 0,
-			image_resource: player_image,
-			transform: self.player_transform_handle,
-		});
+	let transform = state
+		.engine_state
+		.transforms
+		.get_mut(state.player_system_data.player_transform_handle);
+	transform.position = Vector2::new(10.0, 200.0);
 
-		state.box_colliders.add(BoxCollider {
-			size: Vector2::from((32.0, 32.0)),
-			offset: Vector2::zero(),
-			transform: self.player_transform_handle,
-		});
-		*/
+	state.engine_state.sprites.add(Sprite {
+		depth: 0,
+		image_resource: player_image,
+		transform: state.player_system_data.player_transform_handle,
+	});
+
+	state.engine_state.box_colliders.add(BoxCollider {
+		size: Vector2::from((32.0, 32.0)),
+		offset: Vector2::zero(),
+		transform: state.player_system_data.player_transform_handle,
+	});
+}
+
+pub fn update(state: &mut GameState, _events: &GameEvents) {
+	let player_transform = state
+		.engine_state
+		.transforms
+		.get_mut(state.player_system_data.player_transform_handle);
+
+	if state
+		.engine_state
+		.input
+		.is_pressed(state.player_system_data.left_button)
+	{
+		player_transform.position.x -= 1.0;
+	}
+	if state
+		.engine_state
+		.input
+		.is_pressed(state.player_system_data.right_button)
+	{
+		player_transform.position.x += 1.0;
 	}
 
-	fn update(state: &mut EngineState, events: &EngineEvents) {
-		/*
-		let player_transform = state.transforms.get_mut(self.player_transform_handle);
+	if state
+		.engine_state
+		.input
+		.was_pressed(state.player_system_data.jump_button)
+	{
+		player_transform.position.y -= 10.0;
+	}
 
-		if state.input.is_pressed(self.left_button) {
-			player_transform.position.x -= 1.0;
-		}
-		if state.input.is_pressed(self.right_button) {
-			player_transform.position.x += 1.0;
-		}
-
-		if state.input.was_pressed(self.jump_button) {
-			player_transform.position.y -= 10.0;
-		}
-
-		if state.input.was_released(self.jump_button) {
-			player_transform.position.y += 10.0;
-		}
-		*/
+	if state
+		.engine_state
+		.input
+		.was_released(state.player_system_data.jump_button)
+	{
+		player_transform.position.y += 10.0;
 	}
 }

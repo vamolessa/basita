@@ -8,19 +8,22 @@ use game::*;
 
 pub fn main() {
 	let mut sdl_context = SdlContext::new("platform maker", 400, 300);
-	let mut state = EngineState::new(&mut sdl_context);
-	let mut events = EngineEvents::new();
+	let mut state = GameState::new(&mut sdl_context);
+	let mut events = GameEvents::new();
 	let mut systems = SystemCollection::new();
 
-	systems.add_defaults();
-	systems.add::<PlayerSystem>();
+	systems.add_default_systems();
+	systems.add_system(Some(player_system::init), player_system::update);
 
 	systems.init(&mut state, &mut events);
 
 	let message = String::from("ASDasdasd");
-	events.some_event.raise(&mut state, &message);
+	events
+		.engine_events
+		.some_event
+		.raise(&mut state.engine_state, &message);
 
-	while state.running {
+	while state.engine_state.running {
 		systems.update(&mut state, &events);
 	}
 }

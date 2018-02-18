@@ -1,2 +1,4 @@
-mod player_system;
-pub use self::player_system::*;
+mod game;
+pub use self::game::*;
+
+pub mod player_system;
