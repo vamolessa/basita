@@ -1,6 +1,6 @@
 use super::super::{ContainsEngineEvents, ContainsEngineState};
 
-use components::{BoxCollider, ComponentHandle, PhysicBody, Transform};
+use components::{BoxCollider, ComponentHandle};
 use math::Vector2;
 
 pub fn init<'a, S, E>(_s: &mut S, e: &mut E)
@@ -9,7 +9,14 @@ where
 	E: ContainsEngineEvents<S, E>,
 {
 	let events = e.get_engine_events_mut();
-	events.collision.on_collision.subscribe(on_collision);
+	events
+		.collision
+		.on_dynamic_collision
+		.subscribe(on_dynamic_collision);
+	events
+		.collision
+		.on_static_collision
+		.subscribe(on_static_collision);
 }
 
 pub fn update<'a, S, E>(s: &mut S, _e: &E)
@@ -30,10 +37,10 @@ where
 	}
 }
 
-fn on_collision<'a, S, E>(
-	_s: &mut S,
+fn on_dynamic_collision<'a, S, E>(
+	s: &mut S,
 	_e: &E,
-	_data: &(
+	data: (
 		ComponentHandle<BoxCollider>,
 		ComponentHandle<BoxCollider>,
 		Vector2,
@@ -42,38 +49,78 @@ fn on_collision<'a, S, E>(
 	S: ContainsEngineState<'a, S>,
 	E: ContainsEngineEvents<S, E>,
 {
+	let (ach, bch, penetration) = data;
+
+	let (ah, bh, ath, bth, impulse, a_weight, b_weight) = {
+		let state = s.get_engine_state_mut();
+
+		let ac = state.box_colliders.get(ach);
+		let bc = state.box_colliders.get(bch);
+		let ah = ac.physic_body.unwrap();
+		let bh = bc.physic_body.unwrap();
+		let a = state.physic_bodies.get(ah);
+		let b = state.physic_bodies.get(bh);
+
+		let total_inverted_mass = a.inverted_mass + b.inverted_mass;
+		if total_inverted_mass <= 0.0 {
+			return;
+		}
+
+		let a_weight = a.inverted_mass / total_inverted_mass;
+		let b_weight = b.inverted_mass / total_inverted_mass;
+
+		let restitution = (a.bounciness * b.bounciness).sqrt();
+
+		let impulse_magnitude =
+			Vector2::dot(penetration, b.velocity - a.velocity) * (1.0 + restitution);
+		let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
+
+		(
+			ah,
+			bh,
+			a.transform,
+			b.transform,
+			impulse,
+			a_weight,
+			b_weight,
+		)
+	};
+
+	s.get_engine_state_mut().physic_bodies.get_mut(ah).velocity -= impulse * a_weight;
+	s.get_engine_state_mut().transforms.get_mut(ath).position -= penetration * a_weight;
+
+	s.get_engine_state_mut().physic_bodies.get_mut(bh).velocity += impulse * b_weight;
+	s.get_engine_state_mut().transforms.get_mut(bth).position += penetration * b_weight;
 }
 
-fn collide_physic_bodies(
-	a: &mut PhysicBody,
-	a_box_collider: &BoxCollider,
-	a_transform: &mut Transform,
-	b: &mut PhysicBody,
-	b_box_collider: &BoxCollider,
-	b_transform: &mut Transform,
-	penetration: Vector2,
-) {
-	let total_inverted_mass = a.inverted_mass + b.inverted_mass;
-	if total_inverted_mass <= 0.0 {
-		return;
-	}
+fn on_static_collision<'a, S, E>(
+	s: &mut S,
+	_e: &E,
+	data: (
+		ComponentHandle<BoxCollider>,
+		ComponentHandle<BoxCollider>,
+		Vector2,
+	),
+) where
+	S: ContainsEngineState<'a, S>,
+	E: ContainsEngineEvents<S, E>,
+{
+	let (_sch, dch, penetration) = data;
 
-	let a_weight = a.inverted_mass / total_inverted_mass;
-	let b_weight = b.inverted_mass / total_inverted_mass;
+	let (dh, dth, impulse) = {
+		let state = s.get_engine_state_mut();
+		let dc = state.box_colliders.get(dch);
+		let dh = dc.physic_body.unwrap();
+		let d = state.physic_bodies.get(dh);
 
-	let restitution = (a.bounciness + b.bounciness).sqrt();
+		let restitution = d.bounciness;
 
-	// test if box colliders are enabled
+		let impulse_magnitude = Vector2::dot(penetration, d.velocity) * (1.0 + restitution);
+		let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
 
-	let impulse_magnitude =
-		Vector2::dot(penetration, b.velocity - a.velocity) * (1.0 + restitution);
-	let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
+		(dh, d.transform, impulse)
+	};
 
-	a.velocity -= impulse * a_weight;
-	b.velocity += impulse * b_weight;
-
-	a_transform.position -= penetration * a_weight;
-	b_transform.position += penetration * b_weight;
-
-	// notify collision
+	s.get_engine_state_mut().physic_bodies.get_mut(dh).velocity += impulse;
+	s.get_engine_state_mut().transforms.get_mut(dth).position += penetration;
 }

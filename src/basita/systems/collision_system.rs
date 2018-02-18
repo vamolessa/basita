@@ -8,7 +8,17 @@ pub struct CollisionEvents<S, E>
 where
 	E: ContainsEngineEvents<S, E>,
 {
-	pub on_collision: Event<
+	pub on_dynamic_collision: Event<
+		S,
+		E,
+		(
+			ComponentHandle<BoxCollider>,
+			ComponentHandle<BoxCollider>,
+			Vector2,
+		),
+	>,
+
+	pub on_static_collision: Event<
 		S,
 		E,
 		(
@@ -25,7 +35,8 @@ where
 {
 	pub fn new() -> Self {
 		CollisionEvents {
-			on_collision: Event::new(),
+			on_dynamic_collision: Event::new(),
+			on_static_collision: Event::new(),
 		}
 	}
 }
@@ -36,45 +47,44 @@ where
 	E: ContainsEngineEvents<S, E>,
 {
 	let total = s.get_engine_state_mut().box_colliders.all.len();
+	let events = e.get_engine_events();
 
 	for i in 0..total {
 		for j in i..total {
-			if let Some(penetration) = collide_colliders(s, e, i, j) {
-				let (a, b) = {
-					let state = s.get_engine_state_mut();
-					let a = state.box_colliders.get_handle(i);
-					let b = state.box_colliders.get_handle(j);
+			let (ai, bi, r, event) = {
+				let state = s.get_engine_state_mut();
+				let a = &state.box_colliders.all[i];
+				let b = &state.box_colliders.all[j];
 
-					(a, b)
-				};
+				// test if they're enabled
 
-				let events = e.get_engine_events();
-				events
-					.collision
-					.on_collision
-					.raise(s, e, &(a, b, penetration));
+				let a_t = &state.transforms.get(a.transform);
+				let b_t = &state.transforms.get(b.transform);
+
+				if a.physic_body.is_some() {
+					if b.physic_body.is_some() {
+						let r = collide_box_box(a, a_t, b, b_t);
+						(i, j, r, &events.collision.on_dynamic_collision)
+					} else {
+						let r = collide_box_box(a, a_t, b, b_t);
+						(j, i, r, &events.collision.on_static_collision)
+					}
+				} else if b.physic_body.is_some() {
+					let r = collide_box_box(a, a_t, b, b_t);
+					(i, j, r, &events.collision.on_static_collision)
+				} else {
+					continue;
+				}
+			};
+
+			if let Some(penetration) = r {
+				let a = s.get_engine_state_mut().box_colliders.get_handle(ai);
+				let b = s.get_engine_state_mut().box_colliders.get_handle(bi);
+
+				event.raise(s, e, (a, b, penetration));
 			}
 		}
 	}
-}
-
-fn collide_colliders<'a, S, E>(s: &mut S, _e: &E, i: usize, j: usize) -> Option<Vector2>
-where
-	S: ContainsEngineState<'a, S>,
-	E: ContainsEngineEvents<S, E>,
-{
-	let state = s.get_engine_state_mut();
-	let a = &state.box_colliders.all[i];
-	let b = &state.box_colliders.all[j];
-
-	if a.physic_body.is_some() && b.physic_body.is_some() {
-		let a_t = &state.transforms.all[i];
-		let b_t = &state.transforms.all[j];
-
-		return collide_box_box(a, a_t, b, b_t);
-	}
-
-	None
 }
 
 pub fn collide_box_box(

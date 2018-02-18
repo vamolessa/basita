@@ -4,7 +4,6 @@ use input::Input;
 use resources::*;
 use components::*;
 use systems::*;
-use events::*;
 
 pub trait ContainsEngineState<'a, S>
 where
@@ -69,7 +68,6 @@ where
 	E: ContainsEngineEvents<S, E>,
 {
 	pub collision: collision_system::CollisionEvents<S, E>,
-	pub _some_event: Event<S, E, String>,
 }
 
 impl<S, E> EngineEvents<S, E>
@@ -79,7 +77,6 @@ where
 	pub fn new() -> Self {
 		EngineEvents {
 			collision: collision_system::CollisionEvents::new(),
-			_some_event: Event::default(),
 		}
 	}
 }

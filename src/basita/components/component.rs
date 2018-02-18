@@ -17,14 +17,6 @@ impl<T: Component> ComponentHandle<T> {
 	}
 }
 
-impl<T: Component> PartialEq for ComponentHandle<T> {
-	fn eq(&self, other: &Self) -> bool {
-		true
-	}
-}
-
-impl<T: Component> Eq for ComponentHandle<T> {}
-
 impl<T: Component> Clone for ComponentHandle<T> {
 	fn clone(&self) -> Self {
 		ComponentHandle::new(self.index)
@@ -73,36 +65,5 @@ impl<T: Component> ComponentCollection<T> {
 	pub fn get_handle(&self, index: usize) -> ComponentHandle<T> {
 		ComponentHandle::new(index)
 	}
-
-	pub fn iter(&self) -> ComponentCollectionIter<T> {
-		ComponentCollectionIter {
-			collection: self,
-			current: 0,
-		}
-	}
 }
 
-pub struct ComponentCollectionIter<'a, T>
-where
-	T: 'a + Component,
-{
-	collection: &'a ComponentCollection<T>,
-	current: usize,
-}
-
-impl<'a, T> Iterator for ComponentCollectionIter<'a, T>
-where
-	T: 'a + Component,
-{
-	type Item = ComponentHandle<T>;
-
-	fn next(&mut self) -> Option<Self::Item> {
-		if self.current < self.collection.all.len() {
-			let result = Some(ComponentHandle::new(self.current));
-			self.current += 1;
-			result
-		} else {
-			None
-		}
-	}
-}
