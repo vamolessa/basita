@@ -1,4 +1,5 @@
 use std::time::Duration;
+use std::thread;
 
 use sdl2::pixels::Color;
 
@@ -15,11 +16,13 @@ where
 
 	let mut canvas = state.sdl_context.canvas.borrow_mut();
 	canvas.present();
-	::std::thread::sleep(Duration::new(
+	thread::sleep(Duration::new(
 		0,
 		1_000_000_000u32 / state.sdl_context.frames_per_second,
 	));
 
 	canvas.set_draw_color(clear_color);
 	canvas.clear();
+
+	state.delta_time = 1.0 / (state.sdl_context.frames_per_second as f32);
 }
