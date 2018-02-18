@@ -3,13 +3,12 @@ use std::cmp::Ordering;
 use sdl2::rect::Rect;
 
 use super::super::{ContainsEngineEvents, ContainsEngineState};
-
 use components::Sprite;
 
 pub fn update<'a, S, E>(s: &mut S, _e: &E)
 where
-	S: ContainsEngineState<'a>,
-	E: ContainsEngineEvents,
+	S: ContainsEngineState<'a, S>,
+	E: ContainsEngineEvents<S, E>,
 {
 	let state = s.get_engine_state_mut();
 

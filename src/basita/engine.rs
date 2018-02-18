@@ -6,6 +6,21 @@ use components::*;
 use systems::*;
 use events::*;
 
+pub trait ContainsEngineState<'a, S>
+where
+	S: ContainsEngineState<'a, S>,
+{
+	fn get_engine_state_mut(&mut self) -> &mut EngineState<'a>;
+}
+
+pub trait ContainsEngineEvents<S, E>
+where
+	E: ContainsEngineEvents<S, E>,
+{
+	fn get_engine_events(&self) -> &EngineEvents<S, E>;
+	fn get_engine_events_mut(&mut self) -> &mut EngineEvents<S, E>;
+}
+
 pub struct EngineState<'a> {
 	// core
 	pub running: bool,
@@ -40,17 +55,29 @@ impl<'a> EngineState<'a> {
 	}
 }
 
-#[derive(Default)]
-pub struct EngineEvents2<S, E> {
+pub struct EngineEvents<S, E>
+where
+	E: ContainsEngineEvents<S, E>,
+{
 	pub some_event: Event<S, E, String>,
 }
 
-#[derive(Default)]
-pub struct EngineEvents<'a> {
-	pub some_event: Event<EngineState<'a>, EngineEvents<'a>, String>,
+impl<S, E> EngineEvents<S, E>
+where
+	E: ContainsEngineEvents<S, E>,
+{
+	pub fn new() -> Self {
+		EngineEvents {
+			some_event: Event::default(),
+		}
+	}
 }
 
-impl<'a> SystemCollection<EngineState<'a>, EngineEvents<'a>> {
+impl<'a, S, E> SystemCollection<S, E>
+where
+	S: ContainsEngineState<'a, S>,
+	E: ContainsEngineEvents<S, E>,
+{
 	pub fn add_default_systems(&mut self) {
 		self.add_system(None, render_system::update);
 		self.add_system(None, collider_render_system::update);

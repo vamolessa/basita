@@ -21,7 +21,7 @@ pub fn main() {
 	events
 		.engine_events
 		.some_event
-		.raise(&mut state.engine_state, &message);
+		.raise(&mut state, &events, &message);
 
 	while state.engine_state.running {
 		systems.update(&mut state, &events);

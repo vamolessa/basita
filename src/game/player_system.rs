@@ -27,7 +27,7 @@ impl PlayerSystemData {
 	}
 }
 
-fn event_test(_state: &mut EngineState, data: &String) {
+fn event_test(_state: &mut GameState, _events: &GameEvents, data: &String) {
 	let _v = Vector2::zero();
 	println!("ADASDASDASD!!! {}", data);
 }
