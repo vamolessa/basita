@@ -1,7 +1,7 @@
 use super::super::{ContainsEngineEvents, ContainsEngineState};
 use super::super::events::Event;
 
-use components::{BoxCollider, ComponentHandle, Transform};
+use components::{BoxShape, Collider, ComponentHandle, Shape, Transform};
 use math::Vector2;
 
 pub struct CollisionEvents<S, E>
@@ -12,8 +12,8 @@ where
 		S,
 		E,
 		(
-			ComponentHandle<BoxCollider>,
-			ComponentHandle<BoxCollider>,
+			ComponentHandle<Collider>,
+			ComponentHandle<Collider>,
 			Vector2,
 		),
 	>,
@@ -22,8 +22,8 @@ where
 		S,
 		E,
 		(
-			ComponentHandle<BoxCollider>,
-			ComponentHandle<BoxCollider>,
+			ComponentHandle<Collider>,
+			ComponentHandle<Collider>,
 			Vector2,
 		),
 	>,
@@ -46,31 +46,33 @@ where
 	S: ContainsEngineState<'a, S>,
 	E: ContainsEngineEvents<S, E>,
 {
-	let total = s.get_engine_state_mut().box_colliders.all.len();
+	let total = s.get_engine_state_mut().colliders.all.len();
 	let events = e.get_engine_events();
 
 	for i in 0..total {
 		for j in i..total {
 			let (ai, bi, r, event) = {
 				let state = s.get_engine_state_mut();
-				let a = &state.box_colliders.all[i];
-				let b = &state.box_colliders.all[j];
+				let a = &state.colliders.all[i];
+				let b = &state.colliders.all[j];
 
-				// test if they're enabled
+				if !a.enabled || !b.enabled {
+					continue;
+				}
 
 				let a_t = &state.transforms.get(a.transform);
 				let b_t = &state.transforms.get(b.transform);
 
 				if a.physic_body.is_some() {
 					if b.physic_body.is_some() {
-						let r = collide_box_box(a, a_t, b, b_t);
+						let r = collide(a, a_t, b, b_t);
 						(i, j, r, &events.collision.on_dynamic_collision)
 					} else {
-						let r = collide_box_box(a, a_t, b, b_t);
+						let r = collide(a, a_t, b, b_t);
 						(j, i, r, &events.collision.on_static_collision)
 					}
 				} else if b.physic_body.is_some() {
-					let r = collide_box_box(a, a_t, b, b_t);
+					let r = collide(a, a_t, b, b_t);
 					(i, j, r, &events.collision.on_static_collision)
 				} else {
 					continue;
@@ -78,8 +80,8 @@ where
 			};
 
 			if let Some(penetration) = r {
-				let a = s.get_engine_state_mut().box_colliders.get_handle(ai);
-				let b = s.get_engine_state_mut().box_colliders.get_handle(bi);
+				let a = s.get_engine_state_mut().colliders.get_handle(ai);
+				let b = s.get_engine_state_mut().colliders.get_handle(bi);
 
 				event.raise(s, e, (a, b, penetration));
 			}
@@ -87,20 +89,43 @@ where
 	}
 }
 
-pub fn collide_box_box(
-	a: &BoxCollider,
+fn collide(
+	a: &Collider,
 	a_transform: &Transform,
-	b: &BoxCollider,
+	b: &Collider,
 	b_transform: &Transform,
 ) -> Option<Vector2> {
-	let a_center = a_transform.position + a.offset;
-	let b_center = b_transform.position + b.offset;
+	match a.shape {
+		Shape::Box(box_shape) => {
+			collide_box(&box_shape, a_transform.position + a.offset, b, b_transform)
+		}
+	}
+}
 
-	let a_min = a_center - a.half_size;
-	let a_max = a_center + a.half_size;
+fn collide_box(
+	a: &BoxShape,
+	a_position: Vector2,
+	b: &Collider,
+	b_transform: &Transform,
+) -> Option<Vector2> {
+	match b.shape {
+		Shape::Box(box_shape) => {
+			collide_box_box(a, a_position, &box_shape, b_transform.position + b.offset)
+		}
+	}
+}
 
-	let b_min = b_center - b.half_size;
-	let b_max = b_center + b.half_size;
+fn collide_box_box(
+	a: &BoxShape,
+	a_position: Vector2,
+	b: &BoxShape,
+	b_position: Vector2,
+) -> Option<Vector2> {
+	let a_min = a_position - a.half_size;
+	let a_max = a_position + a.half_size;
+
+	let b_min = b_position - b.half_size;
+	let b_max = b_position + b.half_size;
 
 	let min_to_max = b_min - a_max;
 	let max_to_min = b_max - a_min;

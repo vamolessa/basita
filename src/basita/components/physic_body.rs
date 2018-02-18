@@ -1,6 +1,6 @@
 use math::Vector2;
 
-use super::{BoxCollider, Component, ComponentHandle, Transform};
+use super::{Collider, Component, ComponentHandle, Transform};
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct PhysicBody {
@@ -11,7 +11,7 @@ pub struct PhysicBody {
 	pub bounciness: f32,
 
 	pub transform: ComponentHandle<Transform>,
-	pub box_collider: ComponentHandle<BoxCollider>,
+	pub collider: ComponentHandle<Collider>,
 }
 
 impl Component for PhysicBody {}

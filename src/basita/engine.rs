@@ -32,7 +32,7 @@ pub struct EngineState<'a> {
 	pub image_resources: ImageResources<'a>,
 
 	// components
-	pub box_colliders: ComponentCollection<BoxCollider>,
+	pub colliders: ComponentCollection<Collider>,
 	pub sprites: ComponentCollection<Sprite<'a>>,
 	pub transforms: ComponentCollection<Transform>,
 	pub physic_bodies: ComponentCollection<PhysicBody>,
@@ -52,7 +52,7 @@ impl<'a> EngineState<'a> {
 			image_resources: ImageResources::new(sdl_context),
 
 			// components
-			box_colliders: ComponentCollection::new(),
+			colliders: ComponentCollection::new(),
 			sprites: ComponentCollection::new(),
 			transforms: ComponentCollection::new(),
 			physic_bodies: ComponentCollection::new(),

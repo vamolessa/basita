@@ -2,6 +2,7 @@ use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 
 use super::super::{ContainsEngineEvents, ContainsEngineState};
+use super::super::components::Shape;
 
 pub fn update<'a, S, E>(s: &mut S, _e: &E)
 where
@@ -12,17 +13,23 @@ where
 
 	let mut canvas = state.sdl_context.canvas.borrow_mut();
 
-	for box_collider in &state.box_colliders.all {
-		let transform = state.transforms.get(box_collider.transform);
-
+	for collider in &state.colliders.all {
 		canvas.set_draw_color(Color::RGBA(0, 255, 0, 100));
-		canvas
-			.draw_rect(Rect::new(
-				transform.position.x as i32,
-				transform.position.y as i32,
-				(box_collider.half_size.x as u32) * 2,
-				(box_collider.half_size.x as u32) * 2,
-			))
-			.unwrap();
+
+		let transform = state.transforms.get(collider.transform);
+		let position = transform.position + collider.offset;
+
+		match collider.shape {
+			Shape::Box(box_shape) => {
+				canvas
+					.draw_rect(Rect::new(
+						position.x as i32,
+						position.y as i32,
+						(box_shape.half_size.x as u32) * 2,
+						(box_shape.half_size.x as u32) * 2,
+					))
+					.unwrap();
+			}
+		}
 	}
 }

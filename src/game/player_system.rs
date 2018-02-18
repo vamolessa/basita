@@ -45,9 +45,14 @@ pub fn init(state: &mut GameState, _events: &mut GameEvents) {
 		transform: state.player_system_data.player_transform_handle,
 	});
 
-	state.engine_state.box_colliders.add(BoxCollider {
-		half_size: Vector2::from((16.0, 16.0)),
+	state.engine_state.colliders.add(Collider {
+		shape: Shape::Box(BoxShape {
+			half_size: Vector2::from((16.0, 16.0)),
+		}),
 		offset: Vector2::zero(),
+		enabled: true,
+		is_trigger: false,
+
 		transform: state.player_system_data.player_transform_handle,
 		physic_body: None,
 	});

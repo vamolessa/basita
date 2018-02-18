@@ -1,6 +1,6 @@
 use super::super::{ContainsEngineEvents, ContainsEngineState};
 
-use components::{BoxCollider, ComponentHandle};
+use components::{Collider, ComponentHandle};
 use math::Vector2;
 
 pub fn init<'a, S, E>(_s: &mut S, e: &mut E)
@@ -41,8 +41,8 @@ fn on_dynamic_collision<'a, S, E>(
 	s: &mut S,
 	_e: &E,
 	data: (
-		ComponentHandle<BoxCollider>,
-		ComponentHandle<BoxCollider>,
+		ComponentHandle<Collider>,
+		ComponentHandle<Collider>,
 		Vector2,
 	),
 ) where
@@ -54,8 +54,8 @@ fn on_dynamic_collision<'a, S, E>(
 	let (ah, bh, ath, bth, impulse, a_weight, b_weight) = {
 		let state = s.get_engine_state_mut();
 
-		let ac = state.box_colliders.get(ach);
-		let bc = state.box_colliders.get(bch);
+		let ac = state.colliders.get(ach);
+		let bc = state.colliders.get(bch);
 		let ah = ac.physic_body.unwrap();
 		let bh = bc.physic_body.unwrap();
 		let a = state.physic_bodies.get(ah);
@@ -97,8 +97,8 @@ fn on_static_collision<'a, S, E>(
 	s: &mut S,
 	_e: &E,
 	data: (
-		ComponentHandle<BoxCollider>,
-		ComponentHandle<BoxCollider>,
+		ComponentHandle<Collider>,
+		ComponentHandle<Collider>,
 		Vector2,
 	),
 ) where
@@ -109,7 +109,7 @@ fn on_static_collision<'a, S, E>(
 
 	let (dh, dth, impulse) = {
 		let state = s.get_engine_state_mut();
-		let dc = state.box_colliders.get(dch);
+		let dc = state.colliders.get(dch);
 		let dh = dc.physic_body.unwrap();
 		let d = state.physic_bodies.get(dh);
 
