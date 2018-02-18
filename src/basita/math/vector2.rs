@@ -1,4 +1,4 @@
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Vector2 {
@@ -15,13 +15,25 @@ impl Vector2 {
 		Vector2 { x: 0.0, y: 0.0 }
 	}
 
-	/*
-	pub fn one() -> Vector2 {
-		Vector2 { x: 1.0, y: 1.0 }
+	pub fn dot(a: Self, b: Self) -> Self {
+		Vector2 {
+			x: a.x * b.x,
+			y: a.y * b.y,
+		}
+	}
+
+	pub fn set(&mut self, x: f32, y: f32) {
+		self.x = x;
+		self.y = y;
 	}
 
 	pub fn sqr_magnitude(&self) -> f32 {
 		self.x * self.x + self.y * self.y
+	}
+
+	/*
+	pub fn one() -> Vector2 {
+		Vector2 { x: 1.0, y: 1.0 }
 	}
 
 	pub fn magnitude(&self) -> f32 {
@@ -39,7 +51,7 @@ impl From<(f32, f32)> for Vector2 {
 impl Add<Vector2> for Vector2 {
 	type Output = Self;
 
-	fn add(self, other: Self) -> Self {
+	fn add(self, other: Self) -> Self::Output {
 		Vector2 {
 			x: self.x + other.x,
 			y: self.y + other.y,
@@ -47,10 +59,17 @@ impl Add<Vector2> for Vector2 {
 	}
 }
 
+impl AddAssign<Vector2> for Vector2 {
+	fn add_assign(&mut self, other: Self) {
+		self.x += other.x;
+		self.y += other.y;
+	}
+}
+
 impl Sub<Vector2> for Vector2 {
 	type Output = Self;
 
-	fn sub(self, other: Self) -> Self {
+	fn sub(self, other: Self) -> Self::Output {
 		Vector2 {
 			x: self.x - other.x,
 			y: self.y - other.y,
@@ -58,10 +77,17 @@ impl Sub<Vector2> for Vector2 {
 	}
 }
 
-impl Mul<Vector2> for Vector2 {
-	type Output = Vector2;
+impl SubAssign<Vector2> for Vector2 {
+	fn sub_assign(&mut self, other: Self) {
+		self.x -= other.x;
+		self.y -= other.y;
+	}
+}
 
-	fn mul(self, other: Self) -> Self {
+impl Mul<Vector2> for Vector2 {
+	type Output = Self;
+
+	fn mul(self, other: Self) -> Self::Output {
 		Vector2 {
 			x: self.x * other.x,
 			y: self.y * other.y,
@@ -72,7 +98,7 @@ impl Mul<Vector2> for Vector2 {
 impl Mul<f32> for Vector2 {
 	type Output = Self;
 
-	fn mul(self, num: f32) -> Self {
+	fn mul(self, num: f32) -> Self::Output {
 		Vector2 {
 			x: self.x * num,
 			y: self.y * num,
@@ -80,10 +106,17 @@ impl Mul<f32> for Vector2 {
 	}
 }
 
+impl MulAssign<f32> for Vector2 {
+	fn mul_assign(&mut self, value: f32) {
+		self.x *= value;
+		self.y *= value;
+	}
+}
+
 impl Div<Vector2> for Vector2 {
 	type Output = Self;
 
-	fn div(self, other: Self) -> Self {
+	fn div(self, other: Self) -> Self::Output {
 		Vector2 {
 			x: self.x * other.x,
 			y: self.y * other.y,
@@ -94,10 +127,17 @@ impl Div<Vector2> for Vector2 {
 impl Div<f32> for Vector2 {
 	type Output = Self;
 
-	fn div(self, num: f32) -> Self {
+	fn div(self, num: f32) -> Self::Output {
 		Vector2 {
 			x: self.x * num,
 			y: self.y * num,
 		}
+	}
+}
+
+impl DivAssign<f32> for Vector2 {
+	fn div_assign(&mut self, value: f32) {
+		self.x /= value;
+		self.y /= value;
 	}
 }

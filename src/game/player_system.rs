@@ -27,14 +27,7 @@ impl PlayerSystemData {
 	}
 }
 
-fn event_test(_state: &mut GameState, _events: &GameEvents, data: &String) {
-	let _v = Vector2::zero();
-	println!("ADASDASDASD!!! {}", data);
-}
-
-pub fn init(state: &mut GameState, events: &mut GameEvents) {
-	events.engine_events.some_event.subscribe(event_test);
-
+pub fn init(state: &mut GameState, _events: &mut GameEvents) {
 	let player_image = state
 		.engine_state
 		.image_resources
@@ -53,7 +46,7 @@ pub fn init(state: &mut GameState, events: &mut GameEvents) {
 	});
 
 	state.engine_state.box_colliders.add(BoxCollider {
-		size: Vector2::from((32.0, 32.0)),
+		half_size: Vector2::from((16.0, 16.0)),
 		offset: Vector2::zero(),
 		transform: state.player_system_data.player_transform_handle,
 	});

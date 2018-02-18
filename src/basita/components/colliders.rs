@@ -2,8 +2,9 @@ use math::Vector2;
 
 use super::{Component, ComponentHandle, Transform};
 
+#[derive(Clone, Copy, Debug, Default)]
 pub struct BoxCollider {
-	pub size: Vector2,
+	pub half_size: Vector2,
 	pub offset: Vector2,
 
 	pub transform: ComponentHandle<Transform>,

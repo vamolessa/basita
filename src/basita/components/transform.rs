@@ -2,6 +2,7 @@ use math::Vector2;
 
 use super::Component;
 
+#[derive(Clone, Copy, Debug)]
 pub struct Transform {
 	pub position: Vector2,
 }

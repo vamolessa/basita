@@ -20,8 +20,8 @@ where
 			.draw_rect(Rect::new(
 				transform.position.x as i32,
 				transform.position.y as i32,
-				box_collider.size.x as u32,
-				box_collider.size.x as u32,
+				(box_collider.half_size.x as u32) * 2,
+				(box_collider.half_size.x as u32) * 2,
 			))
 			.unwrap();
 	}

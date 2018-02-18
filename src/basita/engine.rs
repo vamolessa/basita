@@ -26,6 +26,7 @@ pub struct EngineState<'a> {
 	pub running: bool,
 	pub sdl_context: &'a SdlContext,
 	pub input: Input,
+	pub systems_state: SystemsState,
 
 	// resources
 	pub image_resources: ImageResources<'a>,
@@ -34,6 +35,7 @@ pub struct EngineState<'a> {
 	pub box_colliders: ComponentCollection<BoxCollider>,
 	pub sprites: ComponentCollection<Sprite<'a>>,
 	pub transforms: ComponentCollection<Transform>,
+	pub physic_bodies: ComponentCollection<PhysicBody>,
 }
 
 impl<'a> EngineState<'a> {
@@ -43,6 +45,7 @@ impl<'a> EngineState<'a> {
 			running: true,
 			sdl_context: sdl_context,
 			input: Input::new(),
+			systems_state: SystemsState::default(),
 
 			// resources
 			image_resources: ImageResources::new(sdl_context),
@@ -51,15 +54,21 @@ impl<'a> EngineState<'a> {
 			box_colliders: ComponentCollection::new(),
 			sprites: ComponentCollection::new(),
 			transforms: ComponentCollection::new(),
+			physic_bodies: ComponentCollection::new(),
 		}
 	}
+}
+
+#[derive(Default)]
+pub struct SystemsState {
+	pub physics_system: physics_system::PhysicsSystemState,
 }
 
 pub struct EngineEvents<S, E>
 where
 	E: ContainsEngineEvents<S, E>,
 {
-	pub some_event: Event<S, E, String>,
+	pub _some_event: Event<S, E, String>,
 }
 
 impl<S, E> EngineEvents<S, E>
@@ -68,7 +77,7 @@ where
 {
 	pub fn new() -> Self {
 		EngineEvents {
-			some_event: Event::default(),
+			_some_event: Event::default(),
 		}
 	}
 }
@@ -79,23 +88,23 @@ where
 	E: ContainsEngineEvents<S, E>,
 {
 	pub fn add_default_systems(&mut self) {
+		self.add_system(None, physics_system::update);
 		self.add_system(None, render_system::update);
 		self.add_system(None, collider_render_system::update);
 		self.add_system(None, sdl_presenter_system::update);
+		// frame start
 		self.add_system(None, sdl_event_system::update);
 	}
 }
 
-/*
-pub fn play<'a>(mut state: EngineState<'a>, systems: Rc<SystemCollection<'a>>) {
-	for system in &systems.all {
-		system.init(&mut state);
-	}
+pub fn play<'a, S, E>(mut state: S, mut events: E, systems: SystemCollection<S, E>)
+where
+	S: ContainsEngineState<'a, S>,
+	E: ContainsEngineEvents<S, E>,
+{
+	systems.init(&mut state, &mut events);
 
-	while state.running {
-		for system in &systems.all {
-			system.update(&mut state);
-		}
+	while state.get_engine_state_mut().running {
+		systems.update(&mut state, &events);
 	}
 }
-*/

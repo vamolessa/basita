@@ -1,3 +1,4 @@
+use std::fmt;
 use std::collections::HashMap;
 use std::marker::PhantomData;
 
@@ -16,6 +17,21 @@ impl<R> Clone for ResourceHandle<R> {
 }
 
 impl<R> Copy for ResourceHandle<R> {}
+
+impl<R> Default for ResourceHandle<R> {
+	fn default() -> Self {
+		ResourceHandle {
+			index: Default::default(),
+			_phantom: PhantomData,
+		}
+	}
+}
+
+impl<R> fmt::Debug for ResourceHandle<R> {
+	fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+		write!(formatter, "ResourceHandle [{}]", self.index)
+	}
+}
 
 pub struct ResourceManager<'a, R, L>
 where
