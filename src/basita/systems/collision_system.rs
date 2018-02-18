@@ -118,9 +118,8 @@ pub fn collide_box_box(
 
 	let abs = max_to_min.y.abs();
 	if abs < min_abs {
-		min_abs = abs;
 		penetration.set(0.0, -max_to_min.y);
 	}
 
-	None
+	Some(penetration)
 }
