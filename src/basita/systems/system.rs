@@ -35,3 +35,10 @@ impl<S, E> SystemCollection<S, E> {
 		}
 	}
 }
+
+#[macro_export]
+macro_rules! add_system {
+	($sc:ident, $sm:ident) => (
+		$sc.add_system(Some($sm::init), $sm::update);
+	);
+}

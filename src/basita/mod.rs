@@ -1,5 +1,6 @@
 pub extern crate sdl2;
 
+#[macro_use]
 pub mod systems;
 pub mod components;
 pub mod events;
