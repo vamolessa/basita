@@ -1,22 +1,20 @@
-use super::super::EngineState;
-
-pub struct Event<D> {
-	callbacks: Vec<fn(&mut EngineState, &D) -> ()>,
+pub struct Event<S, E, D> {
+	callbacks: Vec<fn(&mut S, &E, &D) -> ()>,
 }
 
-impl<D> Event<D> {
-	pub fn subscribe(&mut self, callback: fn(&mut EngineState, &D) -> ()) {
+impl<S, E, D> Event<S, E, D> {
+	pub fn subscribe(&mut self, callback: fn(&mut S, &E, &D) -> ()) {
 		self.callbacks.push(callback);
 	}
 
-	pub fn raise(&self, state: &mut EngineState, data: &D) {
+	pub fn raise(&self, state: &mut S, events: &E, data: &D) {
 		for callback in &self.callbacks {
-			callback(state, data);
+			callback(state, events, data);
 		}
 	}
 }
 
-impl<D> Default for Event<D> {
+impl<S, E, D> Default for Event<S, E, D> {
 	fn default() -> Self {
 		Event {
 			callbacks: Vec::new(),
