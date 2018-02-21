@@ -58,11 +58,33 @@ impl<T: Component> ComponentCollection<T> {
 	pub fn get_handle(&self, index: usize) -> ComponentHandle<T> {
 		ComponentHandle::new(index)
 	}
-}
-/*
-pub struct ComponentCollectionHandleIterator<T: Component> {
-	current_handle: ComponentHandle<T>,
+
+	pub fn handle_iter(&self) -> ComponentCollectionHandleIterator<T> {
+		ComponentCollectionHandleIterator::new(ComponentHandle::new(self.all.len()))
+	}
 }
 
-impl ComponentCollectionHandleIterator
-*/
+pub struct ComponentCollectionHandleIterator<T: Component> {
+	previous_handle: ComponentHandle<T>,
+}
+
+impl<T: Component> ComponentCollectionHandleIterator<T> {
+	pub fn new(handle: ComponentHandle<T>) -> Self {
+		ComponentCollectionHandleIterator {
+			previous_handle: handle,
+		}
+	}
+}
+
+impl<T: Component> Iterator for ComponentCollectionHandleIterator<T> {
+	type Item = ComponentHandle<T>;
+
+	fn next(&mut self) -> Option<Self::Item> {
+		if self.previous_handle.index > 0 {
+			self.previous_handle.index -= 1;
+			Some(self.previous_handle)
+		} else {
+			None
+		}
+	}
+}
