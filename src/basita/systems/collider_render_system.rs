@@ -1,34 +1,39 @@
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 
+use super::System;
 use super::super::{ContainsEngineEvents, ContainsEngineState};
 use super::super::components::Shape;
 
-pub fn update<'a, S, E>(s: &mut S, _e: &E)
+pub struct ColliderRenderSystem;
+
+impl<'a, S, E> System<S, E> for ColliderRenderSystem
 where
-	S: ContainsEngineState<'a, S>,
+	S: ContainsEngineState<'a>,
 	E: ContainsEngineEvents<S, E>,
 {
-	let state = s.get_engine_state_mut();
+	fn update(s: &mut S, _e: &E) {
+		let state = s.get_engine_state_mut();
 
-	let mut canvas = state.sdl_context.canvas.borrow_mut();
+		let mut canvas = state.sdl_context.canvas.borrow_mut();
 
-	for collider in &state.colliders.all {
-		canvas.set_draw_color(Color::RGBA(0, 255, 0, 100));
+		for collider in &state.colliders.all {
+			canvas.set_draw_color(Color::RGBA(0, 255, 0, 100));
 
-		let transform = state.transforms.get(collider.transform);
-		let position = transform.position + collider.offset;
+			let transform = state.transforms.get(collider.transform);
+			let position = transform.position + collider.offset;
 
-		match collider.shape {
-			Shape::Box(box_shape) => {
-				canvas
-					.draw_rect(Rect::new(
-						position.x as i32,
-						position.y as i32,
-						(box_shape.half_size.x as u32) * 2,
-						(box_shape.half_size.x as u32) * 2,
-					))
-					.unwrap();
+			match collider.shape {
+				Shape::Box(box_shape) => {
+					canvas
+						.draw_rect(Rect::new(
+							position.x as i32,
+							position.y as i32,
+							(box_shape.half_size.x as u32) * 2,
+							(box_shape.half_size.x as u32) * 2,
+						))
+						.unwrap();
+				}
 			}
 		}
 	}

@@ -1,3 +1,8 @@
+pub trait System<S, E> {
+	fn init(&mut S, &mut E) {}
+	fn update(&mut S, &E);
+}
+
 pub struct SystemCollection<S, E> {
 	inits: Vec<fn(&mut S, &mut E) -> ()>,
 	updates: Vec<fn(&mut S, &E) -> ()>,
@@ -11,16 +16,12 @@ impl<S, E> SystemCollection<S, E> {
 		}
 	}
 
-	pub fn add_system(
-		&mut self,
-		init: Option<fn(&mut S, &mut E) -> ()>,
-		update: fn(&mut S, &E) -> (),
-	) {
-		if let Some(init_function) = init {
-			self.inits.push(init_function);
-		}
-
-		self.updates.push(update);
+	pub fn add_system<T>(&mut self)
+	where
+		T: System<S, E>,
+	{
+		self.inits.push(T::init);
+		self.updates.push(T::update);
 	}
 
 	pub fn init(&self, state: &mut S, events: &mut E) {
@@ -34,11 +35,4 @@ impl<S, E> SystemCollection<S, E> {
 			f(state, events);
 		}
 	}
-}
-
-#[macro_export]
-macro_rules! add_system {
-	($sc:ident, $sm:ident) => (
-		$sc.add_system(Some($sm::init), $sm::update);
-	);
 }

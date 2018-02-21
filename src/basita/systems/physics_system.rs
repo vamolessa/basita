@@ -1,39 +1,40 @@
 use super::super::{ContainsEngineEvents, ContainsEngineState};
+use super::System;
 
 use components::{Collider, ComponentHandle};
 use math::Vector2;
 
-pub fn init<'a, S, E>(_s: &mut S, e: &mut E)
+pub struct PhysicsSystem;
+
+impl<'a, S, E> System<S, E> for PhysicsSystem
 where
-	S: ContainsEngineState<'a, S>,
+	S: ContainsEngineState<'a>,
 	E: ContainsEngineEvents<S, E>,
 {
-	let events = e.get_engine_events_mut();
-	events
-		.collision
-		.on_dynamic_collision
-		.subscribe(on_dynamic_collision);
-	events
-		.collision
-		.on_static_collision
-		.subscribe(on_static_collision);
-}
+	fn init(_s: &mut S, e: &mut E) {
+		let events = e.get_engine_events_mut();
+		events
+			.collision
+			.on_dynamic_collision
+			.subscribe(on_dynamic_collision);
+		events
+			.collision
+			.on_static_collision
+			.subscribe(on_static_collision);
+	}
 
-pub fn update<'a, S, E>(s: &mut S, _e: &E)
-where
-	S: ContainsEngineState<'a, S>,
-	E: ContainsEngineEvents<S, E>,
-{
-	let state = s.get_engine_state_mut();
-	let physic_bodies = &mut state.physic_bodies;
-	let transforms = &mut state.transforms;
+	fn update(s: &mut S, _e: &E) {
+		let state = s.get_engine_state_mut();
+		let physic_bodies = &mut state.physic_bodies;
+		let transforms = &mut state.transforms;
 
-	for physic_body in &mut physic_bodies.all {
-		let mut transform = transforms.get_mut(physic_body.transform);
+		for physic_body in &mut physic_bodies.all {
+			let mut transform = transforms.get_mut(physic_body.transform);
 
-		physic_body.velocity += physic_body.acceleration * state.delta_time;
-		transform.position += physic_body.velocity * state.delta_time;
-		physic_body.acceleration.set(0.0, 0.0);
+			physic_body.velocity += physic_body.acceleration * state.delta_time;
+			transform.position += physic_body.velocity * state.delta_time;
+			physic_body.acceleration.set(0.0, 0.0);
+		}
 	}
 }
 
@@ -46,7 +47,7 @@ fn on_dynamic_collision<'a, S, E>(
 		Vector2,
 	),
 ) where
-	S: ContainsEngineState<'a, S>,
+	S: ContainsEngineState<'a>,
 	E: ContainsEngineEvents<S, E>,
 {
 	let (ach, bch, penetration) = data;
@@ -102,7 +103,7 @@ fn on_static_collision<'a, S, E>(
 		Vector2,
 	),
 ) where
-	S: ContainsEngineState<'a, S>,
+	S: ContainsEngineState<'a>,
 	E: ContainsEngineEvents<S, E>,
 {
 	let (_sch, dch, penetration) = data;

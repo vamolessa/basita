@@ -5,10 +5,7 @@ use resources::*;
 use components::*;
 use systems::*;
 
-pub trait ContainsEngineState<'a, S>
-where
-	S: ContainsEngineState<'a, S>,
-{
+pub trait ContainsEngineState<'a> {
 	fn get_engine_state_mut(&mut self) -> &mut EngineState<'a>;
 }
 
@@ -67,7 +64,7 @@ pub struct EngineEvents<S, E>
 where
 	E: ContainsEngineEvents<S, E>,
 {
-	pub collision: collision_system::CollisionEvents<S, E>,
+	pub collision: CollisionEvents<S, E>,
 }
 
 impl<S, E> EngineEvents<S, E>
@@ -76,30 +73,30 @@ where
 {
 	pub fn new() -> Self {
 		EngineEvents {
-			collision: collision_system::CollisionEvents::new(),
+			collision: CollisionEvents::new(),
 		}
 	}
 }
 
 impl<'a, S, E> SystemCollection<S, E>
 where
-	S: ContainsEngineState<'a, S>,
+	S: ContainsEngineState<'a>,
 	E: ContainsEngineEvents<S, E>,
 {
 	pub fn add_default_systems(&mut self) {
-		add_system!(self, physics_system);
-		self.add_system(None, collision_system::update);
-		self.add_system(None, render_system::update);
-		self.add_system(None, collider_render_system::update);
-		self.add_system(None, sdl_presenter_system::update);
+		self.add_system::<PhysicsSystem>();
+		self.add_system::<CollisionSystem>();
+		self.add_system::<RenderSystem>();
+		self.add_system::<ColliderRenderSystem>();
+		self.add_system::<SdlPresenterSystem>();
 		// frame start
-		self.add_system(None, sdl_event_system::update);
+		self.add_system::<SdlEventSystem>();
 	}
 }
 
 pub fn play<'a, S, E>(mut state: S, mut events: E, systems: SystemCollection<S, E>)
 where
-	S: ContainsEngineState<'a, S>,
+	S: ContainsEngineState<'a>,
 	E: ContainsEngineEvents<S, E>,
 {
 	systems.init(&mut state, &mut events);

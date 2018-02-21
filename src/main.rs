@@ -1,5 +1,4 @@
 //extern crate basita;
-#[macro_use]
 mod basita;
 use basita::*;
 use basita::systems::*;
@@ -14,7 +13,7 @@ pub fn main() {
 	let mut systems = SystemCollection::new();
 
 	systems.add_default_systems();
-	add_system!(systems, player_system);
+	systems.add_system::<PlayerSystem>();
 
 	play(state, events, systems);
 }

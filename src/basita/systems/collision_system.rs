@@ -1,5 +1,6 @@
 use super::super::{ContainsEngineEvents, ContainsEngineState};
 use super::super::events::Event;
+use super::System;
 
 use components::{BoxShape, Collider, ComponentHandle, Shape, Transform};
 use math::Vector2;
@@ -41,49 +42,53 @@ where
 	}
 }
 
-pub fn update<'a, S, E>(s: &mut S, e: &E)
+pub struct CollisionSystem;
+
+impl<'a, S, E> System<S, E> for CollisionSystem
 where
-	S: ContainsEngineState<'a, S>,
+	S: ContainsEngineState<'a>,
 	E: ContainsEngineEvents<S, E>,
 {
-	let total = s.get_engine_state_mut().colliders.all.len();
-	let events = e.get_engine_events();
+	fn update(s: &mut S, e: &E) {
+		let total = s.get_engine_state_mut().colliders.all.len();
+		let events = e.get_engine_events();
 
-	for i in 0..total {
-		for j in i..total {
-			let (ai, bi, r, event) = {
-				let state = s.get_engine_state_mut();
-				let a = &state.colliders.all[i];
-				let b = &state.colliders.all[j];
+		for i in 0..total {
+			for j in i..total {
+				let (ai, bi, r, event) = {
+					let state = s.get_engine_state_mut();
+					let a = &state.colliders.all[i];
+					let b = &state.colliders.all[j];
 
-				if !a.enabled || !b.enabled {
-					continue;
-				}
-
-				let a_t = &state.transforms.get(a.transform);
-				let b_t = &state.transforms.get(b.transform);
-
-				if a.physic_body.is_some() {
-					if b.physic_body.is_some() {
-						let r = collide(a, a_t, b, b_t);
-						(i, j, r, &events.collision.on_dynamic_collision)
-					} else {
-						let r = collide(a, a_t, b, b_t);
-						(j, i, r, &events.collision.on_static_collision)
+					if !a.enabled || !b.enabled {
+						continue;
 					}
-				} else if b.physic_body.is_some() {
-					let r = collide(a, a_t, b, b_t);
-					(i, j, r, &events.collision.on_static_collision)
-				} else {
-					continue;
+
+					let a_t = &state.transforms.get(a.transform);
+					let b_t = &state.transforms.get(b.transform);
+
+					if a.physic_body.is_some() {
+						if b.physic_body.is_some() {
+							let r = collide(a, a_t, b, b_t);
+							(i, j, r, &events.collision.on_dynamic_collision)
+						} else {
+							let r = collide(a, a_t, b, b_t);
+							(j, i, r, &events.collision.on_static_collision)
+						}
+					} else if b.physic_body.is_some() {
+						let r = collide(a, a_t, b, b_t);
+						(i, j, r, &events.collision.on_static_collision)
+					} else {
+						continue;
+					}
+				};
+
+				if let Some(penetration) = r {
+					let a = s.get_engine_state_mut().colliders.get_handle(ai);
+					let b = s.get_engine_state_mut().colliders.get_handle(bi);
+
+					event.raise(s, e, (a, b, penetration));
 				}
-			};
-
-			if let Some(penetration) = r {
-				let a = s.get_engine_state_mut().colliders.get_handle(ai);
-				let b = s.get_engine_state_mut().colliders.get_handle(bi);
-
-				event.raise(s, e, (a, b, penetration));
 			}
 		}
 	}

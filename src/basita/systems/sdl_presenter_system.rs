@@ -4,25 +4,30 @@ use std::thread;
 use sdl2::pixels::Color;
 
 use super::super::{ContainsEngineEvents, ContainsEngineState};
+use super::System;
 
-pub fn update<'a, S, E>(s: &mut S, _e: &E)
+pub struct SdlPresenterSystem;
+
+impl<'a, S, E> System<S, E> for SdlPresenterSystem
 where
-	S: ContainsEngineState<'a, S>,
+	S: ContainsEngineState<'a>,
 	E: ContainsEngineEvents<S, E>,
 {
-	let state = s.get_engine_state_mut();
+	fn update(s: &mut S, _e: &E) {
+		let state = s.get_engine_state_mut();
 
-	let clear_color = Color::RGB(0, 0, 0);
+		let clear_color = Color::RGB(0, 0, 0);
 
-	let mut canvas = state.sdl_context.canvas.borrow_mut();
-	canvas.present();
-	thread::sleep(Duration::new(
-		0,
-		1_000_000_000u32 / state.sdl_context.frames_per_second,
-	));
+		let mut canvas = state.sdl_context.canvas.borrow_mut();
+		canvas.present();
+		thread::sleep(Duration::new(
+			0,
+			1_000_000_000u32 / state.sdl_context.frames_per_second,
+		));
 
-	canvas.set_draw_color(clear_color);
-	canvas.clear();
+		canvas.set_draw_color(clear_color);
+		canvas.clear();
 
-	state.delta_time = 1.0 / (state.sdl_context.frames_per_second as f32);
+		state.delta_time = 1.0 / (state.sdl_context.frames_per_second as f32);
+	}
 }
