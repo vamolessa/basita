@@ -13,6 +13,10 @@ impl Transform {
 			position: Vector2::zero(),
 		}
 	}
+
+	pub fn new(position: Vector2) -> Self {
+		Transform { position: position }
+	}
 }
 
 impl Component for Transform {}

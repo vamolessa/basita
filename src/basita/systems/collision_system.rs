@@ -87,6 +87,7 @@ where
 					let a = s.get_engine_state_mut().colliders.get_handle(ai);
 					let b = s.get_engine_state_mut().colliders.get_handle(bi);
 
+					println!("penetration! {:?}", penetration);
 					event.raise(s, e, (a, b, penetration));
 				}
 			}

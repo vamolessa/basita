@@ -25,12 +25,14 @@ where
 
 			match collider.shape {
 				Shape::Box(box_shape) => {
+					let half_size = box_shape.half_size;
+
 					canvas
 						.draw_rect(Rect::new(
-							position.x as i32,
-							position.y as i32,
-							(box_shape.half_size.x as u32) * 2,
-							(box_shape.half_size.x as u32) * 2,
+							(position.x - half_size.x) as i32,
+							(position.y - half_size.y) as i32,
+							(half_size.x as u32) * 2,
+							(half_size.y as u32) * 2,
 						))
 						.unwrap();
 				}

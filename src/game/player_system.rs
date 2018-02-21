@@ -50,28 +50,47 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 			.image_resources
 			.load(&String::from("resources/sprites/player.png"));
 
-		let transform = state
-			.engine_state
-			.transforms
-			.get_mut(state.player_system_data.player_transform_handle);
-		transform.position = Vector2::new(10.0, 200.0);
+		{
+			let transform = state
+				.engine_state
+				.transforms
+				.get_mut(state.player_system_data.player_transform_handle);
+			transform.position = Vector2::new(100.0, 100.0);
 
-		state.engine_state.sprites.add(Sprite {
-			depth: 0,
-			image_resource: player_image,
-			transform: state.player_system_data.player_transform_handle,
-		});
+			state.engine_state.sprites.add(Sprite {
+				depth: 0,
+				image_resource: player_image,
+				transform: state.player_system_data.player_transform_handle,
+			});
+		}
 
 		state.engine_state.colliders.add(Collider {
 			shape: Shape::Box(BoxShape {
-				half_size: Vector2::from((16.0, 16.0)),
+				half_size: Vector2::new(16.0, 16.0),
 			}),
-			offset: Vector2::zero(),
+			offset: Vector2::new(16.0, 16.0),
 			enabled: true,
 			is_trigger: false,
 
 			transform: state.player_system_data.player_transform_handle,
 			physic_body: Some(state.player_system_data.player_physic_body_handle),
+		});
+
+		let ground_transform = state
+			.engine_state
+			.transforms
+			.add(Transform::new(Vector2::new(200.0, 200.0)));
+
+		state.engine_state.colliders.add(Collider {
+			shape: Shape::Box(BoxShape {
+				half_size: Vector2::new(200.0, 5.0),
+			}),
+			offset: Vector2::zero(),
+			enabled: true,
+			is_trigger: false,
+
+			transform: ground_transform,
+			physic_body: None,
 		});
 	}
 
