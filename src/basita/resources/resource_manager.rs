@@ -58,9 +58,9 @@ where
 	{
 		match self.try_load(path) {
 			Ok(handle) => handle,
-			Err(message) => panic!(
+			Err(error) => panic!(
 				"Could not load resource at '{}'. Error: '{}'",
-				path, message
+				path, error
 			),
 		}
 	}

@@ -6,7 +6,6 @@ use super::{Component, ComponentHandle, PhysicBody, Transform};
 pub struct Collider {
 	pub shape: Shape,
 	pub offset: Vector2,
-	pub enabled: bool,
 	pub is_trigger: bool,
 
 	pub transform: ComponentHandle<Transform>,

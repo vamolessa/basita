@@ -116,7 +116,7 @@ fn on_static_collision<'a, S, E>(
 
 		let restitution = d.bounciness;
 
-		let impulse_magnitude = Vector2::dot(penetration, d.velocity) * (1.0 + restitution);
+		let impulse_magnitude = Vector2::dot(penetration, -d.velocity) * (1.0 + restitution);
 		let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
 
 		(dh, d.transform, impulse)

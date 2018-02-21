@@ -54,15 +54,11 @@ where
 		let events = e.get_engine_events();
 
 		for i in 0..total {
-			for j in i..total {
+			for j in (i + 1)..total {
 				let (ai, bi, r, event) = {
 					let state = s.get_engine_state_mut();
 					let a = &state.colliders.all[i];
 					let b = &state.colliders.all[j];
-
-					if !a.enabled || !b.enabled {
-						continue;
-					}
 
 					let a_t = &state.transforms.get(a.transform);
 					let b_t = &state.transforms.get(b.transform);
@@ -87,7 +83,6 @@ where
 					let a = s.get_engine_state_mut().colliders.get_handle(ai);
 					let b = s.get_engine_state_mut().colliders.get_handle(bi);
 
-					println!("penetration! {:?}", penetration);
 					event.raise(s, e, (a, b, penetration));
 				}
 			}
@@ -110,40 +105,40 @@ fn collide(
 
 fn collide_box(
 	a: &BoxShape,
-	a_position: Vector2,
+	a_center: Vector2,
 	b: &Collider,
 	b_transform: &Transform,
 ) -> Option<Vector2> {
 	match b.shape {
 		Shape::Box(box_shape) => {
-			collide_box_box(a, a_position, &box_shape, b_transform.position + b.offset)
+			collide_box_box(a, a_center, &box_shape, b_transform.position + b.offset)
 		}
 	}
 }
 
 fn collide_box_box(
 	a: &BoxShape,
-	a_position: Vector2,
+	a_center: Vector2,
 	b: &BoxShape,
-	b_position: Vector2,
+	b_center: Vector2,
 ) -> Option<Vector2> {
-	let a_min = a_position - a.half_size;
-	let a_max = a_position + a.half_size;
+	let a_min = a_center - a.half_size;
+	let a_max = a_center + a.half_size;
 
-	let b_min = b_position - b.half_size;
-	let b_max = b_position + b.half_size;
+	let b_min = b_center - b.half_size;
+	let b_max = b_center + b.half_size;
 
 	let min_to_max = b_min - a_max;
 	let max_to_min = b_max - a_min;
 
-	if min_to_max.x < 0.0 || min_to_max.y < 0.0 || max_to_min.x > 0.0 || max_to_min.y > 0.0 {
+	if min_to_max.x >= 0.0 || min_to_max.y >= 0.0 || max_to_min.x <= 0.0 || max_to_min.y <= 0.0 {
 		return None;
 	}
 
 	let abs = min_to_max.x.abs();
 	let mut min_abs = abs;
 
-	let mut penetration = Vector2::zero();
+	let mut penetration = Vector2::new(min_to_max.x, 0.0);
 
 	let abs = max_to_min.x.abs();
 	if abs < min_abs {
@@ -154,12 +149,12 @@ fn collide_box_box(
 	let abs = min_to_max.y.abs();
 	if abs < min_abs {
 		min_abs = abs;
-		penetration.set(0.0, -min_to_max.y);
+		penetration.set(0.0, min_to_max.y);
 	}
 
 	let abs = max_to_min.y.abs();
 	if abs < min_abs {
-		penetration.set(0.0, -max_to_min.y);
+		penetration.set(0.0, max_to_min.y);
 	}
 
 	Some(penetration)

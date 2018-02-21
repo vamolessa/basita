@@ -42,8 +42,9 @@ impl<T: Component> ComponentCollection<T> {
 	}
 
 	pub fn add(&mut self, component: T) -> ComponentHandle<T> {
+		let handle = ComponentHandle::new(self.all.len());
 		self.all.push(component);
-		ComponentHandle::new(self.all.len() - 1)
+		handle
 	}
 
 	pub fn get(&self, handle: ComponentHandle<T>) -> &T {
@@ -58,3 +59,10 @@ impl<T: Component> ComponentCollection<T> {
 		ComponentHandle::new(index)
 	}
 }
+/*
+pub struct ComponentCollectionHandleIterator<T: Component> {
+	current_handle: ComponentHandle<T>,
+}
+
+impl ComponentCollectionHandleIterator
+*/
