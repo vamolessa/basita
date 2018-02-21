@@ -2,7 +2,7 @@ use math::Vector2;
 
 use super::{Component, ComponentHandle, PhysicBody, Transform};
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct Collider {
 	pub shape: Shape,
 	pub offset: Vector2,
@@ -15,7 +15,7 @@ pub struct Collider {
 
 impl Component for Collider {}
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum Shape {
 	Box(BoxShape),
 }
@@ -26,7 +26,7 @@ impl Default for Shape {
 	}
 }
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct BoxShape {
 	pub half_size: Vector2,
 }

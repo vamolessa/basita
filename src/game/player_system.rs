@@ -1,6 +1,7 @@
 use sdl2::keyboard::Keycode;
 
 use basita::EngineState;
+use basita::systems::System;
 use basita::input::Button;
 use basita::math::Vector2;
 use basita::components::*;
@@ -27,9 +28,9 @@ impl PlayerSystemData {
 	}
 }
 
-pub struct PlayerSystem {}
+pub struct PlayerSystem;
 
-impl GameSystem for PlayerSystem {
+impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 	fn init(state: &mut GameState, _events: &mut GameEvents) {
 		let player_image = state
 			.engine_state

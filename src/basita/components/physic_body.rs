@@ -2,7 +2,7 @@ use math::Vector2;
 
 use super::{Collider, Component, ComponentHandle, Transform};
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct PhysicBody {
 	pub velocity: Vector2,
 	pub acceleration: Vector2,

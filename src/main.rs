@@ -1,5 +1,5 @@
-//extern crate basita;
-mod basita;
+extern crate basita;
+
 use basita::*;
 use basita::systems::*;
 

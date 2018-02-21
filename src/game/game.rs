@@ -1,5 +1,4 @@
 use basita::*;
-use basita::systems::System;
 
 use super::player_system::PlayerSystemData;
 
@@ -45,23 +44,5 @@ impl<'a> ContainsEngineEvents<GameState<'a>, GameEvents<'a>> for GameEvents<'a> 
 
 	fn get_engine_events_mut(&mut self) -> &mut EngineEvents<GameState<'a>, GameEvents<'a>> {
 		&mut self.engine_events
-	}
-}
-
-pub trait GameSystem {
-	fn init(&mut GameState, &mut GameEvents) {}
-	fn update(&mut GameState, &GameEvents);
-}
-
-impl<'a, T> System<GameState<'a>, GameEvents<'a>> for T
-where
-	T: GameSystem,
-{
-	fn init(state: &mut GameState, events: &mut GameEvents) {
-		Self::init(state, events);
-	}
-
-	fn update(state: &mut GameState, events: &GameEvents) {
-		Self::update(state, events);
 	}
 }
