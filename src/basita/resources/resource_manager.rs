@@ -1,7 +1,38 @@
 use std::collections::HashMap;
 use std::marker::PhantomData;
 
-declare_handle!(ResourceHandle);
+#[derive(Serialize, Deserialize)]
+pub struct ResourceHandle<T> {
+	index: usize,
+	_phantom: ::std::marker::PhantomData<T>,
+}
+
+impl<T> ResourceHandle<T> {
+	fn new(index: usize) -> Self {
+		ResourceHandle {
+			index: index,
+			_phantom: ::std::marker::PhantomData,
+		}
+	}
+}
+
+impl<T> Clone for ResourceHandle<T> {
+	fn clone(&self) -> Self {
+		ResourceHandle::new(self.index)
+	}
+}
+
+impl<T> Copy for ResourceHandle<T> {}
+
+impl<T> Default for ResourceHandle<T> {
+	fn default() -> Self {
+		ResourceHandle {
+			index: Default::default(),
+			_phantom: ::std::marker::PhantomData,
+		}
+	}
+}
+
 
 pub struct ResourceManager<'a, R, L>
 where

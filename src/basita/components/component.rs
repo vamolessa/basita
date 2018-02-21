@@ -1,6 +1,42 @@
 pub trait Component {}
 
-declare_handle!(ComponentHandle);
+#[derive(Serialize, Deserialize)]
+pub struct ComponentHandle<T: Component> {
+	index: usize,
+	_phantom: ::std::marker::PhantomData<T>,
+}
+
+impl<T: Component> ComponentHandle<T> {
+	fn new(index: usize) -> Self {
+		ComponentHandle {
+			index: index,
+			_phantom: ::std::marker::PhantomData,
+		}
+	}
+}
+
+impl<T: Component> Clone for ComponentHandle<T> {
+	fn clone(&self) -> Self {
+		ComponentHandle::new(self.index)
+	}
+}
+
+impl<T: Component> Copy for ComponentHandle<T> {}
+
+impl<T: Component> Default for ComponentHandle<T> {
+	fn default() -> Self {
+		ComponentHandle {
+			index: Default::default(),
+			_phantom: ::std::marker::PhantomData,
+		}
+	}
+}
+
+impl<T> ::std::fmt::Debug for ComponentHandle<T> {
+	fn fmt(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+		write!(formatter, "{} [{}]", stringify!($name), self.index)
+	}
+}
 
 pub struct ComponentCollection<T: Component> {
 	pub all: Vec<T>,
