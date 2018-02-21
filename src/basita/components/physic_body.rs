@@ -1,8 +1,8 @@
 use math::Vector2;
 
-use super::{Collider, Component, ComponentHandle, Transform};
+use super::{Component, ComponentHandle, Transform};
 
-#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct PhysicBody {
 	pub velocity: Vector2,
 	pub acceleration: Vector2,
@@ -11,7 +11,6 @@ pub struct PhysicBody {
 	pub bounciness: f32,
 
 	pub transform: ComponentHandle<Transform>,
-	pub collider: ComponentHandle<Collider>,
 }
 
 impl Component for PhysicBody {}

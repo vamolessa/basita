@@ -2,7 +2,7 @@ use super::{Component, ComponentHandle, Transform};
 
 use resources::ImageResourceHandle;
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug)]
 pub struct Sprite<'a> {
 	pub depth: i32,
 	pub image_resource: ImageResourceHandle<'a>,

@@ -14,16 +14,29 @@ pub struct PlayerSystemData {
 	pub jump_button: Button,
 
 	pub player_transform_handle: ComponentHandle<Transform>,
+	pub player_physic_body_handle: ComponentHandle<PhysicBody>,
 }
 
 impl PlayerSystemData {
 	pub fn new(state: &mut EngineState) -> Self {
+		let player_transform = state.transforms.add(Transform::identity());
+		let player_physic_body = state.physic_bodies.add(PhysicBody {
+			velocity: Vector2::zero(),
+			acceleration: Vector2::zero(),
+
+			inverted_mass: 1.0,
+			bounciness: 1.0,
+
+			transform: player_transform,
+		});
+
 		PlayerSystemData {
 			left_button: state.input.new_button(Keycode::Left),
 			right_button: state.input.new_button(Keycode::Right),
 			jump_button: state.input.new_button(Keycode::Space),
 
-			player_transform_handle: state.transforms.add(Transform::identity()),
+			player_transform_handle: player_transform,
+			player_physic_body_handle: player_physic_body,
 		}
 	}
 }
@@ -58,11 +71,20 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 			is_trigger: false,
 
 			transform: state.player_system_data.player_transform_handle,
-			physic_body: None,
+			physic_body: Some(state.player_system_data.player_physic_body_handle),
 		});
 	}
 
 	fn update(state: &mut GameState, _events: &GameEvents) {
+		{
+			let player_physic_body = state
+				.engine_state
+				.physic_bodies
+				.get_mut(state.player_system_data.player_physic_body_handle);
+
+			player_physic_body.acceleration += Vector2::new(0.0, 10.0);
+		}
+
 		let player_transform = state
 			.engine_state
 			.transforms

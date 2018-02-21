@@ -8,9 +8,6 @@ pub extern crate serde;
 pub extern crate serde_json;
 
 // internal
-#[macro_use]
-pub mod util;
-
 pub mod systems;
 pub mod components;
 pub mod events;

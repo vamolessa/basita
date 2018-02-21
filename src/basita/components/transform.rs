@@ -10,15 +10,9 @@ pub struct Transform {
 impl Transform {
 	pub fn identity() -> Self {
 		Transform {
-			position: Vector2::default(),
+			position: Vector2::zero(),
 		}
 	}
 }
 
 impl Component for Transform {}
-
-impl Default for Transform {
-	fn default() -> Transform {
-		Transform::identity()
-	}
-}

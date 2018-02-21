@@ -1,16 +1,19 @@
+use std::marker::PhantomData;
+use std::fmt;
+
 pub trait Component {}
 
 #[derive(Serialize, Deserialize)]
 pub struct ComponentHandle<T: Component> {
 	index: usize,
-	_phantom: ::std::marker::PhantomData<T>,
+	_phantom: PhantomData<T>,
 }
 
 impl<T: Component> ComponentHandle<T> {
 	fn new(index: usize) -> Self {
 		ComponentHandle {
 			index: index,
-			_phantom: ::std::marker::PhantomData,
+			_phantom: PhantomData,
 		}
 	}
 }
@@ -23,18 +26,9 @@ impl<T: Component> Clone for ComponentHandle<T> {
 
 impl<T: Component> Copy for ComponentHandle<T> {}
 
-impl<T: Component> Default for ComponentHandle<T> {
-	fn default() -> Self {
-		ComponentHandle {
-			index: Default::default(),
-			_phantom: ::std::marker::PhantomData,
-		}
-	}
-}
-
-impl<T> ::std::fmt::Debug for ComponentHandle<T> {
-	fn fmt(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-		write!(formatter, "{} [{}]", stringify!($name), self.index)
+impl<T: Component> fmt::Debug for ComponentHandle<T> {
+	fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+		write!(formatter, "ComponentHandle [{}]", self.index)
 	}
 }
 
