@@ -1,9 +1,10 @@
 use std::marker::PhantomData;
 use std::fmt;
+use std::slice::{Iter, IterMut};
 
-pub trait Component {}
+pub trait Component: Default {}
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Clone, Copy, Serialize, Deserialize)]
 pub struct ComponentHandle<T: Component> {
 	index: usize,
 	_phantom: PhantomData<T>,
@@ -18,14 +19,6 @@ impl<T: Component> ComponentHandle<T> {
 	}
 }
 
-impl<T: Component> Clone for ComponentHandle<T> {
-	fn clone(&self) -> Self {
-		ComponentHandle::new(self.index)
-	}
-}
-
-impl<T: Component> Copy for ComponentHandle<T> {}
-
 impl<T: Component> fmt::Debug for ComponentHandle<T> {
 	fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
 		write!(formatter, "ComponentHandle [{}]", self.index)
@@ -38,7 +31,14 @@ pub struct ComponentCollection<T: Component> {
 
 impl<T: Component> ComponentCollection<T> {
 	pub fn new() -> Self {
-		ComponentCollection { all: Vec::new() }
+		let mut collection = Vec::new();
+		collection.push(T::default());
+
+		ComponentCollection { all: collection }
+	}
+
+	pub fn len(&self) -> usize {
+		self.all.len()
 	}
 
 	pub fn add(&mut self, component: T) -> ComponentHandle<T> {
@@ -55,36 +55,19 @@ impl<T: Component> ComponentCollection<T> {
 		&mut self.all[handle.index]
 	}
 
+	pub fn get_at(&self, index: usize) -> &T {
+		&self.all[index]
+	}
+
 	pub fn get_handle(&self, index: usize) -> ComponentHandle<T> {
 		ComponentHandle::new(index)
 	}
 
-	pub fn handle_iter(&self) -> ComponentCollectionHandleIterator<T> {
-		ComponentCollectionHandleIterator::new(ComponentHandle::new(self.all.len()))
+	pub fn iter(&self) -> Iter<T> {
+		self.all.iter()
 	}
-}
 
-pub struct ComponentCollectionHandleIterator<T: Component> {
-	previous_handle: ComponentHandle<T>,
-}
-
-impl<T: Component> ComponentCollectionHandleIterator<T> {
-	pub fn new(handle: ComponentHandle<T>) -> Self {
-		ComponentCollectionHandleIterator {
-			previous_handle: handle,
-		}
-	}
-}
-
-impl<T: Component> Iterator for ComponentCollectionHandleIterator<T> {
-	type Item = ComponentHandle<T>;
-
-	fn next(&mut self) -> Option<Self::Item> {
-		if self.previous_handle.index > 0 {
-			self.previous_handle.index -= 1;
-			Some(self.previous_handle)
-		} else {
-			None
-		}
+	pub fn iter_mut(&mut self) -> IterMut<T> {
+		self.all.iter_mut()
 	}
 }

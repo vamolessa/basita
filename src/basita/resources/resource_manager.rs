@@ -17,6 +17,12 @@ impl<T> ResourceHandle<T> {
 	}
 }
 
+impl<T> Default for ResourceHandle<T> {
+	fn default() -> Self {
+		ResourceHandle::new(0)
+	}
+}
+
 impl<T> Clone for ResourceHandle<T> {
 	fn clone(&self) -> Self {
 		ResourceHandle::new(self.index)
@@ -45,10 +51,17 @@ where
 	L: 'a + ResourceLoader<'a, R>,
 {
 	pub fn new(loader: &'a L) -> Self {
+		let mut resources = Vec::new();
+
+		resources.push(match loader.create_nil_resource() {
+			Ok(resource) => resource,
+			Err(error) => panic!("Could not create nil resource. Error: '{}'", error),
+		});
+
 		ResourceManager {
 			loader: loader,
 			path_map: HashMap::new(),
-			resources: Vec::new(),
+			resources: resources,
 		}
 	}
 
@@ -58,10 +71,7 @@ where
 	{
 		match self.try_load(path) {
 			Ok(handle) => handle,
-			Err(error) => panic!(
-				"Could not load resource at '{}'. Error: '{}'",
-				path, error
-			),
+			Err(error) => panic!("Could not load resource at '{}'. Error: '{}'", path, error),
 		}
 	}
 
@@ -94,4 +104,6 @@ where
 
 pub trait ResourceLoader<'a, R> {
 	fn load(&'a self, path: &str) -> Result<R, String>;
+
+	fn create_nil_resource(&'a self) -> Result<R, String>;
 }

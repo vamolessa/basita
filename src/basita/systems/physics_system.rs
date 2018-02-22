@@ -28,7 +28,7 @@ where
 		let physic_bodies = &mut state.physic_bodies;
 		let transforms = &mut state.transforms;
 
-		for physic_body in &mut physic_bodies.all {
+		for physic_body in physic_bodies.iter_mut() {
 			let mut transform = transforms.get_mut(physic_body.transform);
 
 			physic_body.velocity += physic_body.acceleration * state.delta_time;

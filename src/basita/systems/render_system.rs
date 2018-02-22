@@ -3,7 +3,6 @@ use std::cmp::Ordering;
 use sdl2::rect::Rect;
 
 use super::super::{ContainsEngineEvents, ContainsEngineState};
-use super::super::math::Vector2;
 use super::System;
 
 use components::Sprite;
@@ -22,13 +21,12 @@ where
 
 		let mut canvas = state.sdl_context.canvas.borrow_mut();
 
-		for sprite in &state.sprites.all {
+		for sprite in state.sprites.iter() {
 			let image = &state.image_resources.get(sprite.image_resource);
 			let query = image.texture.query();
 
 			let transform = state.transforms.get(sprite.transform);
-			let size = Vector2::new(query.width as f32, query.height as f32);
-			let position = transform.position - Vector2::scale(size, image.center);
+			let position = transform.position - image.center;
 
 			canvas
 				.copy(

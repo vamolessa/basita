@@ -50,15 +50,15 @@ where
 	E: ContainsEngineEvents<S, E>,
 {
 	fn update(s: &mut S, e: &E) {
-		let total = s.get_engine_state_mut().colliders.all.len();
+		let total = s.get_engine_state_mut().colliders.len();
 		let events = e.get_engine_events();
 
 		for i in 0..total {
 			for j in (i + 1)..total {
 				let (ai, bi, r, event) = {
 					let state = s.get_engine_state_mut();
-					let a = &state.colliders.all[i];
-					let b = &state.colliders.all[j];
+					let a = state.colliders.get_at(i);
+					let b = state.colliders.get_at(j);
 
 					let a_t = &state.transforms.get(a.transform);
 					let b_t = &state.transforms.get(b.transform);
