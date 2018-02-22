@@ -51,17 +51,10 @@ where
 	L: 'a + ResourceLoader<'a, R>,
 {
 	pub fn new(loader: &'a L) -> Self {
-		let mut resources = Vec::new();
-
-		resources.push(match loader.create_nil_resource() {
-			Ok(resource) => resource,
-			Err(error) => panic!("Could not create nil resource. Error: '{}'", error),
-		});
-
 		ResourceManager {
 			loader: loader,
 			path_map: HashMap::new(),
-			resources: resources,
+			resources: Vec::new(),
 		}
 	}
 
@@ -104,6 +97,4 @@ where
 
 pub trait ResourceLoader<'a, R> {
 	fn load(&'a self, path: &str) -> Result<R, String>;
-
-	fn create_nil_resource(&'a self) -> Result<R, String>;
 }

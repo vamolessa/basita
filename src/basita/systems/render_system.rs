@@ -17,15 +17,15 @@ where
 	fn update(s: &mut S, _e: &E) {
 		let state = s.get_engine_state_mut();
 
-		state.sprites.all.sort_unstable();
+		//state.sprites.components.sort_unstable();
 
 		let mut canvas = state.sdl_context.canvas.borrow_mut();
 
-		for sprite in state.sprites.iter() {
+		for &(_h, sprite) in state.sprites.iter() {
 			let image = &state.image_resources.get(sprite.image_resource);
 			let query = image.texture.query();
 
-			let transform = state.transforms.get(sprite.transform);
+			let transform = state.transforms.get(&sprite.transform);
 			let position = transform.position - image.center;
 
 			canvas

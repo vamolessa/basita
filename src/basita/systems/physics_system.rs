@@ -28,8 +28,8 @@ where
 		let physic_bodies = &mut state.physic_bodies;
 		let transforms = &mut state.transforms;
 
-		for physic_body in physic_bodies.iter_mut() {
-			let mut transform = transforms.get_mut(physic_body.transform);
+		for &mut (_h, mut physic_body) in physic_bodies.iter_mut() {
+			let mut transform = transforms.get_mut(&physic_body.transform);
 
 			physic_body.velocity += physic_body.acceleration * state.delta_time;
 			transform.position += physic_body.velocity * state.delta_time;
@@ -55,12 +55,12 @@ fn on_dynamic_collision<'a, S, E>(
 	let (ah, bh, ath, bth, impulse, a_weight, b_weight) = {
 		let state = s.get_engine_state_mut();
 
-		let ac = state.colliders.get(ach);
-		let bc = state.colliders.get(bch);
+		let ac = state.colliders.get(&ach);
+		let bc = state.colliders.get(&bch);
 		let ah = ac.physic_body.unwrap();
 		let bh = bc.physic_body.unwrap();
-		let a = state.physic_bodies.get(ah);
-		let b = state.physic_bodies.get(bh);
+		let a = state.physic_bodies.get(&ah);
+		let b = state.physic_bodies.get(&bh);
 
 		let total_inverted_mass = a.inverted_mass + b.inverted_mass;
 		if total_inverted_mass <= 0.0 {
@@ -87,11 +87,11 @@ fn on_dynamic_collision<'a, S, E>(
 		)
 	};
 
-	s.get_engine_state_mut().physic_bodies.get_mut(ah).velocity -= impulse * a_weight;
-	s.get_engine_state_mut().transforms.get_mut(ath).position -= penetration * a_weight;
+	s.get_engine_state_mut().physic_bodies.get_mut(&ah).velocity -= impulse * a_weight;
+	s.get_engine_state_mut().transforms.get_mut(&ath).position -= penetration * a_weight;
 
-	s.get_engine_state_mut().physic_bodies.get_mut(bh).velocity += impulse * b_weight;
-	s.get_engine_state_mut().transforms.get_mut(bth).position += penetration * b_weight;
+	s.get_engine_state_mut().physic_bodies.get_mut(&bh).velocity += impulse * b_weight;
+	s.get_engine_state_mut().transforms.get_mut(&bth).position += penetration * b_weight;
 }
 
 fn on_static_collision<'a, S, E>(
@@ -110,9 +110,9 @@ fn on_static_collision<'a, S, E>(
 
 	let (dh, dth, impulse) = {
 		let state = s.get_engine_state_mut();
-		let dc = state.colliders.get(dch);
+		let dc = state.colliders.get(&dch);
 		let dh = dc.physic_body.unwrap();
-		let d = state.physic_bodies.get(dh);
+		let d = state.physic_bodies.get(&dh);
 
 		let restitution = d.bounciness;
 
@@ -122,6 +122,6 @@ fn on_static_collision<'a, S, E>(
 		(dh, d.transform, impulse)
 	};
 
-	s.get_engine_state_mut().physic_bodies.get_mut(dh).velocity += impulse;
-	s.get_engine_state_mut().transforms.get_mut(dth).position += penetration;
+	s.get_engine_state_mut().physic_bodies.get_mut(&dh).velocity += impulse;
+	s.get_engine_state_mut().transforms.get_mut(&dth).position += penetration;
 }

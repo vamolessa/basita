@@ -60,8 +60,8 @@ where
 					let a = state.colliders.get_at(i);
 					let b = state.colliders.get_at(j);
 
-					let a_t = &state.transforms.get(a.transform);
-					let b_t = &state.transforms.get(b.transform);
+					let a_t = &state.transforms.get(&a.transform);
+					let b_t = &state.transforms.get(&b.transform);
 
 					if a.physic_body.is_some() {
 						if b.physic_body.is_some() {

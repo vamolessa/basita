@@ -1,73 +1,106 @@
+use std::collections::HashMap;
+use std::hash::{Hash, Hasher};
 use std::marker::PhantomData;
 use std::fmt;
 use std::slice::{Iter, IterMut};
 
+use uuid::Uuid;
+
 pub trait Component: Default {}
 
-#[derive(Default, Clone, Copy, Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct ComponentHandle<T: Component> {
-	index: usize,
+	id: Uuid,
 	_phantom: PhantomData<T>,
 }
 
 impl<T: Component> ComponentHandle<T> {
-	fn new(index: usize) -> Self {
+	fn new(id: Uuid) -> Self {
 		ComponentHandle {
-			index: index,
+			id: id,
 			_phantom: PhantomData,
 		}
 	}
 }
 
+impl<T: Component> Clone for ComponentHandle<T> {
+	fn clone(&self) -> Self {
+		ComponentHandle::new(self.id)
+	}
+}
+
+impl<T: Component> Copy for ComponentHandle<T> {}
+
+impl<T: Component> PartialEq for ComponentHandle<T> {
+	fn eq(&self, other: &Self) -> bool {
+		self.id == other.id
+	}
+}
+
+impl<T: Component> Eq for ComponentHandle<T> {}
+
+impl<T: Component> Hash for ComponentHandle<T> {
+	fn hash<H: Hasher>(&self, state: &mut H) {
+		self.id.hash(state);
+	}
+}
+
 impl<T: Component> fmt::Debug for ComponentHandle<T> {
 	fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-		write!(formatter, "ComponentHandle [{}]", self.index)
+		write!(formatter, "ComponentHandle [{}]", self.id)
 	}
 }
 
 pub struct ComponentCollection<T: Component> {
-	pub all: Vec<T>,
+	index_map: HashMap<ComponentHandle<T>, usize>,
+	components: Vec<(ComponentHandle<T>, T)>,
 }
 
 impl<T: Component> ComponentCollection<T> {
 	pub fn new() -> Self {
-		let mut collection = Vec::new();
-		collection.push(T::default());
-
-		ComponentCollection { all: collection }
+		ComponentCollection {
+			index_map: HashMap::new(),
+			components: Vec::new(),
+		}
 	}
 
 	pub fn len(&self) -> usize {
-		self.all.len()
+		self.components.len()
 	}
 
 	pub fn add(&mut self, component: T) -> ComponentHandle<T> {
-		let handle = ComponentHandle::new(self.all.len());
-		self.all.push(component);
+		let id = Uuid::new_v4();
+		let handle = ComponentHandle::new(id);
+
+		self.index_map.insert(handle, self.components.len());
+		self.components.push((handle, component));
+
 		handle
 	}
 
-	pub fn get(&self, handle: ComponentHandle<T>) -> &T {
-		&self.all[handle.index]
+	pub fn get(&self, handle: &ComponentHandle<T>) -> &T {
+		let index = self.index_map.get(handle).cloned().unwrap();
+		&self.components[index].1
 	}
 
-	pub fn get_mut(&mut self, handle: ComponentHandle<T>) -> &mut T {
-		&mut self.all[handle.index]
+	pub fn get_mut(&mut self, handle: &ComponentHandle<T>) -> &mut T {
+		let index = self.index_map.get(handle).cloned().unwrap();
+		&mut self.components[index].1
 	}
 
 	pub fn get_at(&self, index: usize) -> &T {
-		&self.all[index]
+		&self.components[index].1
 	}
 
 	pub fn get_handle(&self, index: usize) -> ComponentHandle<T> {
-		ComponentHandle::new(index)
+		self.components[index].0
 	}
 
-	pub fn iter(&self) -> Iter<T> {
-		self.all.iter()
+	pub fn iter(&self) -> Iter<(ComponentHandle<T>, T)> {
+		self.components.iter()
 	}
 
-	pub fn iter_mut(&mut self) -> IterMut<T> {
-		self.all.iter_mut()
+	pub fn iter_mut(&mut self) -> IterMut<(ComponentHandle<T>, T)> {
+		self.components.iter_mut()
 	}
 }

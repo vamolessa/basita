@@ -7,6 +7,8 @@ pub extern crate serde_derive;
 pub extern crate serde;
 pub extern crate serde_json;
 
+pub extern crate uuid;
+
 // internal
 pub mod systems;
 pub mod components;

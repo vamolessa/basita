@@ -1,7 +1,5 @@
-use std::error::Error;
-
 use sdl2::image::LoadTexture;
-use sdl2::render::{Texture, TextureAccess};
+use sdl2::render::Texture;
 
 use super::super::math::Vector2;
 
@@ -32,15 +30,5 @@ impl<'a> ResourceLoader<'a, ImageResource<'a>> for SdlContext {
 		self.texture_creator
 			.load_texture(path)
 			.map(ImageResource::new)
-	}
-
-	fn create_nil_resource(&'a self) -> Result<ImageResource, String> {
-		let format = self.texture_creator.default_pixel_format();
-		match self.texture_creator
-			.create_texture(format, TextureAccess::Static, 8, 8)
-		{
-			Ok(texture) => Ok(ImageResource::new(texture)),
-			Err(error) => Err(String::from(error.description())),
-		}
 	}
 }

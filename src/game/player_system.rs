@@ -58,7 +58,7 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 			let transform = state
 				.engine_state
 				.transforms
-				.get_mut(state.player_system_data.player_transform_handle);
+				.get_mut(&state.player_system_data.player_transform_handle);
 			transform.position = Vector2::new(200.0, 150.0);
 
 			state.engine_state.sprites.add(Sprite {
@@ -100,7 +100,7 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 		let player_physic_body = state
 			.engine_state
 			.physic_bodies
-			.get_mut(state.player_system_data.player_physic_body_handle);
+			.get_mut(&state.player_system_data.player_physic_body_handle);
 
 		player_physic_body.acceleration += Vector2::new(0.0, 10.0);
 
