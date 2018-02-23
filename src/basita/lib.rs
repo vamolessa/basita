@@ -18,8 +18,7 @@ pub mod resources;
 pub mod input;
 pub mod math;
 
-mod sdl_context;
-pub use self::sdl_context::*;
+pub mod sdl;
 
 mod engine;
 pub use self::engine::*;

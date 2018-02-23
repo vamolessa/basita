@@ -1,6 +1,6 @@
 extern crate basita;
 
-use basita::{play, SdlContext};
+use basita::sdl::SdlContext;
 use basita::systems::SystemCollection;
 
 mod game;
@@ -16,5 +16,5 @@ pub fn main() {
 	systems.add_default_systems();
 	systems.add_system::<PlayerSystem>();
 
-	play(state, events, systems);
+	basita::play(state, events, systems);
 }

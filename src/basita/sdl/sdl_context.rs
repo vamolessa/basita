@@ -11,15 +11,14 @@ pub struct SdlContext {
 	pub canvas: RefCell<Canvas<Window>>,
 	pub event_pump: RefCell<sdl2::EventPump>,
 
+	// resources
 	pub texture_creator: TextureCreator<WindowContext>,
-
-	pub frames_per_second: u32,
 }
 
 impl SdlContext {
 	pub fn new(window_title: &str, window_width: u32, window_height: u32) -> Self {
-		let sdl_context = sdl2::init().unwrap();
-		let video_subsystem = sdl_context.video().unwrap();
+		let sdl = sdl2::init().unwrap();
+		let video_subsystem = sdl.video().unwrap();
 
 		let window = video_subsystem
 			.window(window_title, window_width, window_height)
@@ -33,11 +32,10 @@ impl SdlContext {
 		let texture_creator = canvas.texture_creator();
 
 		SdlContext {
-			event_pump: RefCell::from(sdl_context.event_pump().unwrap()),
-			_sdl: sdl_context,
+			event_pump: RefCell::from(sdl.event_pump().unwrap()),
+			_sdl: sdl,
 			canvas: RefCell::from(canvas),
 			texture_creator: texture_creator,
-			frames_per_second: 60,
 		}
 	}
 }

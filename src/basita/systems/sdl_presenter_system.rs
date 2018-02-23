@@ -22,12 +22,12 @@ where
 		canvas.present();
 		thread::sleep(Duration::new(
 			0,
-			1_000_000_000u32 / state.sdl_context.frames_per_second,
+			1_000_000_000u32 / state.frames_per_second,
 		));
 
 		canvas.set_draw_color(clear_color);
 		canvas.clear();
 
-		state.delta_time = 1.0 / (state.sdl_context.frames_per_second as f32);
+		state.delta_time = 1.0 / (state.frames_per_second as f32);
 	}
 }

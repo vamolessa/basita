@@ -1,5 +1,4 @@
-use basita;
-use basita::*;
+use basita::{self, *};
 
 use super::player_system::PlayerSystemData;
 
@@ -11,7 +10,7 @@ pub struct GameState<'a> {
 }
 
 impl<'a> GameState<'a> {
-	pub fn new(sdl_context: &'a SdlContext) -> Self {
+	pub fn new(sdl_context: &'a sdl::SdlContext) -> Self {
 		let mut engine_state = EngineState::new(sdl_context);
 
 		GameState {
