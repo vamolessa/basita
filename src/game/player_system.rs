@@ -22,17 +22,6 @@ pub struct PlayerSystemData {
 
 impl PlayerSystemData {
 	pub fn new(state: &mut EngineState) -> Self {
-		let player_transform = state.world.transforms.add(Transform::identity());
-		let player_physic_body = state.world.physic_bodies.add(PhysicBody {
-			velocity: Vector2::zero(),
-			acceleration: Vector2::zero(),
-
-			inverted_mass: 1.0,
-			bounciness: 1.0,
-
-			transform: player_transform,
-		});
-
 		PlayerSystemData {
 			left_button: state.input.new_button(Keycode::Left),
 			right_button: state.input.new_button(Keycode::Right),
@@ -40,8 +29,8 @@ impl PlayerSystemData {
 			down_button: state.input.new_button(Keycode::Down),
 			jump_button: state.input.new_button(Keycode::Space),
 
-			player_transform_handle: player_transform,
-			player_physic_body_handle: player_physic_body,
+			player_transform_handle: ComponentHandle::default(),
+			player_physic_body_handle: ComponentHandle::default(),
 		}
 	}
 }
@@ -49,57 +38,29 @@ impl PlayerSystemData {
 pub struct PlayerSystem;
 
 impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
-	fn init(state: &mut GameState, _events: &mut GameEvents) {
+	fn init(state: &mut GameState<'a>, events: &mut GameEvents<'a>) {
 		let player_image = state
 			.engine
 			.resources
 			.images
 			.load(&String::from("resources/sprites/player.png"));
 
+		let world1_handle = state
+			.engine
+			.resources
+			.worlds
+			.load(&String::from("resources/worlds/world1.json"));
+
+		serialization::deserialize_world(state, events, world1_handle);
+
 		{
-			let transform = state
+			let sprite = state
 				.engine
 				.world
-				.transforms
-				.get_mut(&state.player_system_data.player_transform_handle);
-			transform.position = Vector2::new(200.0, 150.0);
-
-			let sprite = state.engine.world.sprites.add(Sprite {
-				depth: 0,
-				image_resource: player_image,
-				transform: state.player_system_data.player_transform_handle,
-			});
-
-			state.engine.systems.render.add_sprite(sprite);
+				.sprites
+				.get_mut(&ComponentHandle::default());
+			sprite.image_resource = player_image;
 		}
-
-		state.engine.world.colliders.add(Collider {
-			shape: Shape::Box(BoxShape {
-				half_size: Vector2::new(16.0, 16.0),
-			}),
-			offset: Vector2::zero(),
-			is_trigger: false,
-
-			transform: state.player_system_data.player_transform_handle,
-			physic_body: Some(state.player_system_data.player_physic_body_handle),
-		});
-
-		let ground_transform = state
-			.engine
-			.world
-			.transforms
-			.add(Transform::new(Vector2::new(200.0, 200.0)));
-
-		state.engine.world.colliders.add(Collider {
-			shape: Shape::Box(BoxShape {
-				half_size: Vector2::new(100.0, 5.0),
-			}),
-			offset: Vector2::zero(),
-			is_trigger: false,
-
-			transform: ground_transform,
-			physic_body: None,
-		});
 
 		/*
 		use std::fs::File;

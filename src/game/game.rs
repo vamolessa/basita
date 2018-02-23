@@ -36,23 +36,23 @@ impl<'a> basita::GameState<'a> for GameState<'a> {
 }
 
 pub struct GameEvents<'a> {
-	pub events: EngineEvents<GameState<'a>, GameEvents<'a>>,
+	pub engine: EngineEvents<GameState<'a>, GameEvents<'a>>,
 }
 
 impl<'a> GameEvents<'a> {
 	pub fn new() -> Self {
 		GameEvents {
-			events: EngineEvents::default(),
+			engine: EngineEvents::default(),
 		}
 	}
 }
 
 impl<'a> basita::GameEvents<GameState<'a>, GameEvents<'a>> for GameEvents<'a> {
 	fn get_engine_events(&self) -> &EngineEvents<GameState<'a>, GameEvents<'a>> {
-		&self.events
+		&self.engine
 	}
 
 	fn get_engine_events_mut(&mut self) -> &mut EngineEvents<GameState<'a>, GameEvents<'a>> {
-		&mut self.events
+		&mut self.engine
 	}
 }
