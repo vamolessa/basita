@@ -1,3 +1,6 @@
+mod file_helper;
+pub use self::file_helper::*;
+
 mod resource_manager;
 pub use self::resource_manager::*;
 

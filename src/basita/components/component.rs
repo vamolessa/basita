@@ -1,20 +1,18 @@
-use std::error::Error;
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::marker::PhantomData;
 use std::fmt;
 use std::slice::{Iter, IterMut};
 
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use serde::de::{self, Visitor};
-
 use uuid::Uuid;
 
-pub trait Component: Default + Serialize {}
+pub trait Component: Default + fmt::Debug {}
 
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct ComponentHandle<T: Component> {
 	id: Uuid,
+
+	#[serde(skip)]
 	_phantom: PhantomData<T>,
 }
 
@@ -55,13 +53,22 @@ impl<T: Component> fmt::Debug for ComponentHandle<T> {
 	}
 }
 
-#[derive(Default, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct ComponentCollection<T: Component> {
+	#[serde(skip)]
 	index_map: HashMap<ComponentHandle<T>, usize>,
+
 	components: Vec<(ComponentHandle<T>, T)>,
 }
 
 impl<T: Component> ComponentCollection<T> {
+	pub fn init(&mut self) {
+		for i in 0..self.components.len() {
+			let handle = self.components[i].0;
+			self.index_map.insert(handle, i);
+		}
+	}
+
 	pub fn len(&self) -> usize {
 		self.components.len()
 	}
@@ -77,12 +84,12 @@ impl<T: Component> ComponentCollection<T> {
 	}
 
 	pub fn get(&self, handle: &ComponentHandle<T>) -> &T {
-		let index = self.index_map.get(handle).cloned().unwrap();
+		let index = self.handle_to_index(handle);
 		&self.components[index].1
 	}
 
 	pub fn get_mut(&mut self, handle: &ComponentHandle<T>) -> &mut T {
-		let index = self.index_map.get(handle).cloned().unwrap();
+		let index = self.handle_to_index(handle);
 		&mut self.components[index].1
 	}
 
@@ -101,63 +108,15 @@ impl<T: Component> ComponentCollection<T> {
 	pub fn iter_mut(&mut self) -> IterMut<(ComponentHandle<T>, T)> {
 		self.components.iter_mut()
 	}
-}
 
-impl<T: Component> Serialize for ComponentCollection<T> {
-	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-	where
-		S: Serializer,
-	{
-		self.components.serialize(serializer)
-	}
-}
-
-impl<T: Component> Serialize for ComponentHandle<T> {
-	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-	where
-		S: Serializer,
-	{
-		self.id.serialize(serializer)
-	}
-}
-
-struct ComponentHandleVisitor<'a, T>
-where
-	T: Component + Deserialize<'a>,
-{
-	_p1: PhantomData<T>,
-	_p2: PhantomData<&'a ()>,
-}
-
-impl<'a, T> Visitor<'a> for ComponentHandleVisitor<'a, T>
-where
-	T: Component + Deserialize<'a>,
-{
-	type Value = ComponentHandle<T>;
-
-	fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-		formatter.write_str("ComponentHandle")
-	}
-
-	fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-	where
-		E: de::Error,
-	{
-		Ok(ComponentHandle::new(Uuid::parse_str(v).map_err(E::custom)?))
-	}
-}
-
-impl<'a, T> Deserialize<'a> for ComponentHandle<T>
-where
-	T: Component + Deserialize<'a>,
-{
-	fn deserialize<D>(deserializer: D) -> Result<ComponentHandle<T>, D::Error>
-	where
-		D: Deserializer<'a>,
-	{
-		deserializer.deserialize_str(ComponentHandleVisitor {
-			_p1: PhantomData,
-			_p2: PhantomData,
-		})
+	fn handle_to_index(&self, handle: &ComponentHandle<T>) -> usize {
+		match self.index_map.get(handle).cloned() {
+			Some(index) => index,
+			None => panic!(
+				"Could not find component\n{:?}\nfor handle {:?}",
+				T::default(),
+				handle
+			),
+		}
 	}
 }

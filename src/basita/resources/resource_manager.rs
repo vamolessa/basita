@@ -5,6 +5,8 @@ use std::fmt;
 #[derive(Serialize, Deserialize)]
 pub struct ResourceHandle<T> {
 	index: usize,
+
+	#[serde(skip)]
 	_phantom: PhantomData<T>,
 }
 

@@ -72,10 +72,20 @@ pub struct EngineWorld<'a> {
 	pub physic_bodies: ComponentCollection<PhysicBody>,
 }
 
+impl<'a> EngineWorld<'a> {
+	pub fn init(&mut self) {
+		self.colliders.init();
+		self.sprites.init();
+		self.transforms.init();
+		self.physic_bodies.init();
+	}
+}
+
 pub struct WorldEvents<S, E>
 where
 	E: GameEvents<S, E>,
 {
+	pub on_deserialize: Event<S, E, ()>,
 	pub on_load: Event<S, E, ()>,
 }
 
@@ -86,6 +96,7 @@ where
 {
 	fn default() -> Self {
 		WorldEvents {
+			on_deserialize: Event::default(),
 			on_load: Event::default(),
 		}
 	}
