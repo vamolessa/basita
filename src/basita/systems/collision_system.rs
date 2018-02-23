@@ -30,14 +30,15 @@ where
 	>,
 }
 
-impl<S, E> CollisionEvents<S, E>
+impl<'a, S, E> Default for CollisionEvents<S, E>
 where
+	S: GameState<'a>,
 	E: GameEvents<S, E>,
 {
-	pub fn new() -> Self {
+	fn default() -> Self {
 		CollisionEvents {
-			on_dynamic_collision: Event::new(),
-			on_static_collision: Event::new(),
+			on_dynamic_collision: Event::default(),
+			on_static_collision: Event::default(),
 		}
 	}
 }

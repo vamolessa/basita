@@ -4,6 +4,7 @@ use input::Input;
 use resources::*;
 use components::*;
 use systems::*;
+use events::*;
 
 pub trait GameState<'a> {
 	fn get_engine_state(&self) -> &EngineState<'a>;
@@ -46,12 +47,14 @@ impl<'a> EngineState<'a> {
 
 pub struct EngineResources<'a> {
 	pub images: ImageResources<'a>,
+	pub worlds: WorldResources<'a>,
 }
 
 impl<'a> EngineResources<'a> {
 	pub fn new(sdl_context: &'a SdlContext) -> Self {
 		EngineResources {
-			images: ImageResources::new(sdl_context),
+			images: ImageResources::new(&sdl_context.texture_creator),
+			worlds: WorldResources::new(&()),
 		}
 	}
 }
@@ -61,7 +64,7 @@ pub struct EngineSystemsState<'a> {
 	pub render: RenderSystemState<'a>,
 }
 
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct EngineWorld<'a> {
 	pub colliders: ComponentCollection<Collider>,
 	pub sprites: ComponentCollection<Sprite<'a>>,
@@ -69,20 +72,42 @@ pub struct EngineWorld<'a> {
 	pub physic_bodies: ComponentCollection<PhysicBody>,
 }
 
+pub struct WorldEvents<S, E>
+where
+	E: GameEvents<S, E>,
+{
+	pub on_load: Event<S, E, ()>,
+}
+
+impl<'a, S, E> Default for WorldEvents<S, E>
+where
+	S: GameState<'a>,
+	E: GameEvents<S, E>,
+{
+	fn default() -> Self {
+		WorldEvents {
+			on_load: Event::default(),
+		}
+	}
+}
+
 pub struct EngineEvents<S, E>
 where
 	E: GameEvents<S, E>,
 {
+	pub world: WorldEvents<S, E>,
 	pub collision: CollisionEvents<S, E>,
 }
 
-impl<S, E> EngineEvents<S, E>
+impl<'a, S, E> Default for EngineEvents<S, E>
 where
+	S: GameState<'a>,
 	E: GameEvents<S, E>,
 {
-	pub fn new() -> Self {
+	fn default() -> Self {
 		EngineEvents {
-			collision: CollisionEvents::new(),
+			world: WorldEvents::default(),
+			collision: CollisionEvents::default(),
 		}
 	}
 }

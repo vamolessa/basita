@@ -42,7 +42,7 @@ pub struct GameEvents<'a> {
 impl<'a> GameEvents<'a> {
 	pub fn new() -> Self {
 		GameEvents {
-			events: EngineEvents::new(),
+			events: EngineEvents::default(),
 		}
 	}
 }

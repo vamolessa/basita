@@ -1,9 +1,9 @@
 use sdl2::image::LoadTexture;
-use sdl2::render::Texture;
+use sdl2::render::{Texture, TextureCreator};
+use sdl2::video::WindowContext;
 
 use super::super::math::Vector2;
 
-use SdlContext;
 use super::{ResourceHandle, ResourceLoader, ResourceManager};
 
 pub struct ImageResource<'a> {
@@ -23,12 +23,10 @@ impl<'a> ImageResource<'a> {
 }
 
 pub type ImageResourceHandle<'a> = ResourceHandle<ImageResource<'a>>;
-pub type ImageResources<'a> = ResourceManager<'a, ImageResource<'a>, SdlContext>;
+pub type ImageResources<'a> = ResourceManager<'a, ImageResource<'a>, TextureCreator<WindowContext>>;
 
-impl<'a> ResourceLoader<'a, ImageResource<'a>> for SdlContext {
+impl<'a> ResourceLoader<'a, ImageResource<'a>> for TextureCreator<WindowContext> {
 	fn load(&'a self, path: &str) -> Result<ImageResource, String> {
-		self.texture_creator
-			.load_texture(path)
-			.map(ImageResource::new)
+		self.load_texture(path).map(ImageResource::new)
 	}
 }

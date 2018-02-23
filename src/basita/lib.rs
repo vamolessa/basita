@@ -10,6 +10,8 @@ pub extern crate serde_json;
 pub extern crate uuid;
 
 // internal
+pub mod serialization;
+
 pub mod systems;
 pub mod components;
 pub mod events;

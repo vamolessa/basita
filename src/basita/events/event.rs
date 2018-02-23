@@ -9,12 +9,6 @@ impl<S, E, D> Event<S, E, D>
 where
 	D: Copy,
 {
-	pub fn new() -> Self {
-		Event {
-			callbacks: Vec::new(),
-		}
-	}
-
 	pub fn subscribe(&mut self, callback: fn(&mut S, &E, D) -> ()) {
 		self.callbacks.push(callback);
 	}
@@ -31,6 +25,8 @@ where
 	D: Copy,
 {
 	fn default() -> Self {
-		Event::new()
+		Event {
+			callbacks: Vec::new(),
+		}
 	}
 }

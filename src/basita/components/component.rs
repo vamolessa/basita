@@ -51,7 +51,7 @@ impl<T: Component> fmt::Debug for ComponentHandle<T> {
 	}
 }
 
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct ComponentCollection<T: Component> {
 	index_map: HashMap<ComponentHandle<T>, usize>,
 	components: Vec<(ComponentHandle<T>, T)>,

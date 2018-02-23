@@ -1,5 +1,9 @@
+use std::fs::File;
+use std::io::prelude::*;
+
 use basita::sdl2::keyboard::Keycode;
 
+use basita::serialization;
 use basita::EngineState;
 use basita::systems::System;
 use basita::input::Button;
@@ -99,6 +103,10 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 			transform: ground_transform,
 			physic_body: None,
 		});
+
+		let json = serialization::seserialize_world(state);
+		let mut file = File::create("resources/worlds/world1.json").unwrap();
+		file.write_all(json.as_bytes()).unwrap();
 	}
 
 	fn update(state: &mut GameState, _events: &GameEvents) {
