@@ -4,11 +4,13 @@ use std::marker::PhantomData;
 use std::fmt;
 use std::slice::{Iter, IterMut};
 
+use serde::{Serialize, Serializer};
+
 use uuid::Uuid;
 
-pub trait Component: Default {}
+pub trait Component: Default + Serialize {}
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Default, Deserialize)]
 pub struct ComponentHandle<T: Component> {
 	id: Uuid,
 	_phantom: PhantomData<T>,
@@ -51,7 +53,7 @@ impl<T: Component> fmt::Debug for ComponentHandle<T> {
 	}
 }
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Default, Deserialize)]
 pub struct ComponentCollection<T: Component> {
 	index_map: HashMap<ComponentHandle<T>, usize>,
 	components: Vec<(ComponentHandle<T>, T)>,
@@ -96,5 +98,23 @@ impl<T: Component> ComponentCollection<T> {
 
 	pub fn iter_mut(&mut self) -> IterMut<(ComponentHandle<T>, T)> {
 		self.components.iter_mut()
+	}
+}
+
+impl<T: Component> Serialize for ComponentCollection<T> {
+	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+	where
+		S: Serializer,
+	{
+		self.components.serialize(serializer)
+	}
+}
+
+impl<T: Component> Serialize for ComponentHandle<T> {
+	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+	where
+		S: Serializer,
+	{
+		self.id.serialize(serializer)
 	}
 }

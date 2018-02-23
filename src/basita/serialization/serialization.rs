@@ -5,15 +5,12 @@ use serde_json;
 use super::super::{GameEvents, GameState};
 use super::super::resources::WorldResourceHandle;
 
-use super::super::components::*;
-
 pub fn seserialize_world<'a, S>(s: &mut S) -> String
 where
 	S: GameState<'a>,
 {
-	//let world = &s.get_engine_state().world;
-	let handle = ComponentHandle::<Transform>::default();
-	match serde_json::to_string_pretty(&handle) {
+	let world = &s.get_engine_state().world;
+	match serde_json::to_string_pretty(world) {
 		Ok(json) => json,
 		Err(e) => {
 			panic!("Could not serialize World. Error: '{}'", e.description());
