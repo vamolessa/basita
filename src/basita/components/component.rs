@@ -1,16 +1,18 @@
+use std::error::Error;
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::marker::PhantomData;
 use std::fmt;
 use std::slice::{Iter, IterMut};
 
-use serde::{Serialize, Serializer};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::de::{self, Visitor};
 
 use uuid::Uuid;
 
 pub trait Component: Default + Serialize {}
 
-#[derive(Default, Deserialize)]
+#[derive(Default)]
 pub struct ComponentHandle<T: Component> {
 	id: Uuid,
 	_phantom: PhantomData<T>,
@@ -116,5 +118,46 @@ impl<T: Component> Serialize for ComponentHandle<T> {
 		S: Serializer,
 	{
 		self.id.serialize(serializer)
+	}
+}
+
+struct ComponentHandleVisitor<'a, T>
+where
+	T: Component + Deserialize<'a>,
+{
+	_p1: PhantomData<T>,
+	_p2: PhantomData<&'a ()>,
+}
+
+impl<'a, T> Visitor<'a> for ComponentHandleVisitor<'a, T>
+where
+	T: Component + Deserialize<'a>,
+{
+	type Value = ComponentHandle<T>;
+
+	fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+		formatter.write_str("ComponentHandle")
+	}
+
+	fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+	where
+		E: de::Error,
+	{
+		Ok(ComponentHandle::new(Uuid::parse_str(v).map_err(E::custom)?))
+	}
+}
+
+impl<'a, T> Deserialize<'a> for ComponentHandle<T>
+where
+	T: Component + Deserialize<'a>,
+{
+	fn deserialize<D>(deserializer: D) -> Result<ComponentHandle<T>, D::Error>
+	where
+		D: Deserializer<'a>,
+	{
+		deserializer.deserialize_str(ComponentHandleVisitor {
+			_p1: PhantomData,
+			_p2: PhantomData,
+		})
 	}
 }
