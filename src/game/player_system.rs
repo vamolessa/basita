@@ -1,4 +1,4 @@
-use sdl2::keyboard::Keycode;
+use basita::sdl2::keyboard::Keycode;
 
 use basita::EngineState;
 use basita::systems::System;
@@ -21,8 +21,8 @@ pub struct PlayerSystemData {
 
 impl PlayerSystemData {
 	pub fn new(state: &mut EngineState) -> Self {
-		let player_transform = state.transforms.add(Transform::identity());
-		let player_physic_body = state.physic_bodies.add(PhysicBody {
+		let player_transform = state.world.transforms.add(Transform::identity());
+		let player_physic_body = state.world.physic_bodies.add(PhysicBody {
 			velocity: Vector2::zero(),
 			acceleration: Vector2::zero(),
 
@@ -50,25 +50,29 @@ pub struct PlayerSystem;
 impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 	fn init(state: &mut GameState, _events: &mut GameEvents) {
 		let player_image = state
-			.engine_state
-			.image_resources
+			.engine
+			.resources
+			.images
 			.load(&String::from("resources/sprites/player.png"));
 
 		{
 			let transform = state
-				.engine_state
+				.engine
+				.world
 				.transforms
 				.get_mut(&state.player_system_data.player_transform_handle);
 			transform.position = Vector2::new(200.0, 150.0);
 
-			state.engine_state.sprites.add(Sprite {
+			let sprite = state.engine.world.sprites.add(Sprite {
 				depth: 0,
 				image_resource: player_image,
 				transform: state.player_system_data.player_transform_handle,
 			});
+
+			state.engine.systems.render.add_sprite(sprite);
 		}
 
-		state.engine_state.colliders.add(Collider {
+		state.engine.world.colliders.add(Collider {
 			shape: Shape::Box(BoxShape {
 				half_size: Vector2::new(16.0, 16.0),
 			}),
@@ -80,11 +84,12 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 		});
 
 		let ground_transform = state
-			.engine_state
+			.engine
+			.world
 			.transforms
 			.add(Transform::new(Vector2::new(200.0, 200.0)));
 
-		state.engine_state.colliders.add(Collider {
+		state.engine.world.colliders.add(Collider {
 			shape: Shape::Box(BoxShape {
 				half_size: Vector2::new(100.0, 5.0),
 			}),
@@ -98,20 +103,21 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 
 	fn update(state: &mut GameState, _events: &GameEvents) {
 		let player_physic_body = state
-			.engine_state
+			.engine
+			.world
 			.physic_bodies
 			.get_mut(&state.player_system_data.player_physic_body_handle);
 
 		player_physic_body.acceleration += Vector2::new(0.0, 10.0);
 
 		if state
-			.engine_state
+			.engine
 			.input
 			.is_pressed(state.player_system_data.left_button)
 		{
 			player_physic_body.velocity.x = 1.0;
 		} else if state
-			.engine_state
+			.engine
 			.input
 			.is_pressed(state.player_system_data.right_button)
 		{
@@ -121,14 +127,14 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 		}
 
 		if state
-			.engine_state
+			.engine
 			.input
 			.is_pressed(state.player_system_data.up_button)
 		{
 			player_physic_body.velocity.y = 1.0;
 		}
 		if state
-			.engine_state
+			.engine
 			.input
 			.is_pressed(state.player_system_data.down_button)
 		{
@@ -137,7 +143,7 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 
 		/*
 		if state
-			.engine_state
+			.engine
 			.input
 			.was_pressed(state.player_system_data.jump_button)
 		{
@@ -145,7 +151,7 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 		}
 
 		if state
-			.engine_state
+			.engine
 			.input
 			.was_released(state.player_system_data.jump_button)
 		{

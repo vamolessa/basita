@@ -1,10 +1,11 @@
 extern crate basita;
 
-use basita::*;
-use basita::systems::*;
+use basita::{play, SdlContext};
+use basita::systems::SystemCollection;
 
 mod game;
-use game::*;
+use game::{GameEvents, GameState};
+use game::PlayerSystem;
 
 pub fn main() {
 	let mut sdl_context = SdlContext::new("platform maker", 400, 300);

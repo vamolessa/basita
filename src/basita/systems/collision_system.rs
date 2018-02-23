@@ -1,4 +1,4 @@
-use super::super::{ContainsEngineEvents, ContainsEngineState};
+use super::super::{GameEvents, GameState};
 use super::super::events::Event;
 use super::System;
 
@@ -7,7 +7,7 @@ use math::Vector2;
 
 pub struct CollisionEvents<S, E>
 where
-	E: ContainsEngineEvents<S, E>,
+	E: GameEvents<S, E>,
 {
 	pub on_dynamic_collision: Event<
 		S,
@@ -32,7 +32,7 @@ where
 
 impl<S, E> CollisionEvents<S, E>
 where
-	E: ContainsEngineEvents<S, E>,
+	E: GameEvents<S, E>,
 {
 	pub fn new() -> Self {
 		CollisionEvents {
@@ -46,22 +46,22 @@ pub struct CollisionSystem;
 
 impl<'a, S, E> System<S, E> for CollisionSystem
 where
-	S: ContainsEngineState<'a>,
-	E: ContainsEngineEvents<S, E>,
+	S: GameState<'a>,
+	E: GameEvents<S, E>,
 {
 	fn update(s: &mut S, e: &E) {
-		let total = s.get_engine_state_mut().colliders.len();
+		let total = s.get_engine_state().world.colliders.len();
 		let events = e.get_engine_events();
 
 		for i in 0..total {
 			for j in (i + 1)..total {
 				let (ai, bi, r, event) = {
-					let state = s.get_engine_state_mut();
-					let a = state.colliders.get_at(i);
-					let b = state.colliders.get_at(j);
+					let world = &s.get_engine_state().world;
+					let a = world.colliders.get_at(i);
+					let b = world.colliders.get_at(j);
 
-					let a_t = &state.transforms.get(&a.transform);
-					let b_t = &state.transforms.get(&b.transform);
+					let a_t = &world.transforms.get(&a.transform);
+					let b_t = &world.transforms.get(&b.transform);
 
 					if a.physic_body.is_some() {
 						if b.physic_body.is_some() {
@@ -80,8 +80,8 @@ where
 				};
 
 				if let Some(penetration) = r {
-					let a = s.get_engine_state_mut().colliders.get_handle(ai);
-					let b = s.get_engine_state_mut().colliders.get_handle(bi);
+					let a = s.get_engine_state().world.colliders.get_handle(ai);
+					let b = s.get_engine_state().world.colliders.get_handle(bi);
 
 					event.raise(s, e, (a, b, penetration));
 				}

@@ -1,4 +1,4 @@
-use super::super::{ContainsEngineEvents, ContainsEngineState};
+use super::super::{GameEvents, GameState};
 use super::System;
 
 use components::{Collider, ComponentHandle};
@@ -8,8 +8,8 @@ pub struct PhysicsSystem;
 
 impl<'a, S, E> System<S, E> for PhysicsSystem
 where
-	S: ContainsEngineState<'a>,
-	E: ContainsEngineEvents<S, E>,
+	S: GameState<'a>,
+	E: GameEvents<S, E>,
 {
 	fn init(_s: &mut S, e: &mut E) {
 		let events = e.get_engine_events_mut();
@@ -25,14 +25,16 @@ where
 
 	fn update(s: &mut S, _e: &E) {
 		let state = s.get_engine_state_mut();
-		let physic_bodies = &mut state.physic_bodies;
-		let transforms = &mut state.transforms;
+
+		let delta_time = state.delta_time;
+		let physic_bodies = &mut state.world.physic_bodies;
+		let transforms = &mut state.world.transforms;
 
 		for &mut (_h, mut physic_body) in physic_bodies.iter_mut() {
 			let mut transform = transforms.get_mut(&physic_body.transform);
 
-			physic_body.velocity += physic_body.acceleration * state.delta_time;
-			transform.position += physic_body.velocity * state.delta_time;
+			physic_body.velocity += physic_body.acceleration * delta_time;
+			transform.position += physic_body.velocity * delta_time;
 			physic_body.acceleration.set(0.0, 0.0);
 		}
 	}
@@ -47,20 +49,20 @@ fn on_dynamic_collision<'a, S, E>(
 		Vector2,
 	),
 ) where
-	S: ContainsEngineState<'a>,
-	E: ContainsEngineEvents<S, E>,
+	S: GameState<'a>,
+	E: GameEvents<S, E>,
 {
 	let (ach, bch, penetration) = data;
 
 	let (ah, bh, ath, bth, impulse, a_weight, b_weight) = {
-		let state = s.get_engine_state_mut();
+		let world = &s.get_engine_state().world;
 
-		let ac = state.colliders.get(&ach);
-		let bc = state.colliders.get(&bch);
+		let ac = world.colliders.get(&ach);
+		let bc = world.colliders.get(&bch);
 		let ah = ac.physic_body.unwrap();
 		let bh = bc.physic_body.unwrap();
-		let a = state.physic_bodies.get(&ah);
-		let b = state.physic_bodies.get(&bh);
+		let a = world.physic_bodies.get(&ah);
+		let b = world.physic_bodies.get(&bh);
 
 		let total_inverted_mass = a.inverted_mass + b.inverted_mass;
 		if total_inverted_mass <= 0.0 {
@@ -87,11 +89,27 @@ fn on_dynamic_collision<'a, S, E>(
 		)
 	};
 
-	s.get_engine_state_mut().physic_bodies.get_mut(&ah).velocity -= impulse * a_weight;
-	s.get_engine_state_mut().transforms.get_mut(&ath).position -= penetration * a_weight;
+	s.get_engine_state_mut()
+		.world
+		.physic_bodies
+		.get_mut(&ah)
+		.velocity -= impulse * a_weight;
+	s.get_engine_state_mut()
+		.world
+		.transforms
+		.get_mut(&ath)
+		.position -= penetration * a_weight;
 
-	s.get_engine_state_mut().physic_bodies.get_mut(&bh).velocity += impulse * b_weight;
-	s.get_engine_state_mut().transforms.get_mut(&bth).position += penetration * b_weight;
+	s.get_engine_state_mut()
+		.world
+		.physic_bodies
+		.get_mut(&bh)
+		.velocity += impulse * b_weight;
+	s.get_engine_state_mut()
+		.world
+		.transforms
+		.get_mut(&bth)
+		.position += penetration * b_weight;
 }
 
 fn on_static_collision<'a, S, E>(
@@ -103,16 +121,16 @@ fn on_static_collision<'a, S, E>(
 		Vector2,
 	),
 ) where
-	S: ContainsEngineState<'a>,
-	E: ContainsEngineEvents<S, E>,
+	S: GameState<'a>,
+	E: GameEvents<S, E>,
 {
 	let (_sch, dch, penetration) = data;
 
 	let (dh, dth, impulse) = {
-		let state = s.get_engine_state_mut();
-		let dc = state.colliders.get(&dch);
+		let world = &s.get_engine_state().world;
+		let dc = world.colliders.get(&dch);
 		let dh = dc.physic_body.unwrap();
-		let d = state.physic_bodies.get(&dh);
+		let d = world.physic_bodies.get(&dh);
 
 		let restitution = d.bounciness;
 
@@ -122,6 +140,7 @@ fn on_static_collision<'a, S, E>(
 		(dh, d.transform, impulse)
 	};
 
-	s.get_engine_state_mut().physic_bodies.get_mut(&dh).velocity += impulse;
-	s.get_engine_state_mut().transforms.get_mut(&dth).position += penetration;
+	let world = &mut s.get_engine_state_mut().world;
+	world.physic_bodies.get_mut(&dh).velocity += impulse;
+	world.transforms.get_mut(&dth).position += penetration;
 }

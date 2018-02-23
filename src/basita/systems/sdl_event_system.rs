@@ -1,14 +1,14 @@
 use sdl2::event::Event;
 
-use super::super::{ContainsEngineEvents, ContainsEngineState};
+use super::super::{GameEvents, GameState};
 use super::System;
 
 pub struct SdlEventSystem;
 
-impl<'a, S, E> System<S,E> for SdlEventSystem
+impl<'a, S, E> System<S, E> for SdlEventSystem
 where
-	S: ContainsEngineState<'a>,
-	E: ContainsEngineEvents<S, E>,
+	S: GameState<'a>,
+	E: GameEvents<S, E>,
 {
 	fn update(s: &mut S, _e: &E) {
 		let state = s.get_engine_state_mut();

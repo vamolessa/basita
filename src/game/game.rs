@@ -1,3 +1,4 @@
+use basita;
 use basita::*;
 
 use super::player_system::PlayerSystemData;
@@ -5,7 +6,8 @@ use super::player_system::PlayerSystemData;
 pub struct GameState<'a> {
 	pub player_system_data: PlayerSystemData,
 
-	pub engine_state: EngineState<'a>,
+	pub engine: EngineState<'a>,
+	pub world: GameWorld,
 }
 
 impl<'a> GameState<'a> {
@@ -14,35 +16,43 @@ impl<'a> GameState<'a> {
 
 		GameState {
 			player_system_data: PlayerSystemData::new(&mut engine_state),
-			engine_state: engine_state,
+			engine: engine_state,
+			world: GameWorld::default(),
 		}
 	}
 }
 
-impl<'a> ContainsEngineState<'a> for GameState<'a> {
+#[derive(Default)]
+pub struct GameWorld {}
+
+impl<'a> basita::GameState<'a> for GameState<'a> {
+	fn get_engine_state(&self) -> &EngineState<'a> {
+		&self.engine
+	}
+
 	fn get_engine_state_mut(&mut self) -> &mut EngineState<'a> {
-		&mut self.engine_state
+		&mut self.engine
 	}
 }
 
 pub struct GameEvents<'a> {
-	pub engine_events: EngineEvents<GameState<'a>, GameEvents<'a>>,
+	pub events: EngineEvents<GameState<'a>, GameEvents<'a>>,
 }
 
 impl<'a> GameEvents<'a> {
 	pub fn new() -> Self {
 		GameEvents {
-			engine_events: EngineEvents::new(),
+			events: EngineEvents::new(),
 		}
 	}
 }
 
-impl<'a> ContainsEngineEvents<GameState<'a>, GameEvents<'a>> for GameEvents<'a> {
+impl<'a> basita::GameEvents<GameState<'a>, GameEvents<'a>> for GameEvents<'a> {
 	fn get_engine_events(&self) -> &EngineEvents<GameState<'a>, GameEvents<'a>> {
-		&self.engine_events
+		&self.events
 	}
 
 	fn get_engine_events_mut(&mut self) -> &mut EngineEvents<GameState<'a>, GameEvents<'a>> {
-		&mut self.engine_events
+		&mut self.events
 	}
 }

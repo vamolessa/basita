@@ -15,7 +15,7 @@ pub struct ComponentHandle<T: Component> {
 }
 
 impl<T: Component> ComponentHandle<T> {
-	fn new(id: Uuid) -> Self {
+	pub fn new(id: Uuid) -> Self {
 		ComponentHandle {
 			id: id,
 			_phantom: PhantomData,
@@ -51,19 +51,13 @@ impl<T: Component> fmt::Debug for ComponentHandle<T> {
 	}
 }
 
+#[derive(Default)]
 pub struct ComponentCollection<T: Component> {
 	index_map: HashMap<ComponentHandle<T>, usize>,
 	components: Vec<(ComponentHandle<T>, T)>,
 }
 
 impl<T: Component> ComponentCollection<T> {
-	pub fn new() -> Self {
-		ComponentCollection {
-			index_map: HashMap::new(),
-			components: Vec::new(),
-		}
-	}
-
 	pub fn len(&self) -> usize {
 		self.components.len()
 	}
