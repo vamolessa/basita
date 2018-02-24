@@ -4,6 +4,11 @@ use std::slice::{Iter, IterMut};
 
 pub trait Component: Default + fmt::Debug {}
 
+pub trait ComponentData<T: Component>: Default {
+	fn to_component(&self) -> T;
+	fn from_component(&T) -> Self;
+}
+
 #[derive(Default, Serialize, Deserialize)]
 pub struct ComponentHandle<T: Component> {
 	index: usize,
