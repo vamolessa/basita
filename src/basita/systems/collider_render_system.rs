@@ -17,10 +17,10 @@ where
 		let mut canvas = state.sdl_context.canvas.borrow_mut();
 		let world = &state.world;
 
-		for &(_h, collider) in world.colliders.iter() {
+		for collider in world.colliders.iter() {
 			canvas.set_draw_color(Color::RGBA(0, 255, 0, 100));
 
-			let transform = state.world.transforms.get(&collider.transform);
+			let transform = state.world.transforms.get(collider.transform);
 			let position = transform.position + collider.offset;
 
 			match collider.shape {

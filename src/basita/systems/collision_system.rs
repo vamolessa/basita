@@ -61,8 +61,8 @@ where
 					let a = world.colliders.get_at(i);
 					let b = world.colliders.get_at(j);
 
-					let a_t = &world.transforms.get(&a.transform);
-					let b_t = &world.transforms.get(&b.transform);
+					let a_t = &world.transforms.get(a.transform);
+					let b_t = &world.transforms.get(b.transform);
 
 					if a.physic_body.is_some() {
 						if b.physic_body.is_some() {

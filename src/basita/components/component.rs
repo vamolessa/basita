@@ -1,25 +1,21 @@
-use std::collections::HashMap;
-use std::hash::{Hash, Hasher};
 use std::marker::PhantomData;
 use std::fmt;
 use std::slice::{Iter, IterMut};
-
-use uuid::Uuid;
 
 pub trait Component: Default + fmt::Debug {}
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct ComponentHandle<T: Component> {
-	id: Uuid,
+	index: usize,
 
 	#[serde(skip)]
 	_phantom: PhantomData<T>,
 }
 
 impl<T: Component> ComponentHandle<T> {
-	pub fn new(id: Uuid) -> Self {
+	fn new(index: usize) -> Self {
 		ComponentHandle {
-			id: id,
+			index: index,
 			_phantom: PhantomData,
 		}
 	}
@@ -27,7 +23,7 @@ impl<T: Component> ComponentHandle<T> {
 
 impl<T: Component> Clone for ComponentHandle<T> {
 	fn clone(&self) -> Self {
-		ComponentHandle::new(self.id)
+		ComponentHandle::new(self.index)
 	}
 }
 
@@ -35,88 +31,88 @@ impl<T: Component> Copy for ComponentHandle<T> {}
 
 impl<T: Component> PartialEq for ComponentHandle<T> {
 	fn eq(&self, other: &Self) -> bool {
-		self.id == other.id
+		self.index == other.index
 	}
 }
 
 impl<T: Component> Eq for ComponentHandle<T> {}
 
-impl<T: Component> Hash for ComponentHandle<T> {
-	fn hash<H: Hasher>(&self, state: &mut H) {
-		self.id.hash(state);
+impl<T: Component> fmt::Debug for ComponentHandle<T> {
+	fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+		write!(formatter, "ComponentHandle [{}]", self.index)
 	}
 }
 
-impl<T: Component> fmt::Debug for ComponentHandle<T> {
-	fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-		write!(formatter, "ComponentHandle [{}]", self.id)
-	}
+#[derive(Default, Serialize, Deserialize)]
+pub struct ComponentMetadata<T: Component> {
+	pub handle: ComponentHandle<T>,
 }
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct ComponentCollection<T: Component> {
 	#[serde(skip)]
-	index_map: HashMap<ComponentHandle<T>, usize>,
+	indexes: Vec<usize>,
 
-	components: Vec<(ComponentHandle<T>, T)>,
+	components: Vec<T>,
+	metadata: Vec<ComponentMetadata<T>>,
 }
 
 impl<T: Component> ComponentCollection<T> {
-	pub fn init(&mut self) {
-		for i in 0..self.components.len() {
-			let handle = self.components[i].0;
-			self.index_map.insert(handle, i);
-		}
-	}
+	pub fn init(&mut self) {}
 
 	pub fn len(&self) -> usize {
 		self.components.len()
 	}
 
 	pub fn add(&mut self, component: T) -> ComponentHandle<T> {
-		let id = Uuid::new_v4();
-		let handle = ComponentHandle::new(id);
+		let handle = ComponentHandle::new(self.indexes.len());
 
-		self.index_map.insert(handle, self.components.len());
-		self.components.push((handle, component));
+		self.indexes.push(self.components.len());
+		self.components.push(component);
+		self.metadata.push(ComponentMetadata { handle: handle });
 
 		handle
 	}
 
-	pub fn get(&self, handle: &ComponentHandle<T>) -> &T {
+	pub fn get(&self, handle: ComponentHandle<T>) -> &T {
 		let index = self.handle_to_index(handle);
-		&self.components[index].1
+		&self.components[index]
 	}
 
-	pub fn get_mut(&mut self, handle: &ComponentHandle<T>) -> &mut T {
+	pub fn get_mut(&mut self, handle: ComponentHandle<T>) -> &mut T {
 		let index = self.handle_to_index(handle);
-		&mut self.components[index].1
+		&mut self.components[index]
 	}
 
 	pub fn get_at(&self, index: usize) -> &T {
-		&self.components[index].1
+		&self.components[index]
 	}
 
 	pub fn get_handle(&self, index: usize) -> ComponentHandle<T> {
-		self.components[index].0
+		self.metadata[index].handle
 	}
 
-	pub fn iter(&self) -> Iter<(ComponentHandle<T>, T)> {
+	pub fn iter(&self) -> Iter<T> {
 		self.components.iter()
 	}
 
-	pub fn iter_mut(&mut self) -> IterMut<(ComponentHandle<T>, T)> {
+	pub fn iter_mut(&mut self) -> IterMut<T> {
 		self.components.iter_mut()
 	}
 
-	fn handle_to_index(&self, handle: &ComponentHandle<T>) -> usize {
-		match self.index_map.get(handle).cloned() {
-			Some(index) => index,
-			None => panic!(
+	pub fn metadata_iter(&self) -> Iter<ComponentMetadata<T>> {
+		self.metadata.iter()
+	}
+
+	fn handle_to_index(&self, handle: ComponentHandle<T>) -> usize {
+		if handle.index < self.indexes.len() {
+			self.indexes[handle.index]
+		} else {
+			panic!(
 				"Could not find component\n{:?}\nfor handle {:?}",
 				T::default(),
 				handle
-			),
+			)
 		}
 	}
 }

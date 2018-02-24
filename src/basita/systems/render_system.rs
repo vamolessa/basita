@@ -35,20 +35,20 @@ where
 		let render_state = &mut state.systems.render;
 
 		render_state.sprites.sort_by(|ha, hb| {
-			let a = sprites.get(ha);
-			let b = sprites.get(hb);
+			let a = sprites.get(*ha);
+			let b = sprites.get(*hb);
 			a.depth.cmp(&b.depth)
 		});
 
 		let mut canvas = state.sdl_context.canvas.borrow_mut();
 
 		for h in &render_state.sprites {
-			let sprite = sprites.get(h);
+			let sprite = sprites.get(*h);
 
 			let image = &state.resources.images.get(sprite.image_resource);
 			let query = image.texture.query();
 
-			let transform = state.world.transforms.get(&sprite.transform);
+			let transform = state.world.transforms.get(sprite.transform);
 			let position = transform.position - image.center;
 
 			canvas

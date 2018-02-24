@@ -103,9 +103,12 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 		*/
 
 		{
-			for &mut (handle, mut sprite) in state.engine.world.sprites.iter_mut() {
+			for metadata in state.engine.world.sprites.metadata_iter() {
+				state.engine.systems.render.add_sprite(metadata.handle);
+			}
+
+			for sprite in state.engine.world.sprites.iter_mut() {
 				sprite.image_resource = player_image;
-				state.engine.systems.render.add_sprite(handle);
 			}
 		}
 	}
@@ -116,7 +119,7 @@ impl<'a> System<GameState<'a>, GameEvents<'a>> for PlayerSystem {
 			.engine
 			.world
 			.physic_bodies
-			.get_mut(&state.player_system_data.player_physic_body_handle);
+			.get_mut(state.player_system_data.player_physic_body_handle);
 
 		player_physic_body.acceleration += Vector2::new(0.0, 10.0);
 
