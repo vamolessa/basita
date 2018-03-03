@@ -1,13 +1,9 @@
+use std::any::TypeId;
 use std::marker::PhantomData;
 use std::fmt;
 use std::slice::{Iter, IterMut};
 
-pub trait Component: Default + fmt::Debug {}
-
-pub trait ComponentData<T: Component>: Default {
-	fn to_component(&self) -> T;
-	fn from_component(&T) -> Self;
-}
+pub trait Component: Default {}
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct ComponentHandle<T: Component> {
@@ -42,15 +38,26 @@ impl<T: Component> PartialEq for ComponentHandle<T> {
 
 impl<T: Component> Eq for ComponentHandle<T> {}
 
-impl<T: Component> fmt::Debug for ComponentHandle<T> {
+impl<T: 'static + Component> fmt::Debug for ComponentHandle<T> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(f, "ComponentHandle [{}]", self.index)
+		write!(
+			f,
+			"ComponentHandle [{}] for type {:?}",
+			self.index,
+			TypeId::of::<T>(),
+		)
 	}
 }
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct ComponentMetadata<T: Component> {
 	pub handle: ComponentHandle<T>,
+}
+
+#[derive(Default, Serialize, Deserialize)]
+pub struct ComponentWrapper<T: Component> {
+	next_offset: usize,
+	component: T,
 }
 
 #[derive(Default, Serialize, Deserialize)]
@@ -62,7 +69,7 @@ pub struct ComponentCollection<T: Component> {
 	metadata: Vec<ComponentMetadata<T>>,
 }
 
-impl<T: Component> ComponentCollection<T> {
+impl<T: 'static + Component> ComponentCollection<T> {
 	pub fn init(&mut self) {}
 
 	pub fn len(&self) -> usize {
@@ -114,8 +121,8 @@ impl<T: Component> ComponentCollection<T> {
 			self.indexes[handle.index]
 		} else {
 			panic!(
-				"Could not find component\n{:?}\nfor handle {:?}",
-				T::default(),
+				"Could not find component of type {:?} for handle {:?}",
+				TypeId::of::<T>(),
 				handle
 			)
 		}
