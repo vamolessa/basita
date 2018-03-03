@@ -1,11 +1,14 @@
 use World;
+use sdl::SdlContext;
 use components::{Sprite, Transform};
 use renderer::Renderer;
 
-pub struct RenderSystem;
+pub struct RenderSystem<'a> {
+	sdl: &'a SdlContext
+}
 
-impl RenderSystem {
-	pub fn update<W: World>(&self, world: &mut W) {
+impl<'a> RenderSystem<'a> {
+	pub fn update<W: World>(&mut self, world: &mut W) {
 		let mut renderer = Renderer::new(); //world.renderer_mut()
 
 		for _s in world.components::<Sprite>().iter() {
@@ -17,6 +20,7 @@ impl RenderSystem {
 			renderable.rect.y = t.position.y as i32;
 		}
 
-		//renderer.render(canvas, images)
+		let _canvas = self.sdl.canvas.borrow_mut();
+		//renderer.render(canvas, images);
 	}
 }

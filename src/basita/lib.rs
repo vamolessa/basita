@@ -12,7 +12,7 @@ pub extern crate serde_json;
 pub mod components;
 pub mod events;
 
-pub mod resources;
+pub mod assets;
 pub mod input;
 pub mod math;
 

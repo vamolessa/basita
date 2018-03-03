@@ -2,11 +2,11 @@ use sdl2::rect::Rect;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 
-use resources::{ImageResourceHandle, ImageResources};
+use assets::{Image, AssetHandle, AssetCollection};
 
 pub struct Renderable<'a> {
 	pub depth: i32,
-	pub image_resource: ImageResourceHandle<'a>,
+	pub image_resource: AssetHandle<Image<'a>>,
 	pub rect: Rect,
 }
 
@@ -48,7 +48,7 @@ impl<'a> Renderer<'a> {
 		self.renderables.sort_by(|a, b| a.depth.cmp(&b.depth));
 	}
 
-	pub fn render(&self, canvas: &mut Canvas<Window>, images: &ImageResources<'a>) {
+	pub fn render(&self, canvas: &mut Canvas<Window>, images: &AssetCollection<Image<'a>>) {
 		for r in &self.renderables {
 			let image = &images.get(r.image_resource);
 			canvas.copy(&image.texture, None, r.rect).unwrap();

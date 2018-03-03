@@ -1,11 +1,11 @@
 use super::{Component, ComponentHandle, Transform};
 
-use resources::ImageResourceHandle;
+use assets::{AssetHandle, Image};
 
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Sprite<'a> {
 	pub depth: i32,
-	pub image_resource: ImageResourceHandle<'a>,
+	pub image_resource: AssetHandle<Image<'a>>,
 
 	pub transform: ComponentHandle<Transform>,
 }

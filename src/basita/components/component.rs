@@ -43,8 +43,8 @@ impl<T: Component> PartialEq for ComponentHandle<T> {
 impl<T: Component> Eq for ComponentHandle<T> {}
 
 impl<T: Component> fmt::Debug for ComponentHandle<T> {
-	fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-		write!(formatter, "ComponentHandle [{}]", self.index)
+	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+		write!(f, "ComponentHandle [{}]", self.index)
 	}
 }
 

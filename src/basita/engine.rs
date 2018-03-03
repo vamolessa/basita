@@ -1,7 +1,7 @@
 use sdl::SdlContext;
 use input::Input;
 
-use resources::*;
+use assets::*;
 use components::*;
 //use systems::*;
 use events::*;
@@ -25,10 +25,6 @@ pub struct EngineState<'a> {
 	pub running: bool,
 	pub sdl_context: &'a SdlContext,
 	pub input: Input,
-
-	pub resources: EngineResources<'a>,
-	pub systems: EngineSystemsState<'a>,
-	pub world: EngineWorld<'a>,
 }
 
 impl<'a> EngineState<'a> {
@@ -39,48 +35,7 @@ impl<'a> EngineState<'a> {
 			running: true,
 			sdl_context: sdl_context,
 			input: Input::new(),
-
-			resources: EngineResources::new(sdl_context),
-			systems: EngineSystemsState::default(),
-			world: EngineWorld::default(),
 		}
-	}
-}
-
-pub struct EngineResources<'a> {
-	pub images: ImageResources<'a>,
-	pub worlds: WorldResources<'a>,
-}
-
-impl<'a> EngineResources<'a> {
-	pub fn new(sdl_context: &'a SdlContext) -> Self {
-		EngineResources {
-			images: ImageResources::new(&sdl_context.texture_creator),
-			worlds: WorldResources::new(&()),
-		}
-	}
-}
-
-#[derive(Default)]
-pub struct EngineSystemsState<'a> {
-	_phantom: ::std::marker::PhantomData<&'a ()>,
-	//pub render: RenderSystemState<'a>
-}
-
-#[derive(Default, Serialize, Deserialize)]
-pub struct EngineWorld<'a> {
-	pub colliders: ComponentCollection<Collider>,
-	pub sprites: ComponentCollection<Sprite<'a>>,
-	pub transforms: ComponentCollection<Transform>,
-	pub physic_bodies: ComponentCollection<PhysicBody>,
-}
-
-impl<'a> EngineWorld<'a> {
-	pub fn init(&mut self) {
-		self.colliders.init();
-		self.sprites.init();
-		self.transforms.init();
-		self.physic_bodies.init();
 	}
 }
 
@@ -127,22 +82,6 @@ where
 }
 
 /*
-impl<'a, S, E> SystemCollection<S, E>
-where
-	S: GameState<'a>,
-	E: GameEvents<S, E>,
-{
-	pub fn add_default_systems(&mut self) {
-		self.add_system::<PhysicsSystem>();
-		self.add_system::<CollisionSystem>();
-		self.add_system::<RenderSystem>();
-		self.add_system::<ColliderRenderSystem>();
-		self.add_system::<SdlPresenterSystem>();
-		// frame start
-		self.add_system::<SdlEventSystem>();
-	}
-}
-
 pub fn play<'a, S, E>(mut state: S, mut events: E, systems: SystemCollection<S, E>)
 where
 	S: GameState<'a>,
