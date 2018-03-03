@@ -5,9 +5,9 @@ use sdl2::video::Window;
 use resources::{ImageResourceHandle, ImageResources};
 
 pub struct Renderable<'a> {
-	depth: i32,
-	image_resource: ImageResourceHandle<'a>,
-	rect: Rect,
+	pub depth: i32,
+	pub image_resource: ImageResourceHandle<'a>,
+	pub rect: Rect,
 }
 
 pub struct Renderer<'a> {
@@ -32,8 +32,8 @@ impl<'a> Renderer<'a> {
 		&self.renderables[index]
 	}
 
-	pub fn get_mut(&self, index: usize) -> &Renderable<'a> {
-		&self.renderables[index]
+	pub fn get_mut(&mut self, index: usize) -> &mut Renderable<'a> {
+		&mut self.renderables[index]
 	}
 
 	pub fn remove(&mut self, index: usize) {

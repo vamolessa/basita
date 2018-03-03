@@ -3,7 +3,7 @@ use input::Input;
 
 use resources::*;
 use components::*;
-use systems::*;
+//use systems::*;
 use events::*;
 
 pub trait GameState<'a> {
@@ -63,7 +63,8 @@ impl<'a> EngineResources<'a> {
 
 #[derive(Default)]
 pub struct EngineSystemsState<'a> {
-	pub render: RenderSystemState<'a>,
+	_phantom: ::std::marker::PhantomData<&'a ()>,
+	//pub render: RenderSystemState<'a>
 }
 
 #[derive(Default, Serialize, Deserialize)]
@@ -109,7 +110,7 @@ where
 	E: GameEvents<S, E>,
 {
 	pub world: WorldEvents<S, E>,
-	pub collision: CollisionEvents<S, E>,
+	//pub collision: CollisionEvents<S, E>,
 }
 
 impl<'a, S, E> Default for EngineEvents<S, E>
@@ -120,11 +121,12 @@ where
 	fn default() -> Self {
 		EngineEvents {
 			world: WorldEvents::default(),
-			collision: CollisionEvents::default(),
+			//collision: CollisionEvents::default(),
 		}
 	}
 }
 
+/*
 impl<'a, S, E> SystemCollection<S, E>
 where
 	S: GameState<'a>,
@@ -152,3 +154,4 @@ where
 		systems.update(&mut state, &events);
 	}
 }
+*/
