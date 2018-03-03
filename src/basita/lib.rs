@@ -20,3 +20,7 @@ pub mod sdl;
 
 mod engine;
 pub use self::engine::*;
+
+// modules
+
+pub mod renderer;

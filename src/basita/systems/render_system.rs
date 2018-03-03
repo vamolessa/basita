@@ -49,7 +49,7 @@ where
 			let query = image.texture.query();
 
 			let transform = state.world.transforms.get(sprite.transform);
-			let position = transform.position - image.center;
+			let position = transform.position;// - image.center;
 
 			canvas
 				.copy(
