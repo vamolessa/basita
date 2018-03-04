@@ -1,5 +1,3 @@
-use std::slice::{Iter, IterMut};
-
 #[derive(Serialize, Deserialize)]
 pub struct SparseStorage<T> {
 	elements: Vec<Option<T>>,
@@ -22,16 +20,8 @@ impl<T> SparseStorage<T> {
 		self.elements[index].as_mut()
 	}
 
-	pub fn remove(&mut self, index: usize) {
-		self.elements[index] = None;
-	}
-
-	pub fn iter(&self) -> Iter<Option<T>> {
-		self.elements.iter()
-	}
-
-	pub fn iter_mut(&mut self) -> IterMut<Option<T>> {
-		self.elements.iter_mut()
+	pub fn clear(&mut self) {
+		self.elements.clear();
 	}
 }
 

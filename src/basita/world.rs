@@ -1,12 +1,16 @@
+use Entities;
 use components::{Component, ComponentCollection};
 use assets::{Asset, AssetCollection};
 
 pub trait World {
-	fn assets<T:Asset>(&self) -> &AssetCollection<T>;
-	fn assets_mut<T:Asset>(&mut self) -> &mut AssetCollection<T>;
+	fn entities(&self) -> &Entities;
+	fn entities_mut(&mut self) -> &mut Entities;
 
-	fn components<T:Component>(&self) -> &ComponentCollection<T>;
-	fn components_mut<T:Component>(&mut self) -> &mut ComponentCollection<T>;
+	fn assets<T: Asset>(&self) -> &AssetCollection<T>;
+	fn assets_mut<T: Asset>(&mut self) -> &mut AssetCollection<T>;
+
+	fn components<T: Component>(&self) -> &ComponentCollection<T>;
+	fn components_mut<T: Component>(&mut self) -> &mut ComponentCollection<T>;
 }
 
 pub trait WorldForComponent<T: Component> {

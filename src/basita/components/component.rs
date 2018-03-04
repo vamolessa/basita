@@ -1,5 +1,3 @@
-use std::slice::{Iter, IterMut};
-
 use super::SparseStorage;
 use EntityHandle;
 
@@ -14,22 +12,18 @@ impl<T: 'static + Component> ComponentCollection<T> {
 	pub fn init(&mut self) {}
 
 	pub fn set(&mut self, entity: EntityHandle, component: T) {
-		self.components.set(entity.id, component);
+		self.components.set(entity.id(), component);
 	}
 
 	pub fn get(&self, entity: EntityHandle) -> Option<&T> {
-		self.components.get(entity.id)
+		self.components.get(entity.id())
 	}
 
 	pub fn get_mut(&mut self, entity: EntityHandle) -> Option<&mut T> {
-		self.components.get_mut(entity.id)
+		self.components.get_mut(entity.id())
 	}
 
-	pub fn iter(&self) -> Iter<Option<T>> {
-		self.components.iter()
-	}
-
-	pub fn iter_mut(&mut self) -> IterMut<Option<T>> {
-		self.components.iter_mut()
+	pub fn clear(&mut self) {
+		self.components.clear();
 	}
 }
