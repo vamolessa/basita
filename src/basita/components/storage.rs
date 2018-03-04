@@ -1,5 +1,4 @@
-use std::iter::{FilterMap,Iterator};
-use std::slice::Iter;
+use std::iter::Iterator;
 
 #[derive(Serialize, Deserialize)]
 pub struct SparseStorage<T> {
@@ -34,9 +33,20 @@ impl<T> SparseStorage<T> {
 		self.elements[index] = None;
 	}
 
-	pub fn iter(&self) -> FilterMap<Iter<Option<T>>, T> {
-		self.elements.iter().filter_map(|e:Option<T>| e )
+	pub fn iter(&self) -> SparseStorageIter<T> {
+		SparseStorageIter {
+			storage: self,
+			index: 0
+		}
 	}
+/*
+	pub fn iter_mut(&mut self) -> SparseStorageIterMut<T> {
+		SparseStorageIterMut {
+			storage: self,
+			index: 0
+		}
+	}
+	*/
 }
 
 impl<T> Default for SparseStorage<T> {
@@ -44,5 +54,55 @@ impl<T> Default for SparseStorage<T> {
 		SparseStorage {
 			elements: Vec::default(),
 		}
+	}
+}
+
+pub struct SparseStorageIter<'a, T: 'a> {
+	storage: &'a SparseStorage<T>,
+	index : usize
+}
+
+impl<'a, T: 'a> Iterator for SparseStorageIter<'a, T> {
+	type Item = &'a T;
+
+	fn next(&mut self) -> Option<Self::Item> {
+		let len = self.storage.elements.len();
+
+		while self.index < len {
+			let i = self.index;
+			self.index += 1;
+
+			let e = self.storage.get(i);
+			if e.is_some() {
+				return e;
+			}
+		}
+
+		None
+	}
+}
+
+pub struct SparseStorageIterMut<'a, T: 'a> {
+	vec: &'a mut Vec<Option<T>>,
+	index : usize
+}
+
+impl<'a, T: 'a> Iterator for SparseStorageIterMut<'a, T> {
+	type Item = &'a mut T;
+
+	fn next(&mut self) -> Option<Self::Item> {
+		let len = self.vec.len();
+
+		while self.index < len {
+			let i = self.index;
+			self.index += 1;
+
+			let e = self.vec[i].as_mut();
+			if e.is_some() {
+				return e;
+			}
+		}
+
+		None
 	}
 }
