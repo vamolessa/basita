@@ -1,6 +1,9 @@
 mod component;
 pub use self::component::*;
 
+mod storage;
+pub use self::storage::*;
+
 mod transform;
 pub use self::transform::*;
 

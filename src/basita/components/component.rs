@@ -1,22 +1,23 @@
 use std::any::TypeId;
 use std::marker::PhantomData;
 use std::fmt;
-use std::slice::{Iter, IterMut};
+
+use super::{SparseStorage};
 
 pub trait Component: Default {}
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct ComponentHandle<T: Component> {
-	index: usize,
+	entity_id: usize,
 
 	#[serde(skip)]
 	_phantom: PhantomData<T>,
 }
 
 impl<T: Component> ComponentHandle<T> {
-	fn new(index: usize) -> Self {
+	fn new(entity_id: usize) -> Self {
 		ComponentHandle {
-			index: index,
+			entity_id: entity_id,
 			_phantom: PhantomData,
 		}
 	}
@@ -24,7 +25,7 @@ impl<T: Component> ComponentHandle<T> {
 
 impl<T: Component> Clone for ComponentHandle<T> {
 	fn clone(&self) -> Self {
-		ComponentHandle::new(self.index)
+		ComponentHandle::new(self.entity_id)
 	}
 }
 
@@ -32,7 +33,7 @@ impl<T: Component> Copy for ComponentHandle<T> {}
 
 impl<T: Component> PartialEq for ComponentHandle<T> {
 	fn eq(&self, other: &Self) -> bool {
-		self.index == other.index
+		self.entity_id == other.entity_id
 	}
 }
 
@@ -43,77 +44,42 @@ impl<T: 'static + Component> fmt::Debug for ComponentHandle<T> {
 		write!(
 			f,
 			"ComponentHandle [{}] for type {:?}",
-			self.index,
+			self.entity_id,
 			TypeId::of::<T>(),
 		)
 	}
 }
 
 #[derive(Default, Serialize, Deserialize)]
-pub struct ComponentMetadata<T: Component> {
-	pub handle: ComponentHandle<T>,
-}
-
-#[derive(Default, Serialize, Deserialize)]
-pub struct ComponentWrapper<T: Component> {
-	next_offset: usize,
-	component: T,
-}
-
-#[derive(Default, Serialize, Deserialize)]
 pub struct ComponentCollection<T: Component> {
-	#[serde(skip)]
-	indexes: Vec<usize>,
-
-	components: Vec<T>,
-	metadata: Vec<ComponentMetadata<T>>,
+	components: SparseStorage<T>,
 }
 
 impl<T: 'static + Component> ComponentCollection<T> {
 	pub fn init(&mut self) {}
 
-	pub fn len(&self) -> usize {
-		self.components.len()
-	}
-
 	pub fn add(&mut self, component: T) -> ComponentHandle<T> {
-		let handle = ComponentHandle::new(self.indexes.len());
-
-		self.indexes.push(self.components.len());
-		self.components.push(component);
-		self.metadata.push(ComponentMetadata { handle: handle });
-
-		handle
+		let entity_id = self.components.add(component);
+		ComponentHandle::new(entity_id)
 	}
 
+	/*
 	pub fn get(&self, handle: ComponentHandle<T>) -> &T {
-		let index = self.handle_to_index(handle);
-		&self.components[index]
+		self.components.get(handle.entity_id)
 	}
 
 	pub fn get_mut(&mut self, handle: ComponentHandle<T>) -> &mut T {
-		let index = self.handle_to_index(handle);
-		&mut self.components[index]
+		self.components.get_mut(handle.entity_id)
 	}
+	*/
 
-	pub fn get_at(&self, index: usize) -> &T {
-		&self.components[index]
-	}
-
-	pub fn get_handle(&self, index: usize) -> ComponentHandle<T> {
-		self.metadata[index].handle
-	}
-
-	pub fn iter(&self) -> Iter<T> {
+	/*
+	pub fn iter(&self) -> SparseStorageIter<T> {
 		self.components.iter()
 	}
 
 	pub fn iter_mut(&mut self) -> IterMut<T> {
 		self.components.iter_mut()
-	}
-
-	pub fn metadata_iter(&self) -> Iter<ComponentMetadata<T>> {
-		self.metadata.iter()
 	}
 
 	fn handle_to_index(&self, handle: ComponentHandle<T>) -> usize {
@@ -127,4 +93,5 @@ impl<T: 'static + Component> ComponentCollection<T> {
 			)
 		}
 	}
+	*/
 }
