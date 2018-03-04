@@ -1,6 +1,9 @@
 mod component;
 pub use self::component::*;
 
+mod component_iter;
+pub use self::component_iter::*;
+
 mod storage;
 pub use self::storage::*;
 
