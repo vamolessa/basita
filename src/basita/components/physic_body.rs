@@ -1,6 +1,6 @@
 use math::Vector2;
 
-use super::{Component, ComponentHandle, Transform};
+use super::Component;
 
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct PhysicBody {
@@ -9,8 +9,6 @@ pub struct PhysicBody {
 
 	pub inverted_mass: f32,
 	pub bounciness: f32,
-
-	pub transform: ComponentHandle<Transform>,
 }
 
 impl Component for PhysicBody {}

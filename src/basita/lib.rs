@@ -1,3 +1,5 @@
+#![feature(vec_resize_default)]
+
 // external
 pub extern crate sdl2;
 
@@ -20,6 +22,9 @@ pub mod sdl;
 
 mod world;
 pub use self::world::*;
+
+mod entity;
+pub use self::entity::*;
 
 mod engine;
 pub use self::engine::*;

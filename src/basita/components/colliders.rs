@@ -1,15 +1,12 @@
 use math::Vector2;
 
-use super::{Component, ComponentHandle, PhysicBody, Transform};
+use super::Component;
 
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Collider {
 	pub shape: Shape,
 	pub offset: Vector2,
 	pub is_trigger: bool,
-
-	pub transform: ComponentHandle<Transform>,
-	pub physic_body: Option<ComponentHandle<PhysicBody>>,
 }
 
 impl Component for Collider {}
