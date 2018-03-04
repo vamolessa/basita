@@ -1,5 +1,6 @@
 use std::iter::Iterator;
 
+use EntityHandle;
 use super::{Component, ComponentCollection};
 
 /*
@@ -51,6 +52,25 @@ impl<T> ComponentJoin for ComponentCollection<T> {
 }
 */
 
-pub struct ComponentIter<'a, T: 'a + Component> {
-	collections: (&'a ComponentCollection<T>,),
+pub struct ComponentIter<'a, A: 'a + Component, B: 'a + Component> {
+	entity_id: usize,
+	entity_count: usize,
+	collections: (&'a ComponentCollection<A>, &'a ComponentCollection<B>),
+}
+
+impl<'a, A: 'a + Component, B: 'a + Component> Iterator for ComponentIter<'a, A, B> {
+	type Item = (&'a A, &'a B);
+
+	fn next(&mut self) -> Option<Self::Item> {
+		while self.entity_id < self.entity_count {
+			let id = self.entity_id;
+			self.entity_id += 1;
+
+			if let (Some(a), Some(b)) = (self.collections.0.at(id), self.collections.1.at(id)) {
+				return Some((a, b));
+			}
+		}
+
+		None
+	}
 }
