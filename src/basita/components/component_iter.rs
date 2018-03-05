@@ -53,6 +53,34 @@ impl<'a, A: 'a + Component, B: 'a + Component> ComponentJoin for (&'a ComponentC
 	}
 }
 
+macro_rules! component_type_list (
+	($x:ident) => (
+		A
+	)
+	//($x:ident, $($xs:ident)*) => (
+	//	type_list!($x), type_list!($($xs)*)
+	//)
+);
+
+macro_rules! impl_component_join {
+	($x:ident $(, $xs:ident)*) => {
+		impl<'a > ComponentJoin for (&'a ()) {
+			type Join = ();
+
+			fn at(&self, i: usize) -> Option<Self::Join> {
+				None
+			}
+		}
+	};
+}
+
+impl_component_join!(A);
+
+struct Tesadasasd<component_type_list!(A)>
+{
+	_phantom: ::std::marker::PhantomData<A>
+}
+
 fn test()
 {
 	use super::Transform;
