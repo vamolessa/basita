@@ -3,7 +3,9 @@ use std::iter::Iterator;
 use super::{Component, ComponentCollection};
 
 pub trait ComponentJoin
-where Self: Sized {
+where
+	Self: Sized,
+{
 	type Join;
 
 	fn at(&self, entity_index: usize) -> Option<Self::Join>;
@@ -41,55 +43,46 @@ impl<J: ComponentJoin> Iterator for ComponentIter<J> {
 	}
 }
 
-impl<'a, A: 'a + Component, B: 'a + Component> ComponentJoin for (&'a ComponentCollection<A>, &'a ComponentCollection<B>) {
-	type Join = (&'a A, &'a B);
+impl<'a, A: 'a + Component> ComponentJoin for &'a ComponentCollection<A> {
+	type Join = &'a A;
 
 	fn at(&self, i: usize) -> Option<Self::Join> {
-		if let (Some(a), Some(b)) = (self.0.at(i), self.1.at(i)) {
-			Some((a, b))
+		if let Some(a) = ComponentCollection::at(self, i) {
+			Some(a)
 		} else {
 			None
 		}
 	}
 }
 
-macro_rules! component_type_list (
-	($x:ident) => (
-		A
-	)
-	//($x:ident, $($xs:ident)*) => (
-	//	type_list!($x), type_list!($($xs)*)
-	//)
-);
-
 macro_rules! impl_component_join {
-	($x:ident $(, $xs:ident)*) => {
-		impl<'a > ComponentJoin for (&'a ()) {
-			type Join = ();
+	() => ();
+	($($x:ident,)+) => (
+		impl<'a, $($x: 'a + Component),*> ComponentJoin
+			for ($(&'a ComponentCollection<$x>,)*)
+		{
+			type Join = ($(&'a $x,)*);
 
+			#[allow(non_snake_case)]
 			fn at(&self, i: usize) -> Option<Self::Join> {
-				None
+				let &($($x,)*) = self;
+				if let ($(Some($x),)*) = ($($x.at(i),)*) {
+					Some(($($x,)*))
+				} else {
+					None
+				}
 			}
 		}
-	};
+	)
 }
 
-impl_component_join!(A);
-
-struct Tesadasasd<component_type_list!(A)>
-{
-	_phantom: ::std::marker::PhantomData<A>
-}
-
-fn test()
-{
-	use super::Transform;
-	use super::Collider;
-
-	let a = ComponentCollection::<Transform>::default();
-	let b = ComponentCollection::<Collider>::default();
-
-	for (x,y) in (&a,&b).iter(0) {
-
-	}
-}
+impl_component_join!(A,);
+impl_component_join!(A, B,);
+impl_component_join!(A, B, C,);
+impl_component_join!(A, B, C, D,);
+impl_component_join!(A, B, C, D, E,);
+impl_component_join!(A, B, C, D, E, F,);
+impl_component_join!(A, B, C, D, E, F, G,);
+impl_component_join!(A, B, C, D, E, F, G, H,);
+impl_component_join!(A, B, C, D, E, F, G, H, I,);
+impl_component_join!(A, B, C, D, E, F, G, H, I, J,);
