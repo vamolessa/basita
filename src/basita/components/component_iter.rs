@@ -1,76 +1,67 @@
 use std::iter::Iterator;
 
-use EntityHandle;
 use super::{Component, ComponentCollection};
 
-/*
-pub trait ComponentJoin {
-	type Type;
-	type Collection;
+pub trait ComponentJoin
+where Self: Sized {
+	type Join;
 
-	fn get(collections: &Self::Collection, entity_id: usize) -> Self::Type;
-}
+	fn at(&self, entity_index: usize) -> Option<Self::Join>;
 
-pub struct ComponentIter<T: ComponentJoin> {
-	entity_id: usize,
-	entity_count: usize,
-	collections: T::Collection,
-}
-
-impl<T: ComponentJoin> ComponentIter<T> {
-	pub fn new(entity_count: usize, collections: T::Collection) -> Self {
+	fn iter(self, entity_count: usize) -> ComponentIter<Self> {
 		ComponentIter {
-			entity_id: 0,
+			entity_index: 0,
 			entity_count: entity_count,
-			collections: collections,
+			join: self,
 		}
 	}
 }
 
-impl<T: ComponentJoin> Iterator for ComponentIter<T> {
-	type Item = T::Type;
+pub struct ComponentIter<J: ComponentJoin> {
+	entity_index: usize,
+	entity_count: usize,
+	join: J,
+}
 
-	fn next(&mut self) -> Option<T::Type> {
-		if self.entity_id < self.entity_count {
-			let id = self.entity_id;
-			self.entity_id += 1;
+impl<J: ComponentJoin> Iterator for ComponentIter<J> {
+	type Item = J::Join;
 
-			Some(T::get(&self.collections, id))
+	fn next(&mut self) -> Option<Self::Item> {
+		while self.entity_index < self.entity_count {
+			let index = self.entity_index;
+			self.entity_index += 1;
+
+			let j = self.join.at(index);
+			if j.is_some() {
+				return j;
+			}
+		}
+
+		None
+	}
+}
+
+impl<'a, A: 'a + Component, B: 'a + Component> ComponentJoin for (&'a ComponentCollection<A>, &'a ComponentCollection<B>) {
+	type Join = (&'a A, &'a B);
+
+	fn at(&self, i: usize) -> Option<Self::Join> {
+		if let (Some(a), Some(b)) = (self.0.at(i), self.1.at(i)) {
+			Some((a, b))
 		} else {
 			None
 		}
 	}
 }
 
-impl<T> ComponentJoin for ComponentCollection<T> {
-	type Type = T;
-	type Collection = ComponentCollection<T>;
+fn test()
+{
+	use super::Transform;
+	use super::Collider;
 
-	fn get(collections: &Self::Collection, entity_id: usize) -> Self::Type {
+	let a = ComponentCollection::<Transform>::default();
+	let b = ComponentCollection::<Collider>::default();
 
-	}
-}
-*/
+	for (x,y) in (&a,&b).iter(0) {
 
-pub struct ComponentIter<'a, A: 'a + Component, B: 'a + Component> {
-	entity_id: usize,
-	entity_count: usize,
-	collections: (&'a ComponentCollection<A>, &'a ComponentCollection<B>),
-}
-
-impl<'a, A: 'a + Component, B: 'a + Component> Iterator for ComponentIter<'a, A, B> {
-	type Item = (&'a A, &'a B);
-
-	fn next(&mut self) -> Option<Self::Item> {
-		while self.entity_id < self.entity_count {
-			let id = self.entity_id;
-			self.entity_id += 1;
-
-			if let (Some(a), Some(b)) = (self.collections.0.at(id), self.collections.1.at(id)) {
-				return Some((a, b));
-			}
-		}
-
-		None
 	}
 }
