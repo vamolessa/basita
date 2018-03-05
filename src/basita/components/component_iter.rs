@@ -2,23 +2,6 @@ use std::iter::Iterator;
 
 use super::{Component, ComponentCollection};
 
-pub trait ComponentJoin
-where
-	Self: Sized,
-{
-	type Join;
-
-	fn at(&self, entity_index: usize) -> Option<Self::Join>;
-
-	fn iter(self, entity_count: usize) -> ComponentIter<Self> {
-		ComponentIter {
-			entity_index: 0,
-			entity_count: entity_count,
-			join: self,
-		}
-	}
-}
-
 pub struct ComponentIter<J: ComponentJoin> {
 	entity_index: usize,
 	entity_count: usize,
@@ -40,6 +23,23 @@ impl<J: ComponentJoin> Iterator for ComponentIter<J> {
 		}
 
 		None
+	}
+}
+
+pub trait ComponentJoin
+where
+	Self: Sized,
+{
+	type Join;
+
+	fn at(&self, entity_index: usize) -> Option<Self::Join>;
+
+	fn iter(self, entity_count: usize) -> ComponentIter<Self> {
+		ComponentIter {
+			entity_index: 0,
+			entity_count: entity_count,
+			join: self,
+		}
 	}
 }
 
