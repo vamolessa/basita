@@ -1,28 +1,30 @@
-pub struct Event<S, E, D>
+use World;
+
+pub struct Event<W, D>
 where
-	D: Copy,
+	W: World,
 {
-	callbacks: Vec<fn(&mut S, &E, D) -> ()>,
+	callbacks: Vec<fn(&mut W, &D) -> ()>,
 }
 
-impl<S, E, D> Event<S, E, D>
+impl<W, D> Event<W, D>
 where
-	D: Copy,
+	W: World,
 {
-	pub fn subscribe(&mut self, callback: fn(&mut S, &E, D) -> ()) {
+	pub fn subscribe(&mut self, callback: fn(&mut W, &D) -> ()) {
 		self.callbacks.push(callback);
 	}
 
-	pub fn raise(&self, state: &mut S, events: &E, data: D) {
+	pub fn raise(&self, world: &mut W, data: &D) {
 		for callback in &self.callbacks {
-			callback(state, events, data);
+			callback(world, data);
 		}
 	}
 }
 
-impl<S, E, D> Default for Event<S, E, D>
+impl<W, D> Default for Event<W, D>
 where
-	D: Copy,
+	W: World,
 {
 	fn default() -> Self {
 		Event {

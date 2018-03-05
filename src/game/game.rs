@@ -22,35 +22,3 @@ impl<'a> GameState<'a> {
 
 #[derive(Default)]
 pub struct GameWorld {}
-
-impl<'a> basita::GameState<'a> for GameState<'a> {
-	fn get_engine_state(&self) -> &EngineState<'a> {
-		&self.engine
-	}
-
-	fn get_engine_state_mut(&mut self) -> &mut EngineState<'a> {
-		&mut self.engine
-	}
-}
-
-pub struct GameEvents<'a> {
-	pub engine: EngineEvents<GameState<'a>, GameEvents<'a>>,
-}
-
-impl<'a> GameEvents<'a> {
-	pub fn new() -> Self {
-		GameEvents {
-			engine: EngineEvents::default(),
-		}
-	}
-}
-
-impl<'a> basita::GameEvents<GameState<'a>, GameEvents<'a>> for GameEvents<'a> {
-	fn get_engine_events(&self) -> &EngineEvents<GameState<'a>, GameEvents<'a>> {
-		&self.engine
-	}
-
-	fn get_engine_events_mut(&mut self) -> &mut EngineEvents<GameState<'a>, GameEvents<'a>> {
-		&mut self.engine
-	}
-}
