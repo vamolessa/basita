@@ -1,4 +1,4 @@
-use std::any::{Any, TypeId};
+use std::any::Any;
 
 use unique_type_id::UniqueTypeId;
 
@@ -36,7 +36,7 @@ pub trait WorldForResource<T> {
 }
 
 pub struct WorldNew {
-	resources: Vec<Option<Box<Any>>>,
+	resources: Vec<Box<Any>>,
 }
 
 impl WorldNew {
@@ -46,22 +46,21 @@ impl WorldNew {
 		}
 	}
 
-	pub fn register<T: 'static + UniqueTypeId>(&mut self, resource: T) {
-		let type_id = T::id().0 as usize;
+	pub fn register<T: 'static + UniqueTypeId + Default>(&mut self) {
+		let index = T::id().0 as usize;
 
-		if type_id < self.resources.len() {
-			self.resources.resize_default(type_id + 1);
+		let resource_count = self.resources.len();
+		if index >= resource_count {
+			self.resources.reserve(index + 1 - resource_count);
+			unsafe { self.resources.set_len(index + 1) };
 		}
 
-		self.resources[type_id] = Some(Box::from(resource));
+		let resource = Box::from(T::default());
+		self.resources[index] = resource;
 	}
 
 	pub fn resource<T: 'static + UniqueTypeId>(&self) -> &T {
 		let index = T::id().0 as usize;
-		//let resource = &self.resources[index].unwrap();
-
-		//resource.downcast_ref::<T>().unwrap()
-
-		panic!("Resourece {:?} was not registered", TypeId::of::<T>());
+		&self.resources[index].downcast_ref().unwrap()
 	}
 }
