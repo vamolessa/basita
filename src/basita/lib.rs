@@ -12,6 +12,7 @@ pub extern crate serde_json;
 // local
 //pub mod systems;
 pub mod components;
+pub mod resources;
 pub mod events;
 
 pub mod assets;

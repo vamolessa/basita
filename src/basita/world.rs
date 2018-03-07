@@ -11,6 +11,9 @@ pub trait World {
 
 	fn components<T: Component>(&self) -> &ComponentCollection<T>;
 	fn components_mut<T: Component>(&mut self) -> &mut ComponentCollection<T>;
+
+	fn resource<T>(&self) -> &T;
+	fn resource_mut<T>(&mut self) -> &mut T;
 }
 
 pub trait WorldForComponent<T: Component> {
@@ -21,4 +24,9 @@ pub trait WorldForComponent<T: Component> {
 pub trait WorldForAsset<T: Asset> {
 	fn get(&self) -> &AssetCollection<T>;
 	fn get_mut(&mut self) -> &mut AssetCollection<T>;
+}
+
+pub trait WorldForResource<T> {
+	fn get(&self) -> &T;
+	fn get_mut(&mut self) -> &mut T;
 }
