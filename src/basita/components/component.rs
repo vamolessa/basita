@@ -1,5 +1,5 @@
 use super::SparseStorage;
-use EntityHandle;
+use entities::EntityHandle;
 
 pub trait Component: Default {}
 

@@ -2,7 +2,7 @@ use sdl2::rect::Rect;
 
 use sdl::SdlContext;
 use World;
-use assets::{Image, AssetHandle};
+use assets::{AssetHandle, Image};
 use components::{Sprite, Transform};
 
 struct Renderable<'a> {
@@ -20,7 +20,7 @@ impl<'a> RenderSystem<'a> {
 	pub fn new(sdl: &'a SdlContext) -> Self {
 		RenderSystem {
 			sdl: sdl,
-			renderables: Vec::default()
+			renderables: Vec::default(),
 		}
 	}
 
@@ -29,8 +29,8 @@ impl<'a> RenderSystem<'a> {
 	}
 }
 
-impl<'a, W: World> System<W> for RenderSystem<'a> {
-	fn update(&mut self, world: &mut W) {
+impl<'a> System<W> for RenderSystem<'a> {
+	fn update(&mut self, world: &mut World) {
 		for _s in world.components::<Sprite>().iter() {
 			let t = Transform::identity(); // t in world.components::<Transform>().iter()
 
@@ -50,7 +50,7 @@ impl<'a, W: World> System<W> for RenderSystem<'a> {
 	}
 }
 
-pub trait System<W: World> {
-	fn init(&mut self, &mut W) {}
-	fn update(&mut self, &mut W);
+pub trait System {
+	fn init(&mut self, &mut World) {}
+	fn update(&mut self, &mut World);
 }

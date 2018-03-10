@@ -1,66 +1,98 @@
-use std::any::Any;
+use std::any::{Any, TypeId};
+use std::cell::{Ref, RefCell, RefMut};
 
-use unique_type_id::UniqueTypeId;
+use fxhash::FxHashMap;
 
-use Entities;
+use entities::Entities;
 use components::{Component, ComponentCollection};
 use assets::{Asset, AssetCollection};
+use resources::Resource;
 
-pub trait World {
-	fn entities(&self) -> &Entities;
-	fn entities_mut(&mut self) -> &mut Entities;
-
-	fn assets<T: Asset>(&self) -> &AssetCollection<T>;
-	fn assets_mut<T: Asset>(&mut self) -> &mut AssetCollection<T>;
-
-	fn components<T: Component>(&self) -> &ComponentCollection<T>;
-	fn components_mut<T: Component>(&mut self) -> &mut ComponentCollection<T>;
-
-	fn resource<T>(&self) -> &T;
-	fn resource_mut<T>(&mut self) -> &mut T;
+pub struct World {
+	entities: Entities,
+	components: FxHashMap<TypeId, RefCell<Box<Any>>>,
+	assets: FxHashMap<TypeId, RefCell<Box<Any>>>,
+	resources: FxHashMap<TypeId, RefCell<Box<Any>>>,
 }
 
-pub trait WorldForComponent<T: Component> {
-	fn get(&self) -> &ComponentCollection<T>;
-	fn get_mut(&mut self) -> &mut ComponentCollection<T>;
-}
-
-pub trait WorldForAsset<T: Asset> {
-	fn get(&self) -> &AssetCollection<T>;
-	fn get_mut(&mut self) -> &mut AssetCollection<T>;
-}
-
-pub trait WorldForResource<T> {
-	fn get(&self) -> &T;
-	fn get_mut(&mut self) -> &mut T;
-}
-
-pub struct WorldNew {
-	resources: Vec<Box<Any>>,
-}
-
-impl WorldNew {
+impl World {
 	pub fn new() -> Self {
-		WorldNew {
-			resources: Vec::new(),
+		World {
+			entities: Entities::default(),
+			components: FxHashMap::default(),
+			assets: FxHashMap::default(),
+			resources: FxHashMap::default(),
 		}
 	}
 
-	pub fn register<T: 'static + UniqueTypeId + Default>(&mut self) {
-		let index = T::id().0 as usize;
+	pub fn register_component<T: 'static + Component>(&mut self) {
+		let component_collection = ComponentCollection::<T>::default();
 
-		let resource_count = self.resources.len();
-		if index >= resource_count {
-			self.resources.reserve(index + 1 - resource_count);
-			unsafe { self.resources.set_len(index + 1) };
-		}
-
-		let resource = Box::from(T::default());
-		self.resources[index] = resource;
+		self.components.insert(
+			TypeId::of::<ComponentCollection<T>>(),
+			RefCell::from(Box::from(component_collection)),
+		);
 	}
 
-	pub fn resource<T: 'static + UniqueTypeId>(&self) -> &T {
-		let index = T::id().0 as usize;
-		&self.resources[index].downcast_ref().unwrap()
+	pub fn register_asset<T: 'static + Asset>(&mut self) {
+		let asset_collection = AssetCollection::<T>::default();
+
+		self.assets.insert(
+			TypeId::of::<AssetCollection<T>>(),
+			RefCell::from(Box::from(asset_collection)),
+		);
 	}
+
+	pub fn register_resource<T: 'static + Resource>(&mut self) {
+		self.resources
+			.insert(TypeId::of::<T>(), RefCell::from(Box::from(T::default())));
+	}
+
+	pub fn entities(&self) -> &Entities {
+		&self.entities
+	}
+
+	pub fn components<T: 'static + Component>(&self) -> Ref<ComponentCollection<T>> {
+		try_get(&self.components)
+	}
+
+	pub fn components_mut<T: 'static + Component>(&self) -> RefMut<ComponentCollection<T>> {
+		try_get_mut(&self.components)
+	}
+
+	pub fn assets<T: 'static + Asset>(&self) -> Ref<AssetCollection<T>> {
+		try_get(&self.assets)
+	}
+
+	pub fn assets_mut<T: 'static + Asset>(&self) -> RefMut<AssetCollection<T>> {
+		try_get_mut(&self.assets)
+	}
+
+	pub fn resource<T: 'static + Resource>(&self) -> Ref<T> {
+		try_get(&self.resources)
+	}
+
+	pub fn resource_mut<T: 'static + Resource>(&self) -> RefMut<T> {
+		try_get_mut(&self.resources)
+	}
+}
+
+fn try_get<T: Any>(map: &FxHashMap<TypeId, RefCell<Box<Any>>>) -> Ref<T> {
+	Ref::map(
+		match map.get(&TypeId::of::<T>()) {
+			Some(e) => e,
+			None => panic!("Type not registered {:?}", TypeId::of::<T>()),
+		}.borrow(),
+		|a| a.downcast_ref::<T>().unwrap(),
+	)
+}
+
+fn try_get_mut<T: Any>(map: &FxHashMap<TypeId, RefCell<Box<Any>>>) -> RefMut<T> {
+	RefMut::map(
+		match map.get(&TypeId::of::<T>()) {
+			Some(e) => e,
+			None => panic!("Type not registered {:?}", TypeId::of::<T>()),
+		}.borrow_mut(),
+		|a| a.downcast_mut::<T>().unwrap(),
+	)
 }
