@@ -15,7 +15,7 @@ pub extern crate mopa;
 
 // local
 
-//pub mod systems;
+pub mod systems;
 pub mod entities;
 pub mod components;
 pub mod resources;

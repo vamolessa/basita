@@ -1,6 +1,10 @@
 mod system;
 pub use self::system::*;
 
+mod render_system;
+pub use self::render_system::*;
+
+/*
 mod sdl_event_system;
 mod sdl_presenter_system;
 mod render_system;
@@ -16,3 +20,4 @@ pub use self::collider_render_system::*;
 pub use self::collision_system::*;
 pub use self::physics_system::*;
 pub use self::world_system::*;
+*/
