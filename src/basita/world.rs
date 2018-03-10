@@ -1,4 +1,4 @@
-use std::any::{Any, TypeId};
+use std::any::TypeId;
 use std::cell::{Ref, RefCell, RefMut};
 
 use fxhash::FxHashMap;
@@ -6,13 +6,13 @@ use fxhash::FxHashMap;
 use entities::Entities;
 use components::{Component, ComponentCollection};
 use assets::{Asset, AssetCollection};
-use resources::Resource;
+use resources::{get_resource_id, Resource};
 
 pub struct World {
 	entities: Entities,
-	components: FxHashMap<TypeId, RefCell<Box<Any>>>,
-	assets: FxHashMap<TypeId, RefCell<Box<Any>>>,
-	resources: FxHashMap<TypeId, RefCell<Box<Any>>>,
+	components: FxHashMap<TypeId, RefCell<Box<Resource>>>,
+	assets: FxHashMap<TypeId, RefCell<Box<Resource>>>,
+	resources: FxHashMap<TypeId, RefCell<Box<Resource>>>,
 }
 
 impl World {
@@ -43,9 +43,11 @@ impl World {
 		);
 	}
 
-	pub fn register_resource<T: 'static + Resource>(&mut self) {
-		self.resources
-			.insert(TypeId::of::<T>(), RefCell::from(Box::from(T::default())));
+	pub fn register_resource<T: Resource + Default>(&mut self) {
+		self.resources.insert(
+			get_resource_id::<T>(),
+			RefCell::from(Box::from(T::default())),
+		);
 	}
 
 	pub fn entities(&self) -> &Entities {
@@ -68,18 +70,18 @@ impl World {
 		try_get_mut(&self.assets)
 	}
 
-	pub fn resource<T: 'static + Resource>(&self) -> Ref<T> {
+	pub fn resource<T: Resource>(&self) -> Ref<T> {
 		try_get(&self.resources)
 	}
 
-	pub fn resource_mut<T: 'static + Resource>(&self) -> RefMut<T> {
+	pub fn resource_mut<T: Resource>(&self) -> RefMut<T> {
 		try_get_mut(&self.resources)
 	}
 }
 
-fn try_get<T: Any>(map: &FxHashMap<TypeId, RefCell<Box<Any>>>) -> Ref<T> {
+fn try_get<T: Resource>(map: &FxHashMap<TypeId, RefCell<Box<Resource>>>) -> Ref<T> {
 	Ref::map(
-		match map.get(&TypeId::of::<T>()) {
+		match map.get(&get_resource_id::<T>()) {
 			Some(e) => e,
 			None => panic!("Type not registered {:?}", TypeId::of::<T>()),
 		}.borrow(),
@@ -87,9 +89,9 @@ fn try_get<T: Any>(map: &FxHashMap<TypeId, RefCell<Box<Any>>>) -> Ref<T> {
 	)
 }
 
-fn try_get_mut<T: Any>(map: &FxHashMap<TypeId, RefCell<Box<Any>>>) -> RefMut<T> {
+fn try_get_mut<T: Resource>(map: &FxHashMap<TypeId, RefCell<Box<Resource>>>) -> RefMut<T> {
 	RefMut::map(
-		match map.get(&TypeId::of::<T>()) {
+		match map.get(&get_resource_id::<T>()) {
 			Some(e) => e,
 			None => panic!("Type not registered {:?}", TypeId::of::<T>()),
 		}.borrow_mut(),

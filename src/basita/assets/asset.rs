@@ -3,15 +3,17 @@ use std::collections::HashMap;
 use std::marker::PhantomData;
 use std::fmt;
 
+use resources::Resource;
+
 pub trait Asset {}
 
 #[derive(Serialize, Deserialize)]
-pub struct AssetHandle<T:Asset> {
+pub struct AssetHandle<T: Asset> {
 	index: usize,
 	_phantom: PhantomData<T>,
 }
 
-impl<T:Asset> AssetHandle<T> {
+impl<T: Asset> AssetHandle<T> {
 	fn new(index: usize) -> Self {
 		AssetHandle {
 			index: index,
@@ -20,21 +22,21 @@ impl<T:Asset> AssetHandle<T> {
 	}
 }
 
-impl<T:Asset> Default for AssetHandle<T> {
+impl<T: Asset> Default for AssetHandle<T> {
 	fn default() -> Self {
 		AssetHandle::new(0)
 	}
 }
 
-impl<T:Asset> Clone for AssetHandle<T> {
+impl<T: Asset> Clone for AssetHandle<T> {
 	fn clone(&self) -> Self {
 		AssetHandle::new(self.index)
 	}
 }
 
-impl<T:Asset> Copy for AssetHandle<T> {}
+impl<T: Asset> Copy for AssetHandle<T> {}
 
-impl<T:Asset> fmt::Debug for AssetHandle<T> {
+impl<T: Asset> fmt::Debug for AssetHandle<T> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		write!(f, "AssetHandle [{}]", self.index)
 	}
@@ -45,14 +47,12 @@ pub trait AssetLoader<'a, T> {
 }
 
 pub struct AssetLoadError {
-	message: String
+	message: String,
 }
 
 impl AssetLoadError {
 	pub fn new(message: String) -> Self {
-		AssetLoadError {
-			message: message
-		}
+		AssetLoadError { message: message }
 	}
 }
 
@@ -79,17 +79,23 @@ pub struct AssetCollection<T: Asset> {
 	assets: Vec<T>,
 }
 
-impl<T:Asset> AssetCollection<T> {
-	pub fn load<'a>(&mut self, path: &String, loader: &'a AssetLoader<'a, T>) -> AssetHandle<T>
-	{
+impl<T: Asset> AssetCollection<T> {
+	pub fn load<'a>(&mut self, path: &String, loader: &'a AssetLoader<'a, T>) -> AssetHandle<T> {
 		match self.try_load(path, loader) {
 			Ok(handle) => handle,
-			Err(error) => panic!("Could not load resource at '{}'. Error: '{}'", path, error.description()),
+			Err(error) => panic!(
+				"Could not load resource at '{}'. Error: '{}'",
+				path,
+				error.description()
+			),
 		}
 	}
 
-	pub fn try_load<'a>(&mut self, path: &String, loader: &'a AssetLoader<'a, T>) -> Result<AssetHandle<T>, AssetLoadError>
-	{
+	pub fn try_load<'a>(
+		&mut self,
+		path: &String,
+		loader: &'a AssetLoader<'a, T>,
+	) -> Result<AssetHandle<T>, AssetLoadError> {
 		match self.path_map.get(path).cloned() {
 			Some(handle) => Ok(handle),
 			None => {
@@ -117,11 +123,13 @@ impl<T:Asset> AssetCollection<T> {
 	}
 }
 
-impl<T:Asset> Default for AssetCollection<T> {
+impl<T: Asset> Default for AssetCollection<T> {
 	fn default() -> Self {
 		AssetCollection {
-			path_map : HashMap::default(),
-			assets: Vec::default()
+			path_map: HashMap::default(),
+			assets: Vec::default(),
 		}
 	}
 }
+
+impl<T: 'static + Asset> Resource for AssetCollection<T> {}

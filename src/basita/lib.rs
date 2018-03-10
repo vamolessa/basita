@@ -10,6 +10,9 @@ pub extern crate serde_json;
 
 pub extern crate fxhash;
 
+#[macro_use]
+pub extern crate mopa;
+
 // local
 
 //pub mod systems;
@@ -25,7 +28,6 @@ pub mod sdl;
 
 mod world;
 pub use self::world::*;
-
 
 mod engine;
 pub use self::engine::*;

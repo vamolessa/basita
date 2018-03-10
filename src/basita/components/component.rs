@@ -1,5 +1,6 @@
 use super::SparseStorage;
 use entities::EntityHandle;
+use resources::Resource;
 
 pub trait Component: Default {}
 
@@ -31,3 +32,5 @@ impl<T: Component> ComponentCollection<T> {
 		self.components.clear();
 	}
 }
+
+impl<T: 'static + Component> Resource for ComponentCollection<T> {}
