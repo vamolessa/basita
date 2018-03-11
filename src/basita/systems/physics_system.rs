@@ -1,146 +1,112 @@
-use super::super::{GameEvents, GameState};
-use super::System;
+use specs::{Entities, Entity, Join, ReadStorage, System, WriteStorage};
 
-use components::{Collider, ComponentHandle};
+use super::collision_system::collide;
+use components::{Collider, PhysicBody, Transform};
 use math::Vector2;
 
-pub struct PhysicsSystem;
+#[derive(Default)]
+struct CollisionResponse {
+	position_offset: Vector2,
+	velocity_offset: Vector2,
+}
 
-impl<'a, S, E> System<S, E> for PhysicsSystem
-where
-	S: GameState<'a>,
-	E: GameEvents<S, E>,
-{
-	fn init(_s: &mut S, e: &mut E) {
-		let events = e.get_engine_events_mut();
-		events
-			.collision
-			.on_dynamic_collision
-			.subscribe(on_dynamic_collision);
-		events
-			.collision
-			.on_static_collision
-			.subscribe(on_static_collision);
-	}
+pub struct PhysicsSystem {
+	collision_responses: Vec<(Entity, CollisionResponse)>,
+}
 
-	fn update(s: &mut S, _e: &E) {
-		let state = s.get_engine_state_mut();
+impl<'a> System<'a> for PhysicsSystem {
+	type SystemData = (
+		Entities<'a>,
+		ReadStorage<'a, Collider>,
+		WriteStorage<'a, PhysicBody>,
+		WriteStorage<'a, Transform>,
+	);
 
-		let delta_time = state.delta_time;
-		let physic_bodies = &mut state.world.physic_bodies;
-		let transforms = &mut state.world.transforms;
+	fn run(&mut self, (entities, colliders, mut physic_bodies, mut transforms): Self::SystemData) {
+		let delta_time = 0.5;
 
-		for physic_body in physic_bodies.iter_mut() {
-			let mut transform = transforms.get_mut(physic_body.transform);
-
+		// integration
+		for (physic_body, transform) in (&mut physic_bodies, &mut transforms).join() {
 			physic_body.velocity += physic_body.acceleration * delta_time;
 			transform.position += physic_body.velocity * delta_time;
 			physic_body.acceleration.set(0.0, 0.0);
 		}
+
+		self.collision_responses.clear();
+
+		// collisions
+		for (ae, ac, at, ap) in (&*entities, &colliders, &transforms, &physic_bodies).join() {
+			for (be, bc, bt, bp) in (&*entities, &colliders, &transforms, &physic_bodies).join() {
+				if ae.id() <= be.id() {
+					continue;
+				}
+
+				if let Some(penetration) = collide(ac, at, bc, bt) {
+					let (ar, br) = get_dynamic_response(ap, bp, penetration);
+
+					self.collision_responses.push((ae, ar));
+					self.collision_responses.push((be, br));
+				}
+			}
+
+			for (bc, bt, ()) in (&colliders, &transforms, !&physic_bodies).join() {
+				if let Some(penetration) = collide(ac, at, bc, bt) {
+					let ar = get_static_response(ap, penetration);
+					self.collision_responses.push((ae, ar));
+				}
+			}
+		}
+
+		for &(ref entity, ref response) in &self.collision_responses {
+			let transform = transforms.get_mut(*entity).unwrap();
+			let physic_body = physic_bodies.get_mut(*entity).unwrap();
+
+			transform.position += response.position_offset;
+			physic_body.velocity += response.velocity_offset;
+		}
 	}
 }
 
-fn on_dynamic_collision<'a, S, E>(
-	s: &mut S,
-	_e: &E,
-	data: (
-		ComponentHandle<Collider>,
-		ComponentHandle<Collider>,
-		Vector2,
-	),
-) where
-	S: GameState<'a>,
-	E: GameEvents<S, E>,
-{
-	let (ach, bch, penetration) = data;
+fn get_dynamic_response(
+	ap: &PhysicBody,
+	bp: &PhysicBody,
+	penetration: Vector2,
+) -> (CollisionResponse, CollisionResponse) {
+	let total_inverted_mass = ap.inverted_mass + bp.inverted_mass;
+	if total_inverted_mass <= 0.0 {
+		return (CollisionResponse::default(), CollisionResponse::default());
+	}
 
-	let (ah, bh, ath, bth, impulse, a_weight, b_weight) = {
-		let world = &s.get_engine_state().world;
+	let a_weight = ap.inverted_mass / total_inverted_mass;
+	let b_weight = bp.inverted_mass / total_inverted_mass;
 
-		let ac = world.colliders.get(ach);
-		let bc = world.colliders.get(bch);
-		let ah = ac.physic_body.unwrap();
-		let bh = bc.physic_body.unwrap();
-		let a = world.physic_bodies.get(ah);
-		let b = world.physic_bodies.get(bh);
+	let restitution = (ap.bounciness * bp.bounciness).sqrt();
 
-		let total_inverted_mass = a.inverted_mass + b.inverted_mass;
-		if total_inverted_mass <= 0.0 {
-			return;
-		}
+	let impulse_magnitude =
+		Vector2::dot(penetration, bp.velocity - ap.velocity) * (1.0 + restitution);
+	let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
 
-		let a_weight = a.inverted_mass / total_inverted_mass;
-		let b_weight = b.inverted_mass / total_inverted_mass;
-
-		let restitution = (a.bounciness * b.bounciness).sqrt();
-
-		let impulse_magnitude =
-			Vector2::dot(penetration, b.velocity - a.velocity) * (1.0 + restitution);
-		let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
-
-		(
-			ah,
-			bh,
-			a.transform,
-			b.transform,
-			impulse,
-			a_weight,
-			b_weight,
-		)
+	let a_response = CollisionResponse {
+		position_offset: penetration * (-a_weight),
+		velocity_offset: impulse * (-a_weight),
 	};
 
-	s.get_engine_state_mut()
-		.world
-		.physic_bodies
-		.get_mut(ah)
-		.velocity -= impulse * a_weight;
-	s.get_engine_state_mut()
-		.world
-		.transforms
-		.get_mut(ath)
-		.position -= penetration * a_weight;
+	let b_response = CollisionResponse {
+		position_offset: penetration * (b_weight),
+		velocity_offset: impulse * (b_weight),
+	};
 
-	s.get_engine_state_mut()
-		.world
-		.physic_bodies
-		.get_mut(bh)
-		.velocity += impulse * b_weight;
-	s.get_engine_state_mut()
-		.world
-		.transforms
-		.get_mut(bth)
-		.position += penetration * b_weight;
+	(a_response, b_response)
 }
 
-fn on_static_collision<'a, S, E>(
-	s: &mut S,
-	_e: &E,
-	data: (
-		ComponentHandle<Collider>,
-		ComponentHandle<Collider>,
-		Vector2,
-	),
-) where
-	S: GameState<'a>,
-	E: GameEvents<S, E>,
-{
-	let (_sch, dch, penetration) = data;
+fn get_static_response(p: &PhysicBody, penetration: Vector2) -> CollisionResponse {
+	let restitution = p.bounciness;
 
-	let (dh, dth, impulse) = {
-		let world = &s.get_engine_state().world;
-		let dc = world.colliders.get(dch);
-		let dh = dc.physic_body.unwrap();
-		let d = world.physic_bodies.get(dh);
+	let impulse_magnitude = Vector2::dot(penetration, -p.velocity) * (1.0 + restitution);
+	let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
 
-		let restitution = d.bounciness;
-
-		let impulse_magnitude = Vector2::dot(penetration, -d.velocity) * (1.0 + restitution);
-		let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
-
-		(dh, d.transform, impulse)
-	};
-
-	let world = &mut s.get_engine_state_mut().world;
-	world.physic_bodies.get_mut(dh).velocity += impulse;
-	world.transforms.get_mut(dth).position += penetration;
+	CollisionResponse {
+		position_offset: -penetration,
+		velocity_offset: -impulse,
+	}
 }
