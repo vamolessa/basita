@@ -27,8 +27,8 @@ impl<'a> RenderSystem<'a> {
 	}
 }
 
-impl<'a> System<'a> for RenderSystem<'a> {
-	type SystemData = (ReadStorage<'a, Transform>, ReadStorage<'a, Sprite>);
+impl<'a, 's> System<'s> for RenderSystem<'a> {
+	type SystemData = (ReadStorage<'s, Transform>, ReadStorage<'s, Sprite>);
 
 	fn run(&mut self, (transforms, sprites): Self::SystemData) {
 		for (transform, sprite) in (&transforms, &sprites).join() {

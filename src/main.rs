@@ -1,18 +1,23 @@
 extern crate basita;
 
-//use basita::sdl::SdlContext;
-//use basita::systems::SystemCollection;
+use basita::specs::{DispatcherBuilder, World};
 
-//use game::PlayerSystem;
+use basita::sdl::SdlContext;
+use basita::renderer::systems::RenderSystem;
+
+use basita::core::components::Transform;
+use basita::renderer::components::Sprite;
 
 pub fn main() {
-	//let mut sdl_context = SdlContext::new("platform maker", 400, 300);
-	//let state = GameState::new(&mut sdl_context);
-	//let events = GameEvents::new();
-	//let mut systems = SystemCollection::new();
+	let sdl_context = SdlContext::new("platform maker", 400, 300);
+	let mut world = World::new();
 
-	//systems.add_default_systems();
-	//systems.add_system::<PlayerSystem>();
+	let mut dispatcher = DispatcherBuilder::new()
+		.add_thread_local(RenderSystem::new(&sdl_context))
+		.build();
 
-	//basita::play(state, events, systems);
+	world.register::<Transform>();
+	world.register::<Sprite>();
+
+	dispatcher.dispatch(&mut world.res);
 }
