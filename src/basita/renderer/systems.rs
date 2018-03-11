@@ -1,10 +1,11 @@
 use sdl2::rect::Rect;
 
-use specs::{System, ReadStorage, Join};
+use specs::{System, ReadStorage, Join, Fetch};
 
 use sdl::SdlContext;
 use core::assets::{AssetHandle};
 use core::components::Transform;
+use super::resources::ImageCollection;
 use super::assets::Image;
 use super::components::Sprite;
 
@@ -33,9 +34,13 @@ impl<'a> RenderSystem<'a> {
 }
 
 impl<'a> System<'a> for RenderSystem<'a> {
-	type SystemData = (ReadStorage<'a, Transform>, ReadStorage<'a, Sprite>);
+	type SystemData = (
+		ReadStorage<'a, Transform>,
+		ReadStorage<'a, Sprite>,
+		Fetch<'a, ImageCollection>
+	);
 
-	fn run(&mut self, (transforms, sprites): Self::SystemData) {
+	fn run(&mut self, (transforms, sprites, images): Self::SystemData) {
 		for (transform, sprite) in (&transforms, &sprites).join() {
 			let renderable_index = 0; //sprite.renderable_index;
 			let renderable = &mut self.renderables[renderable_index];
