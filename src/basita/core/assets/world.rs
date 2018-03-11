@@ -10,7 +10,7 @@ pub struct WorldAsset {
 impl Asset for WorldAsset {}
 
 impl<'a> AssetLoader<'a, WorldAsset> for () {
-	fn load(&'a self, path: &str) -> Result<WorldAsset, AssetLoadError> {
+	fn load(&'a mut self, path: &str) -> Result<WorldAsset, AssetLoadError> {
 		let contents = file_helper::read_all_text(path).map_err(|e| AssetLoadError::new(String::from(e.description())))?;
 
 		Ok(WorldAsset {

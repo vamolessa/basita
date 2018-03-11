@@ -2,20 +2,22 @@ use std::cell::RefCell;
 
 use sdl2;
 use sdl2::image::{INIT_JPG, INIT_PNG};
-use sdl2::render::{Canvas, TextureCreator};
-use sdl2::video::{Window, WindowContext};
+use sdl2::render::{Canvas};
+use sdl2::video::{Window};
 
-pub struct SdlContext {
+use super::Textures;
+
+pub struct SdlContext<'a> {
 	_sdl: sdl2::Sdl,
 
 	pub canvas: RefCell<Canvas<Window>>,
 	pub event_pump: RefCell<sdl2::EventPump>,
 
-	// resources
-	pub texture_creator: TextureCreator<WindowContext>,
+	// assets
+	pub textures: Textures<'a>,
 }
 
-impl SdlContext {
+impl<'a> SdlContext<'a> {
 	pub fn new(window_title: &str, window_width: u32, window_height: u32) -> Self {
 		let sdl = sdl2::init().unwrap();
 		let video_subsystem = sdl.video().unwrap();
@@ -35,7 +37,7 @@ impl SdlContext {
 			event_pump: RefCell::from(sdl.event_pump().unwrap()),
 			_sdl: sdl,
 			canvas: RefCell::from(canvas),
-			texture_creator: texture_creator,
+			textures: Textures::new(texture_creator),
 		}
 	}
 }

@@ -1,33 +1,32 @@
-use sdl2::image::LoadTexture;
-use sdl2::render::{Texture, TextureCreator};
+use sdl2::render::Texture;
 use sdl2::rect::Point;
-use sdl2::video::WindowContext;
 
-use core::assets::{Asset, AssetLoader, AssetLoadError};
+use core::assets::{Asset, AssetLoadError, AssetLoader};
+use sdl::Textures;
 
-pub struct Image<'a> {
-	pub texture: Texture<'a>,
+pub struct Image {
+	pub texture_index: usize,
 	pub center: Point,
 }
 
-impl<'a> Image<'a> {
-	fn new(texture: Texture<'a>) -> Self {
+impl Image {
+	fn new<'a>(texture: &Texture<'a>, index: usize) -> Self {
 		let query = texture.query();
 
 		Image {
-			texture: texture,
+			texture_index: index,
 			center: Point::new(query.width as i32 / 2, query.height as i32 / 2),
 		}
 	}
 }
 
-impl<'a> Asset for Image<'a> {}
+impl Asset for Image {}
 
-impl<'a> AssetLoader<'a, Image<'a>> for TextureCreator<WindowContext> {
-	fn load(&'a self, path: &str) -> Result<Image, AssetLoadError> {
+impl<'a> AssetLoader<'a, Image> for Textures<'a> {
+	fn load(&'a mut self, path: &str) -> Result<Image, AssetLoadError> {
 		match self.load_texture(path) {
-			Ok(texture) => Ok(Image::new(texture)),
-			Err(message) => Err(AssetLoadError::new(message))
+			Ok((texture, index)) => Ok(Image::new(texture, index)),
+			Err(error) => Err(error),
 		}
 	}
 }

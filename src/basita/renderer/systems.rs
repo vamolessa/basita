@@ -1,4 +1,5 @@
 use sdl2::rect::Rect;
+use sdl2::render::Texture;
 
 use specs::{System, ReadStorage, Join, Fetch};
 
@@ -11,12 +12,13 @@ use super::components::Sprite;
 
 struct Renderable<'a> {
 	pub depth: i32,
-	pub image_resource: AssetHandle<Image<'a>>,
+	pub image_resource: AssetHandle<Image>,
+	pub texture: &'a Texture<'a>,
 	pub rect: Rect,
 }
 
 pub struct RenderSystem<'a> {
-	sdl: &'a SdlContext,
+	sdl: &'a SdlContext<'a>,
 	renderables: Vec<Renderable<'a>>,
 }
 
