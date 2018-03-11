@@ -32,6 +32,7 @@ impl<'a> RenderSystem<'a> {
 
 impl<'a> System for RenderSystem<'a> {
 	fn update(&mut self, world: &mut World) {
+		/*
 		let sprites = world.components::<Sprite>();
 		let transforms = world.components::<Transform>();
 
@@ -49,5 +50,6 @@ impl<'a> System for RenderSystem<'a> {
 			let image = &images.get(r.image_resource);
 			canvas.copy(&image.texture, None, r.rect).unwrap();
 		}
+		*/
 	}
 }

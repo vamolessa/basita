@@ -1,4 +1,5 @@
 use std::iter::Iterator;
+use std::cell::Ref;
 
 use super::{Component, ComponentCollection};
 
@@ -47,11 +48,7 @@ impl<'a, A: 'a + Component> ComponentJoin for &'a ComponentCollection<A> {
 	type Join = &'a A;
 
 	fn at(&self, i: usize) -> Option<Self::Join> {
-		if let Some(a) = ComponentCollection::at(self, i) {
-			Some(a)
-		} else {
-			None
-		}
+		ComponentCollection::at(self, i)
 	}
 }
 

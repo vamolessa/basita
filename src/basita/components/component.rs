@@ -24,7 +24,7 @@ impl<T: Component> ComponentCollection<T> {
 		self.components.get_mut(entity.id())
 	}
 
-	pub fn at(&self, entity_index: usize) -> Option<&T> {
+	pub fn at<'a>(&'a self, entity_index: usize) -> Option<&'a T> {
 		self.components.get(entity_index)
 	}
 
