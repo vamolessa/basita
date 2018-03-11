@@ -3,7 +3,7 @@ use sdl2::render::{Texture, TextureCreator};
 use sdl2::rect::Point;
 use sdl2::video::WindowContext;
 
-use super::{Asset, AssetLoader, AssetLoadError};
+use core::assets::{Asset, AssetLoader, AssetLoadError};
 
 pub struct Image<'a> {
 	pub texture: Texture<'a>,

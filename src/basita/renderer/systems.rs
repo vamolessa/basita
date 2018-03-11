@@ -1,10 +1,11 @@
 use sdl2::rect::Rect;
 
-use specs::{System,ReadStorage};
+use specs::{System, ReadStorage, Join};
 
 use sdl::SdlContext;
-use assets::{AssetHandle, Image};
+use core::assets::{AssetHandle};
 use core::components::Transform;
+use super::assets::Image;
 use super::components::Sprite;
 
 struct Renderable<'a> {
@@ -35,17 +36,14 @@ impl<'a> System<'a> for RenderSystem<'a> {
 	type SystemData = (ReadStorage<'a, Transform>, ReadStorage<'a, Sprite>);
 
 	fn run(&mut self, (transforms, sprites): Self::SystemData) {
-		/*
-		let sprites = world.components::<Sprite>();
-		let transforms = world.components::<Transform>();
-
-		for (s, t) in (sprites, transforms).iter(world.entities().len()) {
-			let renderable_index = 0; //s.renderable_index;
+		for (transform, sprite) in (&transforms, &sprites).join() {
+			let renderable_index = 0; //sprite.renderable_index;
 			let renderable = &mut self.renderables[renderable_index];
-			renderable.rect.x = t.position.x as i32;
-			renderable.rect.y = t.position.y as i32;
+			renderable.rect.x = transform.position.x as i32;
+			renderable.rect.y = transform.position.y as i32;
 		}
 
+	/*
 		let images = world.assets::<Image<'a>>();
 		let canvas = &mut self.sdl.canvas.borrow_mut();
 
@@ -53,6 +51,6 @@ impl<'a> System<'a> for RenderSystem<'a> {
 			let image = &images.get(r.image_resource);
 			canvas.copy(&image.texture, None, r.rect).unwrap();
 		}
-		*/
+	*/
 	}
 }

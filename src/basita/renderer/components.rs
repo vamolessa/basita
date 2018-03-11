@@ -1,6 +1,7 @@
 use specs::{Component, VecStorage};
 
-use assets::{AssetHandle, Image};
+use core::assets::AssetHandle;
+use super::assets::Image;
 
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Sprite {

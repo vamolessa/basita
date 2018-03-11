@@ -18,9 +18,6 @@ pub mod core;
 pub mod renderer;
 
 pub mod systems;
-pub mod entities;
-pub mod components;
-pub mod assets;
 
 pub mod input;
 pub mod math;
