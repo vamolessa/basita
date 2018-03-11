@@ -1,10 +1,8 @@
 extern crate basita;
 
-use basita::sdl::SdlContext;
+//use basita::sdl::SdlContext;
 //use basita::systems::SystemCollection;
 
-mod game;
-use game::{GameState};
 //use game::PlayerSystem;
 
 pub fn main() {

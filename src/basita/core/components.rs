@@ -1,6 +1,6 @@
-use math::Vector2;
+use specs::{Component, VecStorage};
 
-use super::Component;
+use math::Vector2;
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Transform {
@@ -25,4 +25,6 @@ impl Default for Transform {
 	}
 }
 
-impl Component for Transform {}
+impl Component for Transform {
+	type Storage = VecStorage<Self>;
+}

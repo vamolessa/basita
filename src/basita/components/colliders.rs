@@ -1,6 +1,6 @@
-use math::Vector2;
+use specs::{Component, VecStorage};
 
-use super::Component;
+use math::Vector2;
 
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Collider {
@@ -9,7 +9,9 @@ pub struct Collider {
 	pub is_trigger: bool,
 }
 
-impl Component for Collider {}
+impl Component for Collider {
+	type Storage = VecStorage<Self>;
+}
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum Shape {

@@ -2,8 +2,7 @@ use std::error::Error;
 use std::collections::HashMap;
 use std::marker::PhantomData;
 use std::fmt;
-
-use resources::Resource;
+use std::any::TypeId;
 
 pub trait Asset {}
 
@@ -38,9 +37,12 @@ impl<T: Asset> Copy for AssetHandle<T> {}
 
 impl<T: Asset> fmt::Debug for AssetHandle<T> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(f, "AssetHandle [{}]", self.index)
+		write!(f, "AssetHandle [{}]", self.index )
 	}
 }
+
+unsafe impl<T:Asset> Send for AssetHandle<T> {}
+unsafe impl<T:Asset> Sync for AssetHandle<T> {}
 
 pub trait AssetLoader<'a, T> {
 	fn load(&'a self, path: &str) -> Result<T, AssetLoadError>;
@@ -106,8 +108,8 @@ impl<T: Asset> AssetCollection<T> {
 
 				self.path_map.insert(path.clone(), handle);
 
-				let resource = loader.load(path)?;
-				self.assets.push(resource);
+				let asset = loader.load(path)?;
+				self.assets.push(asset);
 
 				Ok(handle)
 			}
@@ -132,4 +134,3 @@ impl<T: Asset> Default for AssetCollection<T> {
 	}
 }
 
-impl<T: 'static + Asset> Resource for AssetCollection<T> {}

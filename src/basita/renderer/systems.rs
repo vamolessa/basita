@@ -1,10 +1,11 @@
 use sdl2::rect::Rect;
 
+use specs::{System,ReadStorage};
+
 use sdl::SdlContext;
-use World;
-use systems::System;
 use assets::{AssetHandle, Image};
-use components::{ComponentIter, Sprite, Transform};
+use core::components::Transform;
+use super::components::Sprite;
 
 struct Renderable<'a> {
 	pub depth: i32,
@@ -30,8 +31,10 @@ impl<'a> RenderSystem<'a> {
 	}
 }
 
-impl<'a> System for RenderSystem<'a> {
-	fn update(&mut self, world: &mut World) {
+impl<'a> System<'a> for RenderSystem<'a> {
+	type SystemData = (ReadStorage<'a, Transform>, ReadStorage<'a, Sprite>);
+
+	fn run(&mut self, (transforms, sprites): Self::SystemData) {
 		/*
 		let sprites = world.components::<Sprite>();
 		let transforms = world.components::<Transform>();

@@ -1,6 +1,6 @@
-use math::Vector2;
+use specs::{Component, VecStorage};
 
-use super::Component;
+use math::Vector2;
 
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct PhysicBody {
@@ -11,4 +11,6 @@ pub struct PhysicBody {
 	pub bounciness: f32,
 }
 
-impl Component for PhysicBody {}
+impl Component for PhysicBody {
+	type Storage = VecStorage<Self>;
+}

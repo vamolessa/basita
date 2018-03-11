@@ -8,26 +8,21 @@ pub extern crate serde;
 pub extern crate serde_derive;
 pub extern crate serde_json;
 
-pub extern crate fxhash;
-
+pub extern crate specs;
 #[macro_use]
-pub extern crate mopa;
+pub extern crate specs_derive;
 
 // local
+
+pub mod core;
+pub mod renderer;
 
 pub mod systems;
 pub mod entities;
 pub mod components;
-pub mod resources;
-
 pub mod assets;
+
 pub mod input;
 pub mod math;
 
 pub mod sdl;
-
-mod world;
-pub use self::world::*;
-
-mod engine;
-pub use self::engine::*;
