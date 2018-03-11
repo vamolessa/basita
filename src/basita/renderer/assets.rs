@@ -24,9 +24,6 @@ impl Asset for Image {}
 
 impl<'a> AssetLoader<'a, Image> for Textures<'a> {
 	fn load(&'a mut self, path: &str) -> Result<Image, AssetLoadError> {
-		match self.load_texture(path) {
-			Ok((texture, index)) => Ok(Image::new(texture, index)),
-			Err(error) => Err(error),
-		}
+		self.load_texture(path).map(|(t, i)| Image::new(t, i))
 	}
 }

@@ -9,8 +9,6 @@ pub extern crate serde_derive;
 pub extern crate serde_json;
 
 pub extern crate specs;
-#[macro_use]
-pub extern crate specs_derive;
 
 // local
 

@@ -1,18 +1,14 @@
 use sdl2::rect::Rect;
 use sdl2::render::Texture;
 
-use specs::{System, ReadStorage, Join, Fetch};
+use specs::{Join, ReadStorage, System};
 
 use sdl::SdlContext;
-use core::assets::{AssetHandle};
 use core::components::Transform;
-use super::resources::ImageCollection;
-use super::assets::Image;
 use super::components::Sprite;
 
 struct Renderable<'a> {
 	pub depth: i32,
-	pub image_resource: AssetHandle<Image>,
 	pub texture: &'a Texture<'a>,
 	pub rect: Rect,
 }
@@ -29,35 +25,23 @@ impl<'a> RenderSystem<'a> {
 			renderables: Vec::default(),
 		}
 	}
-
-	pub fn sort_by_depth(&mut self) {
-		self.renderables.sort_by(|a, b| a.depth.cmp(&b.depth));
-	}
 }
 
 impl<'a> System<'a> for RenderSystem<'a> {
-	type SystemData = (
-		ReadStorage<'a, Transform>,
-		ReadStorage<'a, Sprite>,
-		Fetch<'a, ImageCollection>
-	);
+	type SystemData = (ReadStorage<'a, Transform>, ReadStorage<'a, Sprite>);
 
-	fn run(&mut self, (transforms, sprites, images): Self::SystemData) {
+	fn run(&mut self, (transforms, sprites): Self::SystemData) {
 		for (transform, sprite) in (&transforms, &sprites).join() {
-			let renderable_index = 0; //sprite.renderable_index;
-			let renderable = &mut self.renderables[renderable_index];
+			let renderable = &mut self.renderables[sprite.renderable_index];
 			renderable.rect.x = transform.position.x as i32;
 			renderable.rect.y = transform.position.y as i32;
 		}
 
-	/*
-		let images = world.assets::<Image<'a>>();
-		let canvas = &mut self.sdl.canvas.borrow_mut();
+		self.renderables.sort_by(|a, b| a.depth.cmp(&b.depth));
 
+		let canvas = &mut self.sdl.canvas.borrow_mut();
 		for r in &self.renderables {
-			let image = &images.get(r.image_resource);
-			canvas.copy(&image.texture, None, r.rect).unwrap();
+			canvas.copy(&r.texture, None, r.rect).unwrap();
 		}
-	*/
 	}
 }

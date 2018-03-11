@@ -7,6 +7,7 @@ use super::assets::Image;
 pub struct Sprite {
 	pub depth: i32,
 	pub image_resource: AssetHandle<Image>,
+	pub renderable_index: usize,
 }
 
 impl Component for Sprite {
