@@ -27,4 +27,8 @@ impl<'a> Textures<'a> {
 			Err(message) => Err(AssetLoadError::new(message)),
 		}
 	}
+
+	pub fn at(&self, index: usize) -> &Texture<'a> {
+		&self.textures[index]
+	}
 }

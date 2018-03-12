@@ -4,6 +4,7 @@ use std::time::Duration;
 use std::thread;
 
 use basita::sdl2::pixels::Color;
+use basita::sdl2::event::Event;
 use basita::specs::{DispatcherBuilder, World};
 
 use basita::sdl::SdlContext;
@@ -26,7 +27,7 @@ pub fn main() {
 	world.register::<Transform>();
 	world.register::<Sprite>();
 
-	'main loop {
+	'main: loop {
 		let mut event_pump = sdl_context.event_pump.borrow_mut();
 		for event in event_pump.poll_iter() {
 			match event {

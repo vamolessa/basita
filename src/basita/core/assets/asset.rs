@@ -18,11 +18,15 @@ impl<T: Asset> AssetHandle<T> {
 			_phantom: PhantomData,
 		}
 	}
+
+	pub fn is_valid(&self) -> bool {
+		self.index == usize::max_value()
+	}
 }
 
 impl<T: Asset> Default for AssetHandle<T> {
 	fn default() -> Self {
-		AssetHandle::new(0)
+		AssetHandle::new(usize::max_value())
 	}
 }
 
@@ -33,6 +37,14 @@ impl<T: Asset> Clone for AssetHandle<T> {
 }
 
 impl<T: Asset> Copy for AssetHandle<T> {}
+
+impl<T: Asset> PartialEq for AssetHandle<T> {
+	fn eq(&self, other: &Self) -> bool {
+		self.index == other.index
+	}
+}
+
+impl<T: Asset> Eq for AssetHandle<T> {}
 
 impl<T: Asset> fmt::Debug for AssetHandle<T> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
