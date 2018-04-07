@@ -11,7 +11,10 @@ use basita::sdl::SdlContext;
 use basita::renderer::systems::RenderSystem;
 
 use basita::core::components::Transform;
+use basita::core::resources::Time;
+
 use basita::renderer::components::Sprite;
+use basita::renderer::resources::{UpdatedSprites, ImageCollection};
 
 pub fn main() {
 	let frames_per_second = 60;
@@ -27,6 +30,10 @@ pub fn main() {
 	world.register::<Transform>();
 	world.register::<Sprite>();
 
+	world.add_resource(Time::default());
+	world.add_resource(UpdatedSprites::default());
+	world.add_resource(ImageCollection::default());
+
 	'main: loop {
 		let mut event_pump = sdl_context.event_pump.borrow_mut();
 		for event in event_pump.poll_iter() {
@@ -38,14 +45,19 @@ pub fn main() {
 			};
 		}
 
-		let mut canvas = sdl_context.canvas.borrow_mut();
+		{
+			let mut canvas = sdl_context.canvas.borrow_mut();
 
-		canvas.set_draw_color(clear_color);
-		canvas.clear();
+			canvas.set_draw_color(clear_color);
+			canvas.clear();
+		}
 
 		dispatcher.dispatch(&mut world.res);
 
-		canvas.present();
+		{
+			let mut canvas = sdl_context.canvas.borrow_mut();
+			canvas.present();
+		}
 
 		world.maintain();
 

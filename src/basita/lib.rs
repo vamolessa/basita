@@ -11,9 +11,6 @@ pub extern crate serde_json;
 pub extern crate specs;
 
 // local
-mod basita;
-pub use self::basita::*;
-
 pub mod core;
 pub mod renderer;
 pub mod physics;
