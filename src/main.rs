@@ -12,6 +12,7 @@ use basita::renderer::systems::RenderSystem;
 
 use basita::core::components::Transform;
 use basita::core::resources::Time;
+use basita::math::Vector2;
 
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::{UpdatedSprites, ImageCollection};
@@ -20,7 +21,7 @@ pub fn main() {
 	let frames_per_second = 60;
 	let clear_color = Color::RGB(0, 0, 0);
 
-	let sdl_context = SdlContext::new("platform maker", 400, 300);
+	let mut sdl_context = SdlContext::new("platform maker", 400, 300);
 	let mut world = World::new();
 
 	let mut dispatcher = DispatcherBuilder::new()
@@ -31,8 +32,29 @@ pub fn main() {
 	world.register::<Sprite>();
 
 	world.add_resource(Time::default());
-	world.add_resource(UpdatedSprites::default());
+
 	world.add_resource(ImageCollection::default());
+	world.add_resource(UpdatedSprites::default());
+
+	{
+		let mut player_image = Default::default();
+
+		{
+			let mut images = world.write_resource::<ImageCollection>();
+			player_image = images.load(&String::from("assets/images/player.png"), &mut sdl_context.textures);
+		}
+
+		let _player = world.create_entity()
+			.with(Transform {
+				position: Vector2::new(100.0, 100.0),
+			})
+			.with(Sprite {
+				depth: 0,
+				image: player_image,
+				renderable_index: 0,
+			})
+			.build();
+	}
 
 	'main: loop {
 		let mut event_pump = sdl_context.event_pump.borrow_mut();
