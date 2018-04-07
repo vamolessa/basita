@@ -1,7 +1,8 @@
-use specs::{Entities, Entity, Join, ReadStorage, System, WriteStorage};
+use specs::{Join, Entities, Entity, ReadStorage, System, WriteStorage};
 
 use super::collision_system::collide;
-use components::{Collider, PhysicBody, Transform};
+use core::components::Transform;
+use super::super::components::{Collider, PhysicBody};
 use math::Vector2;
 
 #[derive(Default)]

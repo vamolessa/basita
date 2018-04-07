@@ -16,8 +16,7 @@ pub use self::basita::*;
 
 pub mod core;
 pub mod renderer;
-
-pub mod systems;
+pub mod physics;
 
 pub mod input;
 pub mod math;

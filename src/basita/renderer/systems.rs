@@ -3,9 +3,9 @@ use sdl2::render::Texture;
 
 use specs::{Join, ReadStorage, System, Fetch, FetchMut};
 
-use sdl::SdlContext;
 use core::components::Transform;
 use core::assets::AssetHandle;
+use sdl::SdlContext;
 use super::components::Sprite;
 use super::assets::Image;
 use super::resources::{UpdatedSprites, ImageCollection};

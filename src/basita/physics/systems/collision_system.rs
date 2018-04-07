@@ -1,5 +1,6 @@
-use components::{BoxShape, Collider, Shape, Transform};
+use core::components::Transform;
 use math::Vector2;
+use super::super::components::{BoxShape, Collider, Shape};
 
 pub fn collide(
 	a: &Collider,
