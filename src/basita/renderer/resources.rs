@@ -6,6 +6,6 @@ use super::assets::Image;
 pub type ImageCollection = AssetCollection<Image>;
 
 #[derive(Default)]
-pub struct UpdatedSprites {
+pub struct DirtySprites {
 	pub entities: Vec<Entity>,
 }

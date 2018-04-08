@@ -12,7 +12,7 @@ pub struct ColliderRenderSystem<'a> {
 }
 
 impl<'a> ColliderRenderSystem<'a> {
-	pub fn new(sdl: &'a SdlContext) -> Self {
+	pub fn new(sdl: &'a SdlContext<'a>) -> Self {
 		ColliderRenderSystem {
 			sdl: sdl,
 		}
@@ -26,7 +26,7 @@ impl<'a, 's> System<'s> for ColliderRenderSystem<'a> {
 	);
 
 	fn run(&mut self, (transforms, colliders): Self::SystemData) {
-		let canvas = &mut self.sdl.canvas.borrow_mut();
+		let mut canvas = self.sdl.canvas.borrow_mut();
 		canvas.set_draw_color(Color::RGBA(0, 255, 0, 100));
 
 		for (transform, collider) in (&transforms, &colliders).join() {

@@ -2,8 +2,8 @@ use std::cell::RefCell;
 
 use sdl2;
 use sdl2::image::{INIT_JPG, INIT_PNG};
-use sdl2::render::{Canvas};
-use sdl2::video::{Window};
+use sdl2::render::Canvas;
+use sdl2::video::Window;
 
 use super::Textures;
 
@@ -14,7 +14,7 @@ pub struct SdlContext<'a> {
 	pub event_pump: RefCell<sdl2::EventPump>,
 
 	// assets
-	pub textures: Textures<'a>,
+	pub textures: RefCell<Textures<'a>>,
 }
 
 impl<'a> SdlContext<'a> {
@@ -37,7 +37,7 @@ impl<'a> SdlContext<'a> {
 			event_pump: RefCell::from(sdl.event_pump().unwrap()),
 			_sdl: sdl,
 			canvas: RefCell::from(canvas),
-			textures: Textures::new(texture_creator),
+			textures: RefCell::from(Textures::new(texture_creator)),
 		}
 	}
 }

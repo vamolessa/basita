@@ -1,29 +1,43 @@
 extern crate basita;
 
-use std::time::Duration;
+use std::ops::DerefMut;
 use std::thread;
+use std::time::Duration;
 
-use basita::sdl2::pixels::Color;
 use basita::sdl2::event::Event;
+use basita::sdl2::pixels::Color;
 use basita::specs::{DispatcherBuilder, World};
 
-use basita::sdl::SdlContext;
 use basita::renderer::systems::RenderSystem;
+use basita::sdl::SdlContext;
 
 use basita::core::components::Transform;
 use basita::core::resources::Time;
 use basita::math::Vector2;
 
 use basita::renderer::components::Sprite;
-use basita::renderer::resources::{UpdatedSprites, ImageCollection};
+use basita::renderer::resources::{DirtySprites, ImageCollection};
 
 pub fn main() {
+	/*
 	let frames_per_second = 60;
 	let clear_color = Color::RGB(0, 0, 0);
+	*/
 
-	let sdl_context = SdlContext::new("platform maker", 400, 300);
+	let mut sdl_context = SdlContext::new("game", 400, 300);
 	let mut world = World::new();
 
+	let mut images = world.write_resource::<ImageCollection>();
+	let image_loader = sdl_context.textures.borrow_mut();
+
+	/*
+	::std::cell::RefMut::map(image_loader, |l| {
+		&mut images.load(&String::from("assets/images/player.png"), l)
+	});
+	*/
+	//images.load(&String::from("assets/images/player.png"), &mut image_loader);
+
+	/*
 	let mut dispatcher = DispatcherBuilder::new()
 		.add_thread_local(RenderSystem::new(&sdl_context))
 		.build();
@@ -34,7 +48,7 @@ pub fn main() {
 	world.add_resource(Time::default());
 
 	world.add_resource(ImageCollection::default());
-	world.add_resource(UpdatedSprites::default());
+	world.add_resource(DirtySprites::default());
 
 	{
 		let player_image;
@@ -44,6 +58,7 @@ pub fn main() {
 			let mut images = world.write_resource::<ImageCollection>();
 
 			player_image = images.load(&String::from("assets/images/player.png"), loader);
+			images.load(&String::from("assets/images/player.png"), loader);
 		}
 
 		let _player = world.create_entity()
@@ -87,4 +102,5 @@ pub fn main() {
 
 		thread::sleep(Duration::new(0, 1_000_000_000u32 / frames_per_second));
 	}
+	*/
 }

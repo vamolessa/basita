@@ -1,7 +1,7 @@
-use std::error::Error;
 use std::collections::HashMap;
-use std::marker::PhantomData;
+use std::error::Error;
 use std::fmt;
+use std::marker::PhantomData;
 
 pub trait Asset {}
 
@@ -132,10 +132,18 @@ impl<T: Asset> AssetCollection<T> {
 	}
 
 	pub fn get(&self, handle: AssetHandle<T>) -> &T {
+		if !handle.is_valid() {
+			panic!("Invalid handle");
+		}
+
 		&self.assets[handle.index]
 	}
 
 	pub fn get_mut(&mut self, handle: AssetHandle<T>) -> &mut T {
+		if !handle.is_valid() {
+			panic!("Invalid handle");
+		}
+
 		&mut self.assets[handle.index]
 	}
 }

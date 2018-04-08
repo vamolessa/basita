@@ -1,5 +1,5 @@
-use sdl2::render::Texture;
 use sdl2::rect::Point;
+use sdl2::render::Texture;
 
 use core::assets::{Asset, AssetLoadError, AssetLoader};
 use sdl::Textures;
