@@ -28,7 +28,9 @@ impl<'a> Textures<'a> {
 		}
 	}
 
-	pub fn at(&self, index: usize) -> &Texture<'a> {
+	pub fn at(&'a self, index: usize) -> &Texture<'a> {
 		&self.textures[index]
 	}
+
+	pub fn asd(&'a mut self) {}
 }

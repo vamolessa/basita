@@ -1,6 +1,5 @@
 extern crate basita;
 
-use std::ops::DerefMut;
 use std::thread;
 use std::time::Duration;
 
@@ -18,24 +17,34 @@ use basita::math::Vector2;
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::{DirtySprites, ImageCollection};
 
+use std::ops::DerefMut;
+
 pub fn main() {
 	/*
 	let frames_per_second = 60;
 	let clear_color = Color::RGB(0, 0, 0);
 	*/
 
-	let mut sdl_context = SdlContext::new("game", 400, 300);
+	let sdl_context = SdlContext::new("game", 400, 300);
+
 	let mut world = World::new();
 
 	let mut images = world.write_resource::<ImageCollection>();
-	let image_loader = sdl_context.textures.borrow_mut();
+	let mut image_loader = sdl_context.textures.borrow_mut();
+
+	let _t = image_loader.asd();
+	/*
+	let (t, i) = image_loader
+		.load_texture(&String::from("assets/images/player.png"))
+		.unwrap();
+		*/
 
 	/*
-	::std::cell::RefMut::map(image_loader, |l| {
-		&mut images.load(&String::from("assets/images/player.png"), l)
-	});
+	images.load(
+		&String::from("assets/images/player.png"),
+		image_loader.deref_mut(),
+	);
 	*/
-	//images.load(&String::from("assets/images/player.png"), &mut image_loader);
 
 	/*
 	let mut dispatcher = DispatcherBuilder::new()
