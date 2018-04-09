@@ -10,37 +10,12 @@ pub struct Image {
 
 impl Asset for Image {}
 
-impl<'a> AssetLoader<'a, Image> for Textures<'a> {
-	fn load(&'a mut self, path: &str) -> Result<Image, AssetLoadError> {
-		self.load_texture(path).map(|(t, i)| {
-			let query = t.query();
+impl<'a> AssetLoader<'a, Image> for TextureLoader {
+	type Storage = TextureStorage<'a>;
 
-			Image {
-				texture_index: i,
-				center: Point::new(query.width as i32 / 2, query.height as i32 / 2),
-			}
-		})
-	}
-}
-
-impl<'a> AssetLoader<'a, Image> for (TextureLoader, TextureStorage<'a>) {
-	fn load(&'a mut self, path: &str) -> Result<Image, AssetLoadError> {
-		self.0.load_texture(path, &mut self.1).map(|index| {
-			let texture = self.1.at(index);
-			let query = texture.query();
-
-			Image {
-				texture_index: index,
-				center: Point::new(query.width as i32 / 2, query.height as i32 / 2),
-			}
-		})
-	}
-}
-
-impl<'a> AssetLoader<'a, Image> for (&'a TextureLoader, &'a mut TextureStorage<'a>) {
-	fn load(&'a mut self, path: &str) -> Result<Image, AssetLoadError> {
-		self.0.load_texture(path, &mut self.1).map(|index| {
-			let texture = self.1.at(index);
+	fn load(&'a self, path: &str, storage: &mut Self::Storage) -> Result<Image, AssetLoadError> {
+		self.load_texture(path, storage).map(|index| {
+			let texture = storage.at(index);
 			let query = texture.query();
 
 			Image {

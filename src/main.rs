@@ -18,7 +18,8 @@ use basita::renderer::components::Sprite;
 use basita::renderer::resources::{DirtySprites, ImageCollection};
 
 use basita::core::assets::AssetLoader;
-use basita::sdl::{TextureLoader, Textures};
+use basita::renderer::assets::Image;
+use basita::sdl::{TextureLoader, TextureStorage, Textures};
 use basita::sdl2::image::LoadTexture;
 
 pub fn main() {
@@ -28,30 +29,17 @@ pub fn main() {
 	*/
 
 	let sdl_context = SdlContext::new("game", 400, 300);
-	let mut texture_loader = TextureLoader::new(sdl_context.canvas.borrow().texture_creator());
 	let mut sdl_storage = SdlStorage::default();
 
-	(&texture_loader, &mut sdl_storage.texture_storage)
-		.load("path")
-		.unwrap();
+	//let world = World::new();
+	//let mut images = world.write_resource::<ImageCollection>();
+	let mut images = ImageCollection::default();
 
-	//let mut tex_colection = Vec::new();
-
-	//let tex = textures.texture_creator.load_texture("path").unwrap();
-	//tex_colection.push(tex);
-
-	/*
-	let (t, i) = image_loader
-		.load_texture(&String::from("assets/images/player.png"))
-		.unwrap();
-		*/
-
-	/*
 	images.load(
-		&String::from("assets/images/player.png"),
-		image_loader.deref_mut(),
+		&String::from("path"),
+		&sdl_context.texture_loader,
+		&mut sdl_storage.texture_storage,
 	);
-	*/
 
 	//----------------------
 

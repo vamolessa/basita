@@ -56,7 +56,8 @@ unsafe impl<T: Asset> Send for AssetHandle<T> {}
 unsafe impl<T: Asset> Sync for AssetHandle<T> {}
 
 pub trait AssetLoader<'a, T> {
-	fn load(&'a mut self, path: &str) -> Result<T, AssetLoadError>;
+	type Storage;
+	fn load(&'a self, path: &str, storage: &mut Self::Storage) -> Result<T, AssetLoadError>;
 }
 
 pub struct AssetLoadError {
@@ -93,12 +94,13 @@ pub struct AssetCollection<T: Asset> {
 }
 
 impl<T: Asset> AssetCollection<T> {
-	pub fn load<'a>(
+	pub fn load<'a, S>(
 		&mut self,
 		path: &String,
-		loader: &'a mut AssetLoader<'a, T>,
+		loader: &'a AssetLoader<'a, T, Storage = S>,
+		storage: &mut S,
 	) -> AssetHandle<T> {
-		match self.try_load(path, loader) {
+		match self.try_load(path, loader, storage) {
 			Ok(handle) => handle,
 			Err(error) => panic!(
 				"Could not load resource at '{}'. Error: '{}'",
@@ -108,10 +110,11 @@ impl<T: Asset> AssetCollection<T> {
 		}
 	}
 
-	pub fn try_load<'a>(
+	pub fn try_load<'a, S>(
 		&mut self,
 		path: &String,
-		loader: &'a mut AssetLoader<'a, T>,
+		loader: &'a AssetLoader<'a, T, Storage = S>,
+		storage: &mut S,
 	) -> Result<AssetHandle<T>, AssetLoadError> {
 		match self.path_map.get(path).cloned() {
 			Some(handle) => Ok(handle),
@@ -123,7 +126,7 @@ impl<T: Asset> AssetCollection<T> {
 
 				self.path_map.insert(path.clone(), handle);
 
-				let asset = loader.load(path)?;
+				let asset = loader.load(path, storage)?;
 				self.assets.push(asset);
 
 				Ok(handle)
