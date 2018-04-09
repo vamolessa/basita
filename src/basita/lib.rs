@@ -12,8 +12,8 @@ pub extern crate specs;
 
 // local
 pub mod core;
-pub mod renderer;
 pub mod physics;
+pub mod renderer;
 
 pub mod input;
 pub mod math;

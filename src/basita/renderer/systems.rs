@@ -62,6 +62,7 @@ impl<'a, 's> System<'s> for RenderSystem<'a> {
 			renderable.rect.y = transform.position.y as i32;
 		}
 
+		/*
 		let mut canvas = self.sdl.canvas.borrow_mut();
 		let textures = self.sdl.textures.borrow();
 
@@ -71,5 +72,6 @@ impl<'a, 's> System<'s> for RenderSystem<'a> {
 
 			canvas.copy(texture, None, r.rect).unwrap();
 		}
+		*/
 	}
 }

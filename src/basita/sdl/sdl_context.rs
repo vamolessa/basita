@@ -5,7 +5,7 @@ use sdl2::image::{INIT_JPG, INIT_PNG};
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 
-use super::Textures;
+use super::{TextureLoader, TextureStorage, Textures};
 
 pub struct SdlContext<'a> {
 	_sdl: sdl2::Sdl,
@@ -15,6 +15,7 @@ pub struct SdlContext<'a> {
 
 	// assets
 	pub textures: RefCell<Textures<'a>>,
+	pub texture_loader: TextureLoader,
 }
 
 impl<'a> SdlContext<'a> {
@@ -36,8 +37,14 @@ impl<'a> SdlContext<'a> {
 		SdlContext {
 			event_pump: RefCell::from(sdl.event_pump().unwrap()),
 			_sdl: sdl,
-			canvas: RefCell::from(canvas),
 			textures: RefCell::from(Textures::new(texture_creator)),
+			texture_loader: TextureLoader::new(canvas.texture_creator()),
+			canvas: RefCell::from(canvas),
 		}
 	}
+}
+
+#[derive(Default)]
+pub struct SdlStorage<'a> {
+	pub texture_storage: TextureStorage<'a>,
 }
