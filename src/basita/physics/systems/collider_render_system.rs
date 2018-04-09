@@ -8,11 +8,11 @@ use core::components::Transform;
 use sdl::SdlContext;
 
 pub struct ColliderRenderSystem<'a> {
-	sdl_context: &'a SdlContext<'a>,
+	sdl_context: &'a SdlContext,
 }
 
 impl<'a> ColliderRenderSystem<'a> {
-	pub fn new(sdl_context: &'a SdlContext<'a>) -> Self {
+	pub fn new(sdl_context: &'a SdlContext) -> Self {
 		ColliderRenderSystem {
 			sdl_context: sdl_context,
 		}

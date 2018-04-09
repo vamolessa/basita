@@ -17,13 +17,13 @@ struct Renderable<'a> {
 }
 
 pub struct RenderSystem<'a> {
-	sdl_context: &'a SdlContext<'a>,
+	sdl_context: &'a SdlContext,
 	sdl_storage: &'a SdlStorage<'a>,
 	renderables: Vec<Renderable<'a>>,
 }
 
 impl<'a> RenderSystem<'a> {
-	pub fn new(sdl_context: &'a SdlContext<'a>, sdl_storage: &'a SdlStorage<'a>) -> Self {
+	pub fn new(sdl_context: &'a SdlContext, sdl_storage: &'a SdlStorage<'a>) -> Self {
 		RenderSystem {
 			sdl_context: sdl_context,
 			sdl_storage: sdl_storage,

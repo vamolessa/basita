@@ -46,12 +46,8 @@ pub fn main() {
 		);
 	}
 
-	{
-		let render_system = RenderSystem::new(&sdl_context, &sdl_storage);
-	}
-
 	let mut dispatcher = DispatcherBuilder::new()
-		//.add_thread_local(RenderSystem::new(&sdl_context, &sdl_storage))
+		.add_thread_local(RenderSystem::new(&sdl_context, &sdl_storage))
 		.build();
 
 	let _player = world
