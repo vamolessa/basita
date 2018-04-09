@@ -1,32 +1,29 @@
 use specs::{Join, ReadStorage, System};
 
-use sdl2::rect::Rect;
 use sdl2::pixels::Color;
+use sdl2::rect::Rect;
 
+use super::super::components::{Collider, Shape};
 use core::components::Transform;
 use sdl::SdlContext;
-use super::super::components::{Collider, Shape};
 
 pub struct ColliderRenderSystem<'a> {
-	sdl: &'a SdlContext<'a>,
+	sdl_context: &'a SdlContext<'a>,
 }
 
 impl<'a> ColliderRenderSystem<'a> {
-	pub fn new(sdl: &'a SdlContext<'a>) -> Self {
+	pub fn new(sdl_context: &'a SdlContext<'a>) -> Self {
 		ColliderRenderSystem {
-			sdl: sdl,
+			sdl_context: sdl_context,
 		}
 	}
 }
 
 impl<'a, 's> System<'s> for ColliderRenderSystem<'a> {
-	type SystemData = (
-		ReadStorage<'s, Transform>,
-		ReadStorage<'s, Collider>,
-	);
+	type SystemData = (ReadStorage<'s, Transform>, ReadStorage<'s, Collider>);
 
 	fn run(&mut self, (transforms, colliders): Self::SystemData) {
-		let mut canvas = self.sdl.canvas.borrow_mut();
+		let mut canvas = self.sdl_context.canvas.borrow_mut();
 		canvas.set_draw_color(Color::RGBA(0, 255, 0, 100));
 
 		for (transform, collider) in (&transforms, &colliders).join() {

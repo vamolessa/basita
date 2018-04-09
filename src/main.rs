@@ -17,36 +17,14 @@ use basita::math::Vector2;
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::{DirtySprites, ImageCollection};
 
-use basita::core::assets::AssetLoader;
-use basita::renderer::assets::Image;
-use basita::sdl::{TextureLoader, TextureStorage, Textures};
-use basita::sdl2::image::LoadTexture;
-
 pub fn main() {
-	/*
 	let frames_per_second = 60;
 	let clear_color = Color::RGB(0, 0, 0);
-	*/
 
 	let sdl_context = SdlContext::new("game", 400, 300);
 	let mut sdl_storage = SdlStorage::default();
 
-	//let world = World::new();
-	//let mut images = world.write_resource::<ImageCollection>();
-	let mut images = ImageCollection::default();
-
-	images.load(
-		&String::from("path"),
-		&sdl_context.texture_loader,
-		&mut sdl_storage.texture_storage,
-	);
-
-	//----------------------
-
-	/*
-	let mut dispatcher = DispatcherBuilder::new()
-		.add_thread_local(RenderSystem::new(&sdl_context))
-		.build();
+	let mut world = World::new();
 
 	world.register::<Transform>();
 	world.register::<Sprite>();
@@ -56,28 +34,37 @@ pub fn main() {
 	world.add_resource(ImageCollection::default());
 	world.add_resource(DirtySprites::default());
 
+	let player_image;
+
 	{
-		let player_image;
+		let mut images = world.write_resource::<ImageCollection>();
 
-		{
-			let loader = &mut sdl_context.textures;
-			let mut images = world.write_resource::<ImageCollection>();
-
-			player_image = images.load(&String::from("assets/images/player.png"), loader);
-			images.load(&String::from("assets/images/player.png"), loader);
-		}
-
-		let _player = world.create_entity()
-			.with(Transform {
-				position: Vector2::new(100.0, 100.0),
-			})
-			.with(Sprite {
-				depth: 0,
-				image: player_image,
-				renderable_index: 0,
-			})
-			.build();
+		player_image = images.load(
+			&String::from("assets/images/player.png"),
+			&sdl_context.texture_loader,
+			&mut sdl_storage.texture_storage,
+		);
 	}
+
+	{
+		let render_system = RenderSystem::new(&sdl_context, &sdl_storage);
+	}
+
+	let mut dispatcher = DispatcherBuilder::new()
+		//.add_thread_local(RenderSystem::new(&sdl_context, &sdl_storage))
+		.build();
+
+	let _player = world
+		.create_entity()
+		.with(Transform {
+			position: Vector2::new(100.0, 100.0),
+		})
+		.with(Sprite {
+			depth: 0,
+			image: player_image,
+			renderable_index: 0,
+		})
+		.build();
 
 	'main: loop {
 		let mut event_pump = sdl_context.event_pump.borrow_mut();
@@ -108,5 +95,4 @@ pub fn main() {
 
 		thread::sleep(Duration::new(0, 1_000_000_000u32 / frames_per_second));
 	}
-	*/
 }

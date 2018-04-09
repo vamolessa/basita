@@ -1,5 +1,4 @@
 use sdl2::rect::Rect;
-use sdl2::render::Texture;
 
 use specs::{Fetch, FetchMut, Join, ReadStorage, System};
 
@@ -8,7 +7,7 @@ use super::components::Sprite;
 use super::resources::{DirtySprites, ImageCollection};
 use core::assets::AssetHandle;
 use core::components::Transform;
-use sdl::SdlContext;
+use sdl::{SdlContext, SdlStorage};
 
 struct Renderable<'a> {
 	pub depth: i32,
@@ -18,14 +17,16 @@ struct Renderable<'a> {
 }
 
 pub struct RenderSystem<'a> {
-	sdl: &'a SdlContext<'a>,
+	sdl_context: &'a SdlContext<'a>,
+	sdl_storage: &'a SdlStorage<'a>,
 	renderables: Vec<Renderable<'a>>,
 }
 
 impl<'a> RenderSystem<'a> {
-	pub fn new(sdl: &'a SdlContext<'a>) -> Self {
+	pub fn new(sdl_context: &'a SdlContext<'a>, sdl_storage: &'a SdlStorage<'a>) -> Self {
 		RenderSystem {
-			sdl: sdl,
+			sdl_context: sdl_context,
+			sdl_storage: sdl_storage,
 			renderables: Vec::default(),
 		}
 	}
@@ -62,9 +63,8 @@ impl<'a, 's> System<'s> for RenderSystem<'a> {
 			renderable.rect.y = transform.position.y as i32;
 		}
 
-		/*
-		let mut canvas = self.sdl.canvas.borrow_mut();
-		let textures = self.sdl.textures.borrow();
+		let mut canvas = self.sdl_context.canvas.borrow_mut();
+		let textures = &self.sdl_storage.texture_storage;
 
 		for r in &self.renderables {
 			let image = image_collection.get(r.image);
@@ -72,6 +72,5 @@ impl<'a, 's> System<'s> for RenderSystem<'a> {
 
 			canvas.copy(texture, None, r.rect).unwrap();
 		}
-		*/
 	}
 }

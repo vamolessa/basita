@@ -1,7 +1,7 @@
 use sdl2::rect::Point;
 
 use core::assets::{Asset, AssetLoadError, AssetLoader};
-use sdl::{TextureLoader, TextureStorage, Textures};
+use sdl::{TextureLoader, TextureStorage};
 
 pub struct Image {
 	pub texture_index: usize,
