@@ -20,7 +20,7 @@ impl<T: Asset> AssetHandle<T> {
 	}
 
 	pub fn is_valid(&self) -> bool {
-		self.index == usize::max_value()
+		self.index != usize::max_value()
 	}
 }
 

@@ -1,4 +1,4 @@
-use sdl2::rect::Rect;
+use sdl2::rect::{Point, Rect};
 
 use specs::{Fetch, FetchMut, Join, ReadStorage, System};
 
@@ -9,17 +9,26 @@ use core::assets::AssetHandle;
 use core::components::Transform;
 use sdl::{SdlContext, SdlStorage};
 
-struct Renderable<'a> {
+struct Renderable {
 	pub depth: i32,
 	pub image: AssetHandle<Image>,
-	pub rect: Rect,
-	pub _phantom: ::std::marker::PhantomData<&'a ()>,
+	pub position: Point,
+}
+
+impl Default for Renderable {
+	fn default() -> Self {
+		Renderable {
+			depth: 0,
+			image: Default::default(),
+			position: Point::new(0, 0),
+		}
+	}
 }
 
 pub struct RenderSystem<'a: 'b, 'b> {
 	sdl_context: &'a SdlContext,
 	sdl_storage: &'b SdlStorage<'a>,
-	renderables: Vec<Renderable<'a>>,
+	renderables: Vec<Renderable>,
 }
 
 impl<'a, 'b> RenderSystem<'a, 'b> {
@@ -47,6 +56,10 @@ impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 		if dirty_sprites.entities.len() > 0 {
 			for entity in &dirty_sprites.entities {
 				if let Some(sprite) = sprites.get(*entity) {
+					if sprite.renderable_index >= self.renderables.len() {
+						self.renderables.resize_default(sprite.renderable_index + 1);
+					}
+
 					let renderable = &mut self.renderables[sprite.renderable_index];
 					renderable.depth = sprite.depth;
 					renderable.image = sprite.image;
@@ -59,8 +72,8 @@ impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 
 		for (transform, sprite) in (&transforms, &sprites).join() {
 			let renderable = &mut self.renderables[sprite.renderable_index];
-			renderable.rect.x = transform.position.x as i32;
-			renderable.rect.y = transform.position.y as i32;
+			renderable.position.x = transform.position.x as i32;
+			renderable.position.y = transform.position.y as i32;
 		}
 
 		let mut canvas = self.sdl_context.canvas.borrow_mut();
@@ -70,7 +83,10 @@ impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 			let image = image_collection.get(r.image);
 			let texture = textures.at(image.texture_index);
 
-			canvas.copy(texture, None, r.rect).unwrap();
+			let position = r.position + image.center;
+			let rect = Rect::from_center(position, image.width, image.height);
+
+			canvas.copy(texture, None, rect).unwrap();
 		}
 	}
 }

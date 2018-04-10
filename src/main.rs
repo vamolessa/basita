@@ -24,6 +24,7 @@ pub fn main() {
 	let sdl_context = SdlContext::new("game", 400, 300);
 	let sdl_storage = SdlStorage::default();
 
+	// DECLARE RESOURCES
 	let mut world = World::new();
 
 	world.register::<Transform>();
@@ -34,8 +35,13 @@ pub fn main() {
 	world.add_resource(ImageCollection::default());
 	world.add_resource(DirtySprites::default());
 
-	let player_image;
+	// DISPATCHER
+	let mut dispatcher = DispatcherBuilder::new()
+		.add_thread_local(RenderSystem::new(&sdl_context, &sdl_storage))
+		.build();
 
+	// LOAD ASSETS
+	let player_image;
 	{
 		let mut images = world.write_resource::<ImageCollection>();
 
@@ -44,13 +50,12 @@ pub fn main() {
 			&sdl_context.texture_loader,
 			&mut sdl_storage.texture_storage.borrow_mut(),
 		);
+
+		images.get(player_image);
 	}
 
-	let mut dispatcher = DispatcherBuilder::new()
-		.add_thread_local(RenderSystem::new(&sdl_context, &sdl_storage))
-		.build();
-
-	let _player = world
+	// ADD ENTITIES
+	let player = world
 		.create_entity()
 		.with(Transform {
 			position: Vector2::new(100.0, 100.0),
@@ -62,6 +67,12 @@ pub fn main() {
 		})
 		.build();
 
+	{
+		let mut dirty_sprites = world.write_resource::<DirtySprites>();
+		dirty_sprites.entities.push(player);
+	}
+
+	// MAIN LOOP
 	'main: loop {
 		let mut event_pump = sdl_context.event_pump.borrow_mut();
 		for event in event_pump.poll_iter() {
