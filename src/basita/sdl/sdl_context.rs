@@ -44,5 +44,5 @@ impl SdlContext {
 
 #[derive(Default)]
 pub struct SdlStorage<'a> {
-	pub texture_storage: TextureStorage<'a>,
+	pub texture_storage: RefCell<TextureStorage<'a>>,
 }

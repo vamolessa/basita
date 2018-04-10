@@ -16,14 +16,14 @@ struct Renderable<'a> {
 	pub _phantom: ::std::marker::PhantomData<&'a ()>,
 }
 
-pub struct RenderSystem<'a> {
+pub struct RenderSystem<'a: 'b, 'b> {
 	sdl_context: &'a SdlContext,
-	sdl_storage: &'a SdlStorage<'a>,
+	sdl_storage: &'b SdlStorage<'a>,
 	renderables: Vec<Renderable<'a>>,
 }
 
-impl<'a> RenderSystem<'a> {
-	pub fn new(sdl_context: &'a SdlContext, sdl_storage: &'a SdlStorage<'a>) -> Self {
+impl<'a, 'b> RenderSystem<'a, 'b> {
+	pub fn new(sdl_context: &'a SdlContext, sdl_storage: &'b SdlStorage<'a>) -> Self {
 		RenderSystem {
 			sdl_context: sdl_context,
 			sdl_storage: sdl_storage,
@@ -32,7 +32,7 @@ impl<'a> RenderSystem<'a> {
 	}
 }
 
-impl<'a, 's> System<'s> for RenderSystem<'a> {
+impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 	type SystemData = (
 		ReadStorage<'s, Transform>,
 		ReadStorage<'s, Sprite>,
@@ -64,7 +64,7 @@ impl<'a, 's> System<'s> for RenderSystem<'a> {
 		}
 
 		let mut canvas = self.sdl_context.canvas.borrow_mut();
-		let textures = &self.sdl_storage.texture_storage;
+		let textures = self.sdl_storage.texture_storage.borrow();
 
 		for r in &self.renderables {
 			let image = image_collection.get(r.image);

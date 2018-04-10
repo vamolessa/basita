@@ -22,7 +22,7 @@ pub fn main() {
 	let clear_color = Color::RGB(0, 0, 0);
 
 	let sdl_context = SdlContext::new("game", 400, 300);
-	let mut sdl_storage = SdlStorage::default();
+	let sdl_storage = SdlStorage::default();
 
 	let mut world = World::new();
 
@@ -42,7 +42,7 @@ pub fn main() {
 		player_image = images.load(
 			&String::from("assets/images/player.png"),
 			&sdl_context.texture_loader,
-			&mut sdl_storage.texture_storage,
+			&mut sdl_storage.texture_storage.borrow_mut(),
 		);
 	}
 
