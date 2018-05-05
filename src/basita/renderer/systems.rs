@@ -1,34 +1,15 @@
-use sdl2::rect::{Point, Rect};
+use sdl2::rect::Rect;
 
 use specs::{Fetch, FetchMut, Join, ReadStorage, System};
 
-use super::assets::Image;
 use super::components::Sprite;
-use super::resources::{DirtySprites, ImageCollection};
-use core::assets::AssetHandle;
+use super::resources::{DirtySprites, ImageInstances, Images};
 use core::components::Transform;
 use sdl::{SdlContext, SdlStorage};
-
-struct Renderable {
-	pub depth: i32,
-	pub image: AssetHandle<Image>,
-	pub position: Point,
-}
-
-impl Default for Renderable {
-	fn default() -> Self {
-		Renderable {
-			depth: 0,
-			image: Default::default(),
-			position: Point::new(0, 0),
-		}
-	}
-}
 
 pub struct RenderSystem<'a: 'b, 'b> {
 	sdl_context: &'a SdlContext,
 	sdl_storage: &'b SdlStorage<'a>,
-	renderables: Vec<Renderable>,
 }
 
 impl<'a, 'b> RenderSystem<'a, 'b> {
@@ -36,7 +17,6 @@ impl<'a, 'b> RenderSystem<'a, 'b> {
 		RenderSystem {
 			sdl_context: sdl_context,
 			sdl_storage: sdl_storage,
-			renderables: Vec::default(),
 		}
 	}
 }
@@ -46,32 +26,39 @@ impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 		ReadStorage<'s, Transform>,
 		ReadStorage<'s, Sprite>,
 		FetchMut<'s, DirtySprites>,
-		Fetch<'s, ImageCollection>,
+		Fetch<'s, Images>,
+		FetchMut<'s, ImageInstances>,
 	);
 
 	fn run(
 		&mut self,
-		(transforms, sprites, mut dirty_sprites, image_collection): Self::SystemData,
+		(transforms, sprites, mut dirty_sprites, images, mut image_instances): Self::SystemData,
 	) {
 		if dirty_sprites.entities.len() > 0 {
 			for entity in &dirty_sprites.entities {
 				if let Some(sprite) = sprites.get(*entity) {
-					if sprite.renderable_index >= self.renderables.len() {
-						self.renderables.resize_default(sprite.renderable_index + 1);
+					if sprite.image_instance_index >= image_instances.instances.len() {
+						image_instances
+							.instances
+							.resize_default(sprite.image_instance_index + 1);
 					}
 
-					let renderable = &mut self.renderables[sprite.renderable_index];
+					let renderable = &mut image_instances.instances[sprite.image_instance_index];
 					renderable.depth = sprite.depth;
 					renderable.image = sprite.image;
+				} else {
+					
 				}
 			}
 
-			self.renderables.sort_by(|a, b| a.depth.cmp(&b.depth));
+			image_instances
+				.instances
+				.sort_by(|a, b| a.depth.cmp(&b.depth));
 			dirty_sprites.entities.clear();
 		}
 
 		for (transform, sprite) in (&transforms, &sprites).join() {
-			let renderable = &mut self.renderables[sprite.renderable_index];
+			let renderable = &mut image_instances.instances[sprite.image_instance_index];
 			renderable.position.x = transform.position.x as i32;
 			renderable.position.y = transform.position.y as i32;
 		}
@@ -79,8 +66,8 @@ impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 		let mut canvas = self.sdl_context.canvas.borrow_mut();
 		let textures = self.sdl_storage.texture_storage.borrow();
 
-		for r in &self.renderables {
-			let image = image_collection.get(r.image);
+		for r in &image_instances.instances {
+			let image = images.get(r.image);
 			let texture = textures.at(image.texture_index);
 
 			let position = r.position + image.center;

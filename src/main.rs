@@ -15,7 +15,7 @@ use basita::core::resources::Time;
 use basita::math::Vector2;
 
 use basita::renderer::components::Sprite;
-use basita::renderer::resources::{DirtySprites, ImageCollection};
+use basita::renderer::resources::{DirtySprites, Images, ImageInstances};
 
 pub fn main() {
 	let frames_per_second = 60;
@@ -32,7 +32,8 @@ pub fn main() {
 
 	world.add_resource(Time::default());
 
-	world.add_resource(ImageCollection::default());
+	world.add_resource(Images::default());
+	world.add_resource(ImageInstances::default());
 	world.add_resource(DirtySprites::default());
 
 	// DISPATCHER
@@ -43,7 +44,7 @@ pub fn main() {
 	// LOAD ASSETS
 	let player_image;
 	{
-		let mut images = world.write_resource::<ImageCollection>();
+		let mut images = world.write_resource::<Images>();
 
 		player_image = images.load(
 			&String::from("assets/images/player.png"),
@@ -63,7 +64,7 @@ pub fn main() {
 		.with(Sprite {
 			depth: 0,
 			image: player_image,
-			renderable_index: 0,
+			image_instance_index: 0,
 		})
 		.build();
 
