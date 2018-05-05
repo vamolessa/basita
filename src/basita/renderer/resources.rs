@@ -6,11 +6,8 @@ use super::assets::Image;
 use core::assets::{AssetCollection, AssetHandle};
 
 pub type Images = AssetCollection<Image>;
-
-#[derive(Default)]
-pub struct DirtySprites {
-	pub entities: Vec<Entity>,
-}
+pub type DirtySprites = Vec<Entity>;
+pub type ImageInstances = Vec<ImageInstance>;
 
 pub struct ImageInstance {
 	pub depth: i32,
@@ -26,9 +23,4 @@ impl Default for ImageInstance {
 			position: Point::new(0, 0),
 		}
 	}
-}
-
-#[derive(Default)]
-pub struct ImageInstances {
-	pub instances: Vec<ImageInstance>,
 }

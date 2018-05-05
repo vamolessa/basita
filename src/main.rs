@@ -70,7 +70,7 @@ pub fn main() {
 
 	{
 		let mut dirty_sprites = world.write_resource::<DirtySprites>();
-		dirty_sprites.entities.push(player);
+		dirty_sprites.push(player);
 	}
 
 	// MAIN LOOP
