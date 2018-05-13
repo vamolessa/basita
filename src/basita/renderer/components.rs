@@ -5,9 +5,8 @@ use super::assets::Image;
 
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Sprite {
-	pub depth: i32,
+	pub layer_index: usize,
 	pub image: AssetHandle<Image>,
-	pub image_instance_index: usize,
 }
 
 impl Component for Sprite {

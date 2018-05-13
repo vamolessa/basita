@@ -15,7 +15,7 @@ use basita::core::resources::Time;
 use basita::math::Vector2;
 
 use basita::renderer::components::Sprite;
-use basita::renderer::resources::{DirtySprites, Images, ImageInstances};
+use basita::renderer::resources::{Images, Layers};
 
 pub fn main() {
 	let frames_per_second = 60;
@@ -33,8 +33,7 @@ pub fn main() {
 	world.add_resource(Time::default());
 
 	world.add_resource(Images::default());
-	world.add_resource(ImageInstances::default());
-	world.add_resource(DirtySprites::default());
+	world.add_resource(Layers::default());
 
 	// DISPATCHER
 	let mut dispatcher = DispatcherBuilder::new()
@@ -56,22 +55,16 @@ pub fn main() {
 	}
 
 	// ADD ENTITIES
-	let player = world
+	let _player = world
 		.create_entity()
 		.with(Transform {
 			position: Vector2::new(100.0, 100.0),
 		})
 		.with(Sprite {
-			depth: 0,
+			layer_index: 0,
 			image: player_image,
-			image_instance_index: 0,
 		})
 		.build();
-
-	{
-		let mut dirty_sprites = world.write_resource::<DirtySprites>();
-		dirty_sprites.push(player);
-	}
 
 	// MAIN LOOP
 	'main: loop {

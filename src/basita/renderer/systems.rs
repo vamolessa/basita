@@ -1,9 +1,9 @@
-use sdl2::rect::Rect;
+use sdl2::rect::{Rect, Point};
 
 use specs::{Fetch, FetchMut, Join, ReadStorage, System};
 
 use super::components::Sprite;
-use super::resources::{DirtySprites, ImageInstances, Images};
+use super::resources::{Layers, Images, ImageInstance};
 use core::components::Transform;
 use sdl::{SdlContext, SdlStorage};
 
@@ -25,51 +25,46 @@ impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 	type SystemData = (
 		ReadStorage<'s, Transform>,
 		ReadStorage<'s, Sprite>,
-		FetchMut<'s, DirtySprites>,
 		Fetch<'s, Images>,
-		FetchMut<'s, ImageInstances>,
+		FetchMut<'s, Layers>,
 	);
 
 	fn run(
 		&mut self,
-		(transforms, sprites, mut dirty_sprites, images, mut image_instances): Self::SystemData,
+		(transforms, sprites, images, mut layers): Self::SystemData,
 	) {
-		if dirty_sprites.len() > 0 {
-			for entity in dirty_sprites.iter() {
-				if let Some(sprite) = sprites.get(*entity) {
-					if sprite.image_instance_index >= image_instances.len() {
-						image_instances.resize_default(sprite.image_instance_index + 1);
-					}
-
-					let renderable = &mut image_instances[sprite.image_instance_index];
-					renderable.depth = sprite.depth;
-					renderable.image = sprite.image;
-				} else {
-
-				}
-			}
-
-			image_instances.sort_by(|a, b| a.depth.cmp(&b.depth));
-			dirty_sprites.clear();
+		for layer in layers.iter_mut() {
+			layer.clear();
 		}
 
 		for (transform, sprite) in (&transforms, &sprites).join() {
-			let renderable = &mut image_instances[sprite.image_instance_index];
-			renderable.position.x = transform.position.x as i32;
-			renderable.position.y = transform.position.y as i32;
+			if sprite.layer_index >= layers.len() {
+				layers.resize_default(sprite.layer_index + 1);
+			}
+
+			let mut layer = &mut layers[sprite.layer_index];
+			layer.push(ImageInstance {
+				image: sprite.image,
+				position: Point::new(
+					transform.position.x as i32,
+					transform.position.y as i32
+				)
+			});
 		}
 
 		let mut canvas = self.sdl_context.canvas.borrow_mut();
 		let textures = self.sdl_storage.texture_storage.borrow();
 
-		for r in image_instances.iter() {
-			let image = images.get(r.image);
-			let texture = textures.at(image.texture_index);
+		for layer in layers.iter() {
+			for image_instance in layer.iter() {
+				let image = images.get(image_instance.image);
+				let texture = textures.at(image.texture_index);
 
-			let position = r.position + image.center;
-			let rect = Rect::from_center(position, image.width, image.height);
+				let position = image_instance.position + image.center;
+				let rect = Rect::from_center(position, image.width, image.height);
 
-			canvas.copy(texture, None, rect).unwrap();
+				canvas.copy(texture, None, rect).unwrap();
+			}
 		}
 	}
 }
