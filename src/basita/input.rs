@@ -13,6 +13,18 @@ pub struct Input {
 }
 
 impl Input {
+	pub fn new() -> Self {
+		let key_count = (Keycode::Sleep as usize) + 1;
+		//let mut keys = Vec::with_capacity(key_count);
+		//keys.resize_default(key_count);
+
+		println!("key_count: {}", key_count );
+
+		Input {
+			keys: Default::default(),
+		}
+	}
+
 	pub fn update(&mut self) {
 		for key in &mut self.keys {
 			if key.just_changed {

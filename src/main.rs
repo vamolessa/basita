@@ -38,7 +38,7 @@ pub fn main() {
 
 	world.add_resource(Images::default());
 	world.add_resource(Layers::default());
-	world.add_resource(Input::default());
+	world.add_resource(Input::new());
 
 	// DISPATCHER
 	let mut dispatcher = DispatcherBuilder::new()
@@ -74,8 +74,8 @@ pub fn main() {
 	// MAIN LOOP
 	'main: loop {
 		{
-			let mut input = world.write_resource::<Input>();
-			input.update();
+			//let mut input = world.write_resource::<Input>();
+			//input.update();
 
 			let mut event_pump = sdl_context.event_pump.borrow_mut();
 			for event in event_pump.poll_iter() {
@@ -83,8 +83,8 @@ pub fn main() {
 					Event::Quit { .. } => {
 						break 'main;
 					}
-					e => {
-						input.handle_event(e);
+					_e => {
+						//input.handle_event(e);
 					}
 				};
 			}
