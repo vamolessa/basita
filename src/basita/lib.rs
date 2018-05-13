@@ -12,10 +12,10 @@ pub extern crate specs;
 
 // local
 pub mod core;
+pub mod input;
 pub mod physics;
 pub mod renderer;
 
-pub mod input;
 pub mod math;
 
 pub mod sdl;

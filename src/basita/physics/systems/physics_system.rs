@@ -35,7 +35,7 @@ impl<'a> System<'a> for PhysicsSystem {
 
 		self.collision_responses.clear();
 
-		// collisions
+		// check collisions
 		for (ae, ac, at, ap) in (&*entities, &colliders, &transforms, &physic_bodies).join() {
 			for (be, bc, bt, bp) in (&*entities, &colliders, &transforms, &physic_bodies).join() {
 				if ae.id() <= be.id() {
@@ -58,6 +58,7 @@ impl<'a> System<'a> for PhysicsSystem {
 			}
 		}
 
+		// respond to collisions
 		for &(ref entity, ref response) in &self.collision_responses {
 			let transform = transforms.get_mut(*entity).unwrap();
 			let physic_body = physic_bodies.get_mut(*entity).unwrap();
