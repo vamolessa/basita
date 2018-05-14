@@ -1,6 +1,8 @@
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
+use fxhash::FxHashMap;
+
 #[derive(Default)]
 pub struct State {
 	pub is_pressed: bool,
@@ -9,27 +11,15 @@ pub struct State {
 
 #[derive(Default)]
 pub struct Input {
-	pub keys: Vec<State>,
+	pub keys: FxHashMap<Keycode, State>,
 }
 
 impl Input {
-	pub fn new() -> Self {
-		let key_count = (Keycode::Sleep as usize) + 1;
-		//let mut keys = Vec::with_capacity(key_count);
-		//keys.resize_default(key_count);
-
-		println!("key_count: {}", key_count );
-
-		Input {
-			keys: Default::default(),
-		}
-	}
-
 	pub fn update(&mut self) {
-		for key in &mut self.keys {
-			if key.just_changed {
-				key.is_pressed = !key.is_pressed;
-				key.just_changed = false;
+		for (_keycode, state) in &mut self.keys {
+			if state.just_changed {
+				state.is_pressed = !state.is_pressed;
+				state.just_changed = false;
 			}
 		}
 	}
@@ -47,7 +37,7 @@ impl Input {
 	}
 
 	fn handle_key_change(&mut self, keycode: Keycode, is_pressed: bool) {
-		let key = &mut self.keys[keycode as usize];
+		let key = self.keys.entry(keycode).or_insert(State::default());
 		key.is_pressed = is_pressed;
 		key.just_changed = true;
 	}

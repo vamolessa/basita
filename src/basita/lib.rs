@@ -10,6 +10,8 @@ pub extern crate serde_json;
 
 pub extern crate specs;
 
+pub extern crate fxhash;
+
 // local
 pub mod core;
 pub mod input;

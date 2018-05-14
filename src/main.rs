@@ -12,8 +12,8 @@ use basita::sdl::{SdlContext, SdlStorage};
 
 use basita::core::components::Transform;
 use basita::core::resources::Time;
-use basita::math::Vector2;
 use basita::input::Input;
+use basita::math::Vector2;
 
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::{Images, Layers};
@@ -38,7 +38,7 @@ pub fn main() {
 
 	world.add_resource(Images::default());
 	world.add_resource(Layers::default());
-	world.add_resource(Input::new());
+	world.add_resource(Input::default());
 
 	// DISPATCHER
 	let mut dispatcher = DispatcherBuilder::new()
@@ -74,8 +74,8 @@ pub fn main() {
 	// MAIN LOOP
 	'main: loop {
 		{
-			//let mut input = world.write_resource::<Input>();
-			//input.update();
+			let mut input = world.write_resource::<Input>();
+			input.update();
 
 			let mut event_pump = sdl_context.event_pump.borrow_mut();
 			for event in event_pump.poll_iter() {
@@ -83,8 +83,8 @@ pub fn main() {
 					Event::Quit { .. } => {
 						break 'main;
 					}
-					_e => {
-						//input.handle_event(e);
+					e => {
+						input.handle_event(e);
 					}
 				};
 			}
