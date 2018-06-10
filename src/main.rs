@@ -18,8 +18,8 @@ use basita::math::Vector2;
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::{Images, Layers};
 
-//mod game;
-//use game::*;
+mod game;
+use game::*;
 
 pub fn main() {
 	let frames_per_second = 60;
@@ -45,31 +45,13 @@ pub fn main() {
 		.add_thread_local(RenderSystem::new(&sdl_context, &sdl_storage))
 		.build();
 
-	// LOAD ASSETS
-	let player_image;
-	{
-		let mut images = world.write_resource::<Images>();
-
-		player_image = images.load(
-			&String::from("assets/images/player.png"),
-			&sdl_context.texture_loader,
-			&mut sdl_storage.texture_storage.borrow_mut(),
-		);
-
-		images.get(player_image);
-	}
-
 	// ADD ENTITIES
-	let _player = world
-		.create_entity()
-		.with(Transform {
-			position: Vector2::new(100.0, 100.0),
-		})
-		.with(Sprite {
-			layer_index: 0,
-			image: player_image,
-		})
-		.build();
+	entities::player::new(
+		&mut world,
+		&sdl_context,
+		&sdl_storage,
+		Vector2::new(100.0, 100.0),
+	);
 
 	// MAIN LOOP
 	'main: loop {
