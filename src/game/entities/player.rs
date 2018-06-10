@@ -11,17 +11,17 @@ pub fn new<'a, 'b>(
 	sdl_storage: &'b SdlStorage<'a>,
 	position: Vector2,
 ) {
-	let player_image;
+	let image;
 	{
 		let mut images = world.write_resource::<Images>();
 
-		player_image = images.load(
+		image = images.load(
 			&String::from("assets/images/player.png"),
 			&sdl_context.texture_loader,
 			&mut sdl_storage.texture_storage.borrow_mut(),
 		);
 
-		images.get(player_image);
+		images.get(image);
 	}
 
 	let _player = world
@@ -29,7 +29,7 @@ pub fn new<'a, 'b>(
 		.with(Transform { position: position })
 		.with(Sprite {
 			layer_index: 0,
-			image: player_image,
+			image: image,
 		})
 		.build();
 }

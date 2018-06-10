@@ -13,7 +13,6 @@ use basita::sdl::{SdlContext, SdlStorage};
 use basita::core::components::Transform;
 use basita::core::resources::Time;
 use basita::input::Input;
-use basita::math::Vector2;
 
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::{Images, Layers};
@@ -45,13 +44,8 @@ pub fn main() {
 		.add_thread_local(RenderSystem::new(&sdl_context, &sdl_storage))
 		.build();
 
-	// ADD ENTITIES
-	entities::player::new(
-		&mut world,
-		&sdl_context,
-		&sdl_storage,
-		Vector2::new(100.0, 100.0),
-	);
+	// LOAD LEVEL
+	levels::level1::load(&mut world, &sdl_context, &sdl_storage);
 
 	// MAIN LOOP
 	'main: loop {
