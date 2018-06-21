@@ -1,10 +1,10 @@
-use specs::{Join, Entities, Entity, ReadStorage, System, WriteStorage, Fetch};
+use specs::{Entities, Entity, Join, Read, ReadStorage, System, WriteStorage};
 
+use super::super::components::{Collider, PhysicBody};
+use super::super::helpers::collide;
 use core::components::Transform;
 use core::resources::Time;
 use math::Vector2;
-use super::super::helpers::collide;
-use super::super::components::{Collider, PhysicBody};
 
 #[derive(Default)]
 struct CollisionResponse {
@@ -12,20 +12,24 @@ struct CollisionResponse {
 	velocity_offset: Vector2,
 }
 
+#[derive(Default)]
 pub struct PhysicsSystem {
 	collision_responses: Vec<(Entity, CollisionResponse)>,
 }
 
 impl<'a> System<'a> for PhysicsSystem {
 	type SystemData = (
-		Fetch<'a, Time>,
+		Read<'a, Time>,
 		Entities<'a>,
 		ReadStorage<'a, Collider>,
 		WriteStorage<'a, PhysicBody>,
 		WriteStorage<'a, Transform>,
 	);
 
-	fn run(&mut self, (time, entities, colliders, mut physic_bodies, mut transforms): Self::SystemData) {
+	fn run(
+		&mut self,
+		(time, entities, colliders, mut physic_bodies, mut transforms): Self::SystemData,
+	) {
 		// integration
 		for (physic_body, transform) in (&mut physic_bodies, &mut transforms).join() {
 			physic_body.velocity += physic_body.acceleration * time.delta_time;

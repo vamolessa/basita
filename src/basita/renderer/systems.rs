@@ -1,6 +1,6 @@
 use sdl2::rect::{Point, Rect};
 
-use specs::{Fetch, FetchMut, Join, ReadStorage, System};
+use specs::{Read, Write, Join, ReadStorage, System};
 
 use super::components::Sprite;
 use super::resources::{ImageInstance, Images, Layers};
@@ -25,8 +25,8 @@ impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 	type SystemData = (
 		ReadStorage<'s, Transform>,
 		ReadStorage<'s, Sprite>,
-		Fetch<'s, Images>,
-		FetchMut<'s, Layers>,
+		Read<'s, Images>,
+		Write<'s, Layers>,
 	);
 
 	fn run(&mut self, (transforms, sprites, images, mut layers): Self::SystemData) {
