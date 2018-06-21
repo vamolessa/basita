@@ -1,9 +1,9 @@
-use sdl2::rect::{Rect, Point};
+use sdl2::rect::{Point, Rect};
 
 use specs::{Fetch, FetchMut, Join, ReadStorage, System};
 
 use super::components::Sprite;
-use super::resources::{Layers, Images, ImageInstance};
+use super::resources::{ImageInstance, Images, Layers};
 use core::components::Transform;
 use sdl::{SdlContext, SdlStorage};
 
@@ -29,10 +29,7 @@ impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 		FetchMut<'s, Layers>,
 	);
 
-	fn run(
-		&mut self,
-		(transforms, sprites, images, mut layers): Self::SystemData,
-	) {
+	fn run(&mut self, (transforms, sprites, images, mut layers): Self::SystemData) {
 		for layer in layers.iter_mut() {
 			layer.clear();
 		}
@@ -45,10 +42,7 @@ impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 			let mut layer = &mut layers[sprite.layer_index];
 			layer.push(ImageInstance {
 				image: sprite.image,
-				position: Point::new(
-					transform.position.x as i32,
-					transform.position.y as i32
-				)
+				position: Point::new(transform.position.x as i32, transform.position.y as i32),
 			});
 		}
 
@@ -60,8 +54,8 @@ impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 				let image = images.get(image_instance.image);
 				let texture = textures.at(image.texture_index);
 
-				let position = image_instance.position + image.center;
-				let rect = Rect::from_center(position, image.width, image.height);
+				let position = image_instance.position - image.center;
+				let rect = Rect::new(position.x, position.y, image.width, image.height);
 
 				canvas.copy(texture, None, rect).unwrap();
 			}

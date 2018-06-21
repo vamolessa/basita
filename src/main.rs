@@ -7,7 +7,6 @@ use basita::sdl2::event::Event;
 use basita::sdl2::pixels::Color;
 use basita::specs::{DispatcherBuilder, World};
 
-use basita::renderer::systems::RenderSystem;
 use basita::sdl::{SdlContext, SdlStorage};
 
 use basita::core::components::Transform;
@@ -16,6 +15,10 @@ use basita::input::Input;
 
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::{Images, Layers};
+use basita::renderer::systems::RenderSystem;
+
+use basita::physics::components::Collider;
+use basita::physics::systems::ColliderRenderSystem;
 
 mod game;
 use game::*;
@@ -32,6 +35,7 @@ pub fn main() {
 
 	world.register::<Transform>();
 	world.register::<Sprite>();
+	world.register::<Collider>();
 
 	world.add_resource(Time::default());
 
@@ -42,6 +46,7 @@ pub fn main() {
 	// DISPATCHER
 	let mut dispatcher = DispatcherBuilder::new()
 		.add_thread_local(RenderSystem::new(&sdl_context, &sdl_storage))
+		.add_thread_local(ColliderRenderSystem::new(&sdl_context))
 		.build();
 
 	// LOAD LEVEL

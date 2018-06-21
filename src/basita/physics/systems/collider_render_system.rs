@@ -35,8 +35,8 @@ impl<'a, 's> System<'s> for ColliderRenderSystem<'a> {
 
 					canvas
 						.draw_rect(Rect::new(
-							(position.x - half_size.x) as i32,
-							(position.y - half_size.y) as i32,
+							(position.x + collider.offset.x - half_size.x) as i32,
+							(position.y + collider.offset.y - half_size.y) as i32,
 							(half_size.x as u32) * 2,
 							(half_size.y as u32) * 2,
 						))

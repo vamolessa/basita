@@ -22,7 +22,7 @@ pub fn new<'a, 'b>(
 			&mut sdl_storage.texture_storage.borrow_mut(),
 		);
 
-		images.get(image);
+		let _image = images.get(image);
 	}
 
 	let _player = world
@@ -32,6 +32,6 @@ pub fn new<'a, 'b>(
 			layer_index: 0,
 			image: image,
 		})
-		.with(new_box_collider(Vector2::new(32.0, 32.0)))
+		.with(new_box_collider(Vector2::new(16.0, 16.0)))
 		.build();
 }
