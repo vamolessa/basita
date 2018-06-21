@@ -46,9 +46,12 @@ pub fn main() {
 
 	// DISPATCHER
 	let mut dispatcher = DispatcherBuilder::new()
+		// Engine
 		.with(PhysicsSystem::default(), "physics", &[])
 		.with_thread_local(RenderSystem::new(&sdl_context, &sdl_storage))
 		.with_thread_local(ColliderRenderSystem::new(&sdl_context))
+		// Player
+		.with(systems::PlayerSystem, "player", &[])
 		.build();
 
 	// LOAD LEVEL

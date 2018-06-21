@@ -1,10 +1,10 @@
 use basita::sdl2::keyboard::Keycode;
 
-use basita::EngineState;
-use basita::systems::{System, WorldSystem};
+use basita::components::*;
 use basita::input::Button;
 use basita::math::Vector2;
-use basita::components::*;
+use basita::systems::{System, WorldSystem};
+use basita::EngineState;
 
 use game::*;
 
