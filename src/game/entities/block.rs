@@ -1,5 +1,6 @@
 use basita::core::components::Transform;
 use basita::math::Vector2;
+use basita::physics::components::new_box_collider;
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::Images;
 use basita::sdl::{SdlContext, SdlStorage};
@@ -31,5 +32,6 @@ pub fn new<'a, 'b>(
 			layer_index: 0,
 			image: image,
 		})
+		.with(new_box_collider(Vector2::new(32.0, 32.0)))
 		.build();
 }

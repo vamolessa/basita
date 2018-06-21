@@ -41,3 +41,13 @@ impl Default for Shape {
 pub struct BoxShape {
 	pub half_size: Vector2,
 }
+
+pub fn new_box_collider(half_size: Vector2) -> Collider {
+	Collider {
+		shape: Shape::Box(BoxShape {
+			half_size: half_size,
+		}),
+		offset: Vector2::zero(),
+		is_trigger: false,
+	}
+}
