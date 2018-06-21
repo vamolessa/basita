@@ -12,25 +12,25 @@ pub fn new<'a, 'b>(
 	sdl_storage: &'b SdlStorage<'a>,
 	position: Vector2,
 ) {
-	let image;
+	let image_handle;
 	{
 		let mut images = world.write_resource::<Images>();
 
-		image = images.load(
-			&String::from("assets/images/player.png"),
+		image_handle = images.load(
+			&String::from("assets/images/block.png"),
 			&sdl_context.texture_loader,
 			&mut sdl_storage.texture_storage.borrow_mut(),
 		);
 
-		images.get(image);
+		let _image = images.get(image_handle);
 	}
 
-	let _player = world
+	let _block = world
 		.create_entity()
 		.with(Transform { position: position })
 		.with(Sprite {
 			layer_index: 0,
-			image: image,
+			image: image_handle,
 		})
 		.with(new_box_collider(Vector2::new(16.0, 16.0)))
 		.build();

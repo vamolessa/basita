@@ -11,5 +11,5 @@ pub fn load<'a, 'b>(
 ) {
 	player::new(world, sdl_context, sdl_storage, Vector2::new(100.0, 100.0));
 
-	block::new(world, sdl_context, sdl_storage, Vector2::new(0.0, 0.0));
+	block::new(world, sdl_context, sdl_storage, Vector2::new(16.0, 16.0));
 }
