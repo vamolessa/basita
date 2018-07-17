@@ -6,6 +6,8 @@ use basita::renderer::resources::Images;
 use basita::sdl::{SdlContext, SdlStorage};
 use basita::specs::World;
 
+use components::Player;
+
 pub fn new<'a, 'b>(
 	world: &mut World,
 	sdl_context: &'a SdlContext,
@@ -27,6 +29,7 @@ pub fn new<'a, 'b>(
 
 	let _player = world
 		.create_entity()
+		.with(Player)
 		.with(Transform { position: position })
 		.with(Sprite {
 			layer_index: 0,

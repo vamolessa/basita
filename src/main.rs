@@ -33,6 +33,7 @@ pub fn main() {
 	// DECLARE RESOURCES
 	let mut world = World::new();
 
+	// Engine
 	world.register::<Transform>();
 	world.register::<Sprite>();
 	world.register::<Collider>();
@@ -43,6 +44,9 @@ pub fn main() {
 	world.add_resource(Images::default());
 	world.add_resource(Layers::default());
 	world.add_resource(Input::default());
+
+	// Player
+	world.register::<components::Player>();
 
 	// DISPATCHER
 	let mut dispatcher = DispatcherBuilder::new()
