@@ -23,6 +23,12 @@ impl<'a> System<'a> for PlayerSystem {
 			if input.key(Keycode::Right).is_pressed {
 				transform.position.x += 1.0;
 			}
+			if input.key(Keycode::Up).is_pressed {
+				transform.position.y -= 1.0;
+			}
+			if input.key(Keycode::Down).is_pressed {
+				transform.position.y += 1.0;
+			}
 		}
 	}
 }

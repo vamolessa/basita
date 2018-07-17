@@ -31,10 +31,7 @@ impl Input {
 
 	pub fn update(&mut self) {
 		for (_keycode, state) in &mut self.keys {
-			if state.just_changed {
-				state.is_pressed = !state.is_pressed;
-				state.just_changed = false;
-			}
+			state.just_changed = false;
 		}
 	}
 
@@ -62,7 +59,5 @@ impl Input {
 		let key = self.keys.entry(keycode).or_default();
 		key.is_pressed = is_pressed;
 		key.just_changed = true;
-
-		println!("key {:?} pressed: {}", keycode, is_pressed);
 	}
 }
