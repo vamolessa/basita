@@ -1,15 +1,10 @@
+use basita::creator::Creator;
 use basita::math::Vector2;
-use basita::sdl::{SdlContext, SdlStorage};
-use basita::specs::World;
 
 use entities::{block, player};
 
-pub fn load<'a, 'b>(
-	world: &mut World,
-	sdl_context: &'a SdlContext,
-	sdl_storage: &'b SdlStorage<'a>,
-) {
-	player::new(world, sdl_context, sdl_storage, Vector2::new(100.0, 100.0));
+pub fn load<'a, 'b>(creator: &mut Creator<'a, 'b>) {
+	player::new(creator, Vector2::new(100.0, 100.0));
 
-	block::new(world, sdl_context, sdl_storage, Vector2::new(64.0, 64.0));
+	block::new(creator, Vector2::new(64.0, 64.0));
 }

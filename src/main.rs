@@ -11,6 +11,7 @@ use basita::sdl::{SdlContext, SdlStorage};
 
 use basita::core::components::Transform;
 use basita::core::resources::Time;
+use basita::creator::Creator;
 use basita::input::Input;
 
 use basita::renderer::components::Sprite;
@@ -59,7 +60,15 @@ pub fn main() {
 		.build();
 
 	// LOAD LEVEL
-	levels::level1::load(&mut world, &sdl_context, &sdl_storage);
+	{
+		let mut creator = Creator {
+			world: &mut world,
+			sdl_context: &sdl_context,
+			sdl_storage: &sdl_storage,
+		};
+
+		levels::level1::load(&mut creator);
+	}
 
 	// MAIN LOOP
 	'main: loop {
