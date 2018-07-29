@@ -16,18 +16,20 @@ impl<'a> System<'a> for PlayerSystem {
 	);
 
 	fn run(&mut self, (input, players, mut transforms): Self::SystemData) {
+		let velocity = 2.0;
+
 		for (_player, transform) in (&players, &mut transforms).join() {
 			if input.key(Keycode::Left).is_pressed {
-				transform.position.x -= 1.0;
+				transform.position.x -= velocity;
 			}
 			if input.key(Keycode::Right).is_pressed {
-				transform.position.x += 1.0;
+				transform.position.x += velocity;
 			}
 			if input.key(Keycode::Up).is_pressed {
-				transform.position.y -= 1.0;
+				transform.position.y -= velocity;
 			}
 			if input.key(Keycode::Down).is_pressed {
-				transform.position.y += 1.0;
+				transform.position.y += velocity;
 			}
 		}
 	}

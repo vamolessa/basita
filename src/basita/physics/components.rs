@@ -11,6 +11,17 @@ pub struct PhysicBody {
 	pub bounciness: f32,
 }
 
+impl PhysicBody {
+	pub fn new(inverted_mass: f32, bounciness: f32) -> Self {
+		PhysicBody {
+			velocity: Vector2::zero(),
+			acceleration: Vector2::zero(),
+			inverted_mass: inverted_mass,
+			bounciness: bounciness,
+		}
+	}
+}
+
 impl Component for PhysicBody {
 	type Storage = VecStorage<Self>;
 }

@@ -93,13 +93,13 @@ fn get_dynamic_response(
 	let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
 
 	let a_response = CollisionResponse {
-		position_offset: penetration * (-a_weight),
-		velocity_offset: impulse * (-a_weight),
+		position_offset: penetration * (a_weight),
+		velocity_offset: impulse * (a_weight),
 	};
 
 	let b_response = CollisionResponse {
-		position_offset: penetration * (b_weight),
-		velocity_offset: impulse * (b_weight),
+		position_offset: penetration * (-b_weight),
+		velocity_offset: impulse * (-b_weight),
 	};
 
 	(a_response, b_response)
@@ -108,11 +108,11 @@ fn get_dynamic_response(
 fn get_static_response(p: &PhysicBody, penetration: Vector2) -> CollisionResponse {
 	let restitution = p.bounciness;
 
-	let impulse_magnitude = Vector2::dot(penetration, -p.velocity) * (1.0 + restitution);
+	let impulse_magnitude = Vector2::dot(penetration, p.velocity) * (1.0 + restitution);
 	let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
 
 	CollisionResponse {
-		position_offset: -penetration,
-		velocity_offset: -impulse,
+		position_offset: penetration,
+		velocity_offset: impulse,
 	}
 }
