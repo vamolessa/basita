@@ -1,35 +1,21 @@
-use sdl2::rect::{Point, Rect};
+use sdl2::rect::Point;
 
-use specs::{Join, Read, ReadStorage, System, Write};
+use specs::{Join, ReadStorage, System, Write};
 
 use super::components::Sprite;
-use super::resources::{ImageInstance, Images, Layers};
+use super::resources::{ImageInstance, Layers};
 use core::components::Transform;
-use sdl::{SdlContext, SdlStorage};
 
-pub struct RenderSystem<'a: 'b, 'b> {
-	sdl_context: &'a SdlContext,
-	sdl_storage: &'b SdlStorage<'a>,
-}
+pub struct RenderSystem;
 
-impl<'a, 'b> RenderSystem<'a, 'b> {
-	pub fn new(sdl_context: &'a SdlContext, sdl_storage: &'b SdlStorage<'a>) -> Self {
-		RenderSystem {
-			sdl_context: sdl_context,
-			sdl_storage: sdl_storage,
-		}
-	}
-}
-
-impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
+impl<'s> System<'s> for RenderSystem {
 	type SystemData = (
 		ReadStorage<'s, Transform>,
 		ReadStorage<'s, Sprite>,
-		Read<'s, Images>,
 		Write<'s, Layers>,
 	);
 
-	fn run(&mut self, (transforms, sprites, images, mut layers): Self::SystemData) {
+	fn run(&mut self, (transforms, sprites, mut layers): Self::SystemData) {
 		for layer in layers.iter_mut() {
 			layer.clear();
 		}
@@ -44,21 +30,6 @@ impl<'a, 'b, 's> System<'s> for RenderSystem<'a, 'b> {
 				image: sprite.image,
 				position: Point::new(transform.position.x as i32, transform.position.y as i32),
 			});
-		}
-
-		let mut canvas = self.sdl_context.canvas.borrow_mut();
-		let textures = self.sdl_storage.texture_storage.borrow();
-
-		for layer in layers.iter() {
-			for image_instance in layer.iter() {
-				let image = images.get(image_instance.image);
-				let texture = textures.at(image.texture_index);
-
-				let position = image_instance.position - image.center;
-				let rect = Rect::new(position.x, position.y, image.width, image.height);
-
-				canvas.copy(texture, None, rect).unwrap();
-			}
 		}
 	}
 }

@@ -4,7 +4,7 @@ use std::thread;
 use std::time::Duration;
 
 use basita::sdl2::event::Event;
-use basita::sdl2::pixels::Color;
+
 use basita::specs::{DispatcherBuilder, World};
 
 use basita::sdl::{SdlContext, SdlStorage};
@@ -14,6 +14,7 @@ use basita::core::resources::Time;
 use basita::creator::Creator;
 use basita::input::Input;
 
+use basita::renderer;
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::{Images, Layers};
 use basita::renderer::systems::RenderSystem;
@@ -26,7 +27,6 @@ use game::*;
 
 pub fn main() {
 	let frames_per_second = 60;
-	let clear_color = Color::RGB(0, 0, 0);
 
 	let sdl_context = SdlContext::new("game", 400, 300);
 	let sdl_storage = SdlStorage::default();
@@ -49,13 +49,12 @@ pub fn main() {
 	// Player
 	world.register::<components::Player>();
 
-	/*
 	// DISPATCHER
 	let mut dispatcher = DispatcherBuilder::new()
 		// Engine
 		.with(PhysicsSystem::default(), "physics", &[])
-		.with_thread_local(RenderSystem::new(&sdl_context, &sdl_storage))
-		.with_thread_local(ColliderRenderSystem::new(&sdl_context))
+		.with(RenderSystem, "render", &[])
+		//.with_thread_local(ColliderRenderSystem::new(&sdl_context))
 		// Player
 		.with(systems::PlayerSystem, "player", &[])
 		.build();
@@ -90,23 +89,12 @@ pub fn main() {
 			}
 		}
 
-		{
-			let mut canvas = sdl_context.canvas.borrow_mut();
-
-			canvas.set_draw_color(clear_color);
-			canvas.clear();
-		}
-
 		dispatcher.dispatch(&mut world.res);
 
-		{
-			let mut canvas = sdl_context.canvas.borrow_mut();
-			canvas.present();
-		}
+		renderer::render(&world, &sdl_context, &sdl_storage);
 
 		world.maintain();
 
 		thread::sleep(Duration::new(0, 1_000_000_000u32 / frames_per_second));
 	}
-	*/
 }
