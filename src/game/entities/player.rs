@@ -1,3 +1,5 @@
+use basita::specs::Builder;
+
 use basita::core::components::Transform;
 use basita::creator::Creator;
 use basita::math::Vector2;

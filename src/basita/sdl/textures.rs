@@ -43,34 +43,3 @@ impl TextureLoader {
 		}
 	}
 }
-
-//----
-
-pub struct Textures<'a> {
-	pub textures: Vec<Texture<'a>>,
-	pub texture_creator: TextureCreator<WindowContext>,
-}
-
-impl<'a> Textures<'a> {
-	pub fn new(texture_creator: TextureCreator<WindowContext>) -> Self {
-		Textures {
-			texture_creator: texture_creator,
-			textures: Vec::new(),
-		}
-	}
-
-	pub fn load_texture(&'a mut self, path: &str) -> Result<(&Texture<'a>, usize), AssetLoadError> {
-		match self.texture_creator.load_texture(path) {
-			Ok(texture) => {
-				let index = self.textures.len();
-				self.textures.push(texture);
-				Ok((&self.textures[index], index))
-			}
-			Err(message) => Err(AssetLoadError::new(message)),
-		}
-	}
-
-	pub fn at(&'a self, index: usize) -> &Texture<'a> {
-		&self.textures[index]
-	}
-}

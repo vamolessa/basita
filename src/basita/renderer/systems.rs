@@ -1,6 +1,6 @@
 use sdl2::rect::{Point, Rect};
 
-use specs::{Read, Write, Join, ReadStorage, System};
+use specs::{Join, Read, ReadStorage, System, Write};
 
 use super::components::Sprite;
 use super::resources::{ImageInstance, Images, Layers};
