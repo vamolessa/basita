@@ -1,7 +1,7 @@
 use sdl2::rect::Point;
 
 use super::assets::Image;
-use core::assets::{AssetCollection, AssetHandle};
+use core::assets::AssetCollection;
 
 pub type Images = AssetCollection<Image>;
 pub type RenderCommands = Vec<RenderCommand>;

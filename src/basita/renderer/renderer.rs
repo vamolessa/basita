@@ -20,12 +20,10 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 	for command in commands.iter() {
 		let texture = textures.at(command.texture_index);
 		let texture_query = texture.query();
-		//let position = image_instance.position - image.center;
-		let position = command.position;
 
 		let rect = Rect::new(
-			position.x,
-			position.y,
+			command.position.x,
+			command.position.y,
 			texture_query.width,
 			texture_query.height,
 		);
