@@ -22,7 +22,7 @@ impl<'a> TextureStorage<'a> {
 }
 
 pub struct TextureLoader {
-	texture_creator: TextureCreator<WindowContext>,
+	pub texture_creator: TextureCreator<WindowContext>,
 }
 
 impl TextureLoader {

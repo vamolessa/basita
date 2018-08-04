@@ -1,3 +1,4 @@
+/*
 use specs::{Join, ReadStorage, System};
 
 use sdl2::pixels::Color;
@@ -46,3 +47,4 @@ impl<'a, 's> System<'s> for ColliderRenderSystem<'a> {
 		}
 	}
 }
+*/

@@ -7,11 +7,10 @@ use basita::sdl2::event::Event;
 
 use basita::specs::{DispatcherBuilder, World};
 
-use basita::sdl::{SdlContext, SdlStorage};
+use basita::sdl::{SdlContext, SdlLoader, SdlStorage};
 
 use basita::core::components::Transform;
 use basita::core::resources::Time;
-use basita::creator::Creator;
 use basita::input::Input;
 
 use basita::renderer;
@@ -20,7 +19,8 @@ use basita::renderer::resources::{Images, Layers};
 use basita::renderer::systems::RenderSystem;
 
 use basita::physics::components::{Collider, PhysicBody};
-use basita::physics::systems::{ColliderRenderSystem, PhysicsSystem};
+use basita::physics::systems::PhysicsSystem;
+//use basita::physics::systems::{ColliderRenderSystem, PhysicsSystem};
 
 mod game;
 use game::*;
@@ -28,8 +28,9 @@ use game::*;
 pub fn main() {
 	let frames_per_second = 60;
 
-	let sdl_context = SdlContext::new("game", 400, 300);
-	let sdl_storage = SdlStorage::default();
+	let mut sdl_context = SdlContext::new("game", 400, 300);
+	let sdl_loader = SdlLoader::new(&sdl_context);
+	let mut sdl_storage = SdlStorage::default();
 
 	// DECLARE RESOURCES
 	let mut world = World::new();
@@ -60,15 +61,7 @@ pub fn main() {
 		.build();
 
 	// LOAD LEVEL
-	{
-		let mut creator = Creator {
-			world: &mut world,
-			sdl_context: &sdl_context,
-			sdl_storage: &sdl_storage,
-		};
-
-		levels::level1::load(&mut creator);
-	}
+	levels::level1::load(&mut world, &sdl_loader, &mut sdl_storage);
 
 	// MAIN LOOP
 	'main: loop {
@@ -76,7 +69,7 @@ pub fn main() {
 			let mut input = world.write_resource::<Input>();
 			input.update();
 
-			let mut event_pump = sdl_context.event_pump.borrow_mut();
+			let event_pump = &mut sdl_context.event_pump;
 			for event in event_pump.poll_iter() {
 				match event {
 					Event::Quit { .. } => {
@@ -91,7 +84,7 @@ pub fn main() {
 
 		dispatcher.dispatch(&mut world.res);
 
-		renderer::render(&world, &sdl_context, &sdl_storage);
+		renderer::render(&world, &mut sdl_context, &sdl_storage);
 
 		world.maintain();
 

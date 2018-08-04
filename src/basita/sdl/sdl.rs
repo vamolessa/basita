@@ -1,5 +1,3 @@
-use std::cell::RefCell;
-
 use sdl2;
 use sdl2::image::{INIT_JPG, INIT_PNG};
 use sdl2::render::Canvas;
@@ -10,11 +8,8 @@ use super::{TextureLoader, TextureStorage};
 pub struct SdlContext {
 	_sdl: sdl2::Sdl,
 
-	pub canvas: RefCell<Canvas<Window>>,
-	pub event_pump: RefCell<sdl2::EventPump>,
-
-	// assets
-	pub texture_loader: TextureLoader,
+	pub canvas: Canvas<Window>,
+	pub event_pump: sdl2::EventPump,
 }
 
 impl SdlContext {
@@ -31,18 +26,32 @@ impl SdlContext {
 		let canvas = window.into_canvas().build().unwrap();
 
 		let _image_context = sdl2::image::init(INIT_PNG | INIT_JPG).unwrap();
-		let texture_creator = canvas.texture_creator();
 
 		SdlContext {
-			event_pump: RefCell::from(sdl.event_pump().unwrap()),
+			event_pump: sdl.event_pump().unwrap(),
 			_sdl: sdl,
-			texture_loader: TextureLoader::new(texture_creator),
-			canvas: RefCell::from(canvas),
+			canvas: canvas,
+		}
+	}
+}
+
+pub struct SdlLoader {
+	pub texture_loader: TextureLoader,
+}
+
+impl SdlLoader {
+	pub fn new(sdl_context: &SdlContext) -> Self {
+		SdlLoader {
+			texture_loader: TextureLoader {
+				texture_creator: sdl_context.canvas.texture_creator(),
+			},
 		}
 	}
 }
 
 #[derive(Default)]
 pub struct SdlStorage<'a> {
-	pub texture_storage: RefCell<TextureStorage<'a>>,
+	pub texture_storage: TextureStorage<'a>,
 }
+
+

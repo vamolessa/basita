@@ -14,7 +14,6 @@ pub extern crate fxhash;
 
 // local
 pub mod core;
-pub mod creator;
 pub mod input;
 pub mod physics;
 pub mod renderer;

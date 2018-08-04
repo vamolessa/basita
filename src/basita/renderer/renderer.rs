@@ -6,11 +6,11 @@ use specs::World;
 
 use super::resources::{Images, Layers};
 
-pub fn render<'a>(world: &World, sdl_context: &SdlContext, sdl_storage: &SdlStorage<'a>) {
+pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &SdlStorage<'a>) {
 	let clear_color = Color::RGB(0, 0, 0);
 
-	let mut canvas = sdl_context.canvas.borrow_mut();
-	let textures = sdl_storage.texture_storage.borrow();
+	let canvas = &mut sdl_context.canvas;
+	let textures = &sdl_storage.texture_storage;
 
 	canvas.set_draw_color(clear_color);
 	canvas.clear();
