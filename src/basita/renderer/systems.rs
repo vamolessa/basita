@@ -3,7 +3,7 @@ use sdl2::rect::Point;
 use specs::{Join, ReadStorage, System, Write};
 
 use super::components::Sprite;
-use super::resources::{ImageInstance, Layers};
+use super::resources::{ImageInstance, RenderLayers};
 use core::components::Transform;
 
 pub struct RenderSystem;
@@ -12,7 +12,7 @@ impl<'s> System<'s> for RenderSystem {
 	type SystemData = (
 		ReadStorage<'s, Transform>,
 		ReadStorage<'s, Sprite>,
-		Write<'s, Layers>,
+		Write<'s, RenderLayers>,
 	);
 
 	fn run(&mut self, (transforms, sprites, mut layers): Self::SystemData) {

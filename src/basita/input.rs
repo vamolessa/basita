@@ -61,3 +61,7 @@ impl Input {
 		key.just_changed = true;
 	}
 }
+
+pub fn init(world: &mut ::specs::World) {
+	world.add_resource(Input::default());
+}

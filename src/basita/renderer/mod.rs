@@ -5,3 +5,10 @@ pub mod systems;
 
 mod renderer;
 pub use self::renderer::*;
+
+pub fn init(world: &mut ::specs::World) {
+	world.register::<components::Sprite>();
+
+	world.add_resource(resources::Images::default());
+	world.add_resource(resources::RenderLayers::default());
+}

@@ -4,7 +4,7 @@ use sdl2::rect::Rect;
 use sdl::{SdlContext, SdlStorage};
 use specs::World;
 
-use super::resources::{Images, Layers};
+use super::resources::{Images, RenderLayers};
 
 pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &SdlStorage<'a>) {
 	let clear_color = Color::RGB(0, 0, 0);
@@ -15,7 +15,7 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 	canvas.set_draw_color(clear_color);
 	canvas.clear();
 
-	let layers = world.read_resource::<Layers>();
+	let layers = world.read_resource::<RenderLayers>();
 	let images = world.read_resource::<Images>();
 
 	for layer in layers.iter() {

@@ -4,7 +4,7 @@ use super::assets::Image;
 use core::assets::{AssetCollection, AssetHandle};
 
 pub type Images = AssetCollection<Image>;
-pub type Layers = Vec<Vec<ImageInstance>>;
+pub type RenderLayers = Vec<Vec<ImageInstance>>;
 
 pub struct ImageInstance {
 	pub image: AssetHandle<Image>,

@@ -4,23 +4,13 @@ use std::thread;
 use std::time::Duration;
 
 use basita::sdl2::event::Event;
-
 use basita::specs::{DispatcherBuilder, World};
 
-use basita::sdl::{SdlContext, SdlLoader, SdlStorage};
-
-use basita::core::components::Transform;
-use basita::core::resources::Time;
 use basita::input::Input;
-
-use basita::renderer;
-use basita::renderer::components::Sprite;
-use basita::renderer::resources::{Images, Layers};
+use basita::physics::systems::{ColliderRenderSystem, PhysicsSystem};
 use basita::renderer::systems::RenderSystem;
-
-use basita::physics::components::{Collider, PhysicBody};
-use basita::physics::systems::PhysicsSystem;
-//use basita::physics::systems::{ColliderRenderSystem, PhysicsSystem};
+use basita::sdl::{SdlContext, SdlLoader, SdlStorage};
+use basita::{core, input, physics, renderer};
 
 mod game;
 use game::*;
@@ -36,16 +26,10 @@ pub fn main() {
 	let mut world = World::new();
 
 	// Engine
-	world.register::<Transform>();
-	world.register::<Sprite>();
-	world.register::<Collider>();
-	world.register::<PhysicBody>();
-
-	world.add_resource(Time::default());
-
-	world.add_resource(Images::default());
-	world.add_resource(Layers::default());
-	world.add_resource(Input::default());
+	core::init(&mut world);
+	input::init(&mut world);
+	renderer::init(&mut world);
+	physics::init(&mut world);
 
 	// Player
 	world.register::<components::Player>();
@@ -55,7 +39,7 @@ pub fn main() {
 		// Engine
 		.with(PhysicsSystem::default(), "physics", &[])
 		.with(RenderSystem, "render", &[])
-		//.with_thread_local(ColliderRenderSystem::new(&sdl_context))
+		.with(ColliderRenderSystem, "collider_render", &["render"])
 		// Player
 		.with(systems::PlayerSystem, "player", &[])
 		.build();
