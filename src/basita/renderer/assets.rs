@@ -6,8 +6,6 @@ use sdl::{TextureLoader, TextureStorage};
 pub struct Image {
 	pub texture_index: usize,
 	pub center: Point,
-	pub width: u32,
-	pub height: u32,
 }
 
 impl Asset for Image {}
@@ -22,9 +20,7 @@ impl<'a> AssetLoader<'a, Image> for TextureLoader {
 
 			Image {
 				texture_index: index,
-				center: Point::new(query.width as i32 / 2, query.height as i32 / 2),
-				width: query.width,
-				height: query.height,
+				center: Point::new(query.width as i32 / 2, query.height as i32 / 2)
 			}
 		})
 	}

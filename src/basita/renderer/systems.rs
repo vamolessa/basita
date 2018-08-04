@@ -1,9 +1,9 @@
 use sdl2::rect::Point;
 
-use specs::{Join, ReadStorage, System, Write};
+use specs::{Join, Read, ReadStorage, System, Write};
 
 use super::components::Sprite;
-use super::resources::{ImageInstance, RenderLayers};
+use super::resources::{Images, RenderCommand, RenderCommands};
 use core::components::Transform;
 
 pub struct RenderSystem;
@@ -12,24 +12,24 @@ impl<'s> System<'s> for RenderSystem {
 	type SystemData = (
 		ReadStorage<'s, Transform>,
 		ReadStorage<'s, Sprite>,
-		Write<'s, RenderLayers>,
+		Read<'s, Images>,
+		Write<'s, RenderCommands>,
 	);
 
-	fn run(&mut self, (transforms, sprites, mut layers): Self::SystemData) {
-		for layer in layers.iter_mut() {
-			layer.clear();
-		}
+	fn run(&mut self, (transforms, sprites, images, mut commands): Self::SystemData) {
+		commands.clear();
 
 		for (transform, sprite) in (&transforms, &sprites).join() {
-			if sprite.layer_index >= layers.len() {
-				layers.resize_default(sprite.layer_index + 1);
-			}
+			let image = images.get(sprite.image);
 
-			let mut layer = &mut layers[sprite.layer_index];
-			layer.push(ImageInstance {
-				image: sprite.image,
-				position: Point::new(transform.position.x as i32, transform.position.y as i32),
+			commands.push(RenderCommand {
+				layer: sprite.layer,
+				position: Point::new(transform.position.x as i32, transform.position.y as i32)
+					- image.center,
+				texture_index: image.texture_index,
 			});
 		}
+
+		commands.sort_by_key(|c| c.layer);
 	}
 }

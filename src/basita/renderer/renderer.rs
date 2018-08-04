@@ -4,7 +4,7 @@ use sdl2::rect::Rect;
 use sdl::{SdlContext, SdlStorage};
 use specs::World;
 
-use super::resources::{Images, RenderLayers};
+use super::resources::RenderCommands;
 
 pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &SdlStorage<'a>) {
 	let clear_color = Color::RGB(0, 0, 0);
@@ -15,19 +15,22 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 	canvas.set_draw_color(clear_color);
 	canvas.clear();
 
-	let layers = world.read_resource::<RenderLayers>();
-	let images = world.read_resource::<Images>();
+	let commands = world.read_resource::<RenderCommands>();
 
-	for layer in layers.iter() {
-		for image_instance in layer.iter() {
-			let image = images.get(image_instance.image);
-			let texture = textures.at(image.texture_index);
+	for command in commands.iter() {
+		let texture = textures.at(command.texture_index);
+		let texture_query = texture.query();
+		//let position = image_instance.position - image.center;
+		let position = command.position;
 
-			let position = image_instance.position - image.center;
-			let rect = Rect::new(position.x, position.y, image.width, image.height);
+		let rect = Rect::new(
+			position.x,
+			position.y,
+			texture_query.width,
+			texture_query.height,
+		);
 
-			canvas.copy(texture, None, rect).unwrap();
-		}
+		canvas.copy(texture, None, rect).unwrap();
 	}
 
 	canvas.present();

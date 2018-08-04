@@ -34,7 +34,7 @@ pub fn new<'a, 'b>(
 		.with(Player)
 		.with(Transform { position: position })
 		.with(Sprite {
-			layer_index: 0,
+			layer: 0,
 			image: image_handle,
 		})
 		.with(new_box_collider(Vector2::new(16.0, 16.0)))

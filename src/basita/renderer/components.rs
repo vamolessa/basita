@@ -5,7 +5,7 @@ use core::assets::AssetHandle;
 
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Sprite {
-	pub layer_index: usize,
+	pub layer: usize,
 	pub image: AssetHandle<Image>,
 }
 

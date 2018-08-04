@@ -4,18 +4,10 @@ use super::assets::Image;
 use core::assets::{AssetCollection, AssetHandle};
 
 pub type Images = AssetCollection<Image>;
-pub type RenderLayers = Vec<Vec<ImageInstance>>;
+pub type RenderCommands = Vec<RenderCommand>;
 
-pub struct ImageInstance {
-	pub image: AssetHandle<Image>,
+pub struct RenderCommand {
+	pub layer: usize,
 	pub position: Point,
-}
-
-impl Default for ImageInstance {
-	fn default() -> Self {
-		ImageInstance {
-			image: Default::default(),
-			position: Point::new(0, 0),
-		}
-	}
+	pub texture_index: usize,
 }
