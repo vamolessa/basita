@@ -4,7 +4,7 @@ use sdl2::rect::Rect;
 use sdl::{SdlContext, SdlStorage};
 use specs::World;
 
-use super::resources::RenderCommands;
+use super::resources::{RenderCommands, RenderVariant};
 
 pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &SdlStorage<'a>) {
 	let clear_color = Color::RGB(0, 0, 0);
@@ -18,17 +18,22 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 	let commands = world.read_resource::<RenderCommands>();
 
 	for command in commands.iter() {
-		let texture = textures.at(command.texture_index);
-		let texture_query = texture.query();
+		match command.render_variant {
+			RenderVariant::Texture(texture_index) => {
+				let texture = textures.at(texture_index);
+				let texture_query = texture.query();
 
-		let rect = Rect::new(
-			command.position.x,
-			command.position.y,
-			texture_query.width,
-			texture_query.height,
-		);
+				let rect = Rect::new(
+					command.position.x,
+					command.position.y,
+					texture_query.width,
+					texture_query.height,
+				);
 
-		canvas.copy(texture, None, rect).unwrap();
+				canvas.copy(texture, None, rect).unwrap();
+			}
+			_ => {}
+		}
 	}
 
 	canvas.present();

@@ -3,7 +3,7 @@ use sdl2::rect::Point;
 use specs::{Join, Read, ReadStorage, System, Write};
 
 use super::components::Sprite;
-use super::resources::{Images, RenderCommand, RenderCommands};
+use super::resources::{Images, RenderCommand, RenderCommands, RenderVariant};
 use core::components::Transform;
 
 pub struct RenderSystem;
@@ -26,7 +26,7 @@ impl<'s> System<'s> for RenderSystem {
 				layer: sprite.layer,
 				position: Point::new(transform.position.x as i32, transform.position.y as i32)
 					- image.center,
-				texture_index: image.texture_index,
+				render_variant: RenderVariant::Texture(image.texture_index),
 			});
 		}
 

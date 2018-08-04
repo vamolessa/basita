@@ -6,8 +6,13 @@ use core::assets::AssetCollection;
 pub type Images = AssetCollection<Image>;
 pub type RenderCommands = Vec<RenderCommand>;
 
+pub enum RenderVariant {
+	Texture(usize),
+	Rect(u32, u32),
+}
+
 pub struct RenderCommand {
 	pub layer: usize,
 	pub position: Point,
-	pub texture_index: usize,
+	pub render_variant: RenderVariant,
 }
