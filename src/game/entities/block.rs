@@ -31,10 +31,8 @@ pub fn new<'a, 'b>(
 		.create_entity()
 		.with(Transform { position: position })
 		.with(Sprite {
-			layer: 0,
 			image: image_handle,
-			flip_horizontal: false,
-			flip_vertical: false,
+			..Default::default()
 		})
 		.with(new_box_collider(Vector2::new(16.0, 16.0)))
 		.build();
