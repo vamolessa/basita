@@ -7,12 +7,10 @@ use specs::World;
 use super::resources::{RenderCommands, RenderVariant};
 
 pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &SdlStorage<'a>) {
-	let clear_color = Color::RGB(0, 0, 0);
-
 	let canvas = &mut sdl_context.canvas;
 	let textures = &sdl_storage.texture_storage;
 
-	canvas.set_draw_color(clear_color);
+	canvas.set_draw_color(Color::RGB(0, 0, 0));
 	canvas.clear();
 
 	let commands = world.read_resource::<RenderCommands>();
@@ -32,7 +30,17 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 
 				canvas.copy(texture, None, rect).unwrap();
 			}
-			_ => {}
+			RenderVariant::Rect(color, width, height) => {
+				canvas.set_draw_color(color);
+				canvas
+					.draw_rect(Rect::new(
+						command.position.x,
+						command.position.y,
+						width,
+						height,
+					))
+					.unwrap();
+			}
 		}
 	}
 

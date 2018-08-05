@@ -1,3 +1,4 @@
+use sdl2::pixels::Color;
 use sdl2::rect::Point;
 
 use super::assets::Image;
@@ -8,7 +9,7 @@ pub type RenderCommands = Vec<RenderCommand>;
 
 pub enum RenderVariant {
 	Texture(usize),
-	Rect(u32, u32),
+	Rect(Color, u32, u32),
 }
 
 pub struct RenderCommand {
