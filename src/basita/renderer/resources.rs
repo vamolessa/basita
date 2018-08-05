@@ -8,7 +8,7 @@ pub type Images = AssetCollection<Image>;
 pub type RenderCommands = Vec<RenderCommand>;
 
 pub enum RenderVariant {
-	Texture(usize),
+	Texture(usize, bool, bool),
 	Rect(Color, u32, u32),
 }
 

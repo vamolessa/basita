@@ -7,6 +7,8 @@ use core::assets::AssetHandle;
 pub struct Sprite {
 	pub layer: usize,
 	pub image: AssetHandle<Image>,
+	pub flip_horizontal: bool,
+	pub flip_vertical: bool,
 }
 
 impl Component for Sprite {

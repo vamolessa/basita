@@ -17,7 +17,7 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 
 	for command in commands.iter() {
 		match command.render_variant {
-			RenderVariant::Texture(texture_index) => {
+			RenderVariant::Texture(texture_index, flip_horizontal, flip_vertical) => {
 				let texture = textures.at(texture_index);
 				let texture_query = texture.query();
 
@@ -28,7 +28,18 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 					texture_query.height,
 				);
 
-				canvas.copy(texture, None, rect).unwrap();
+				//canvas.copy(texture, None, rect).unwrap();
+				canvas
+					.copy_ex(
+						texture,
+						None,
+						rect,
+						0.0,
+						None,
+						flip_horizontal,
+						flip_vertical,
+					)
+					.unwrap();
 			}
 			RenderVariant::Rect(color, width, height) => {
 				canvas.set_draw_color(color);

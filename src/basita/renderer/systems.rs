@@ -26,7 +26,11 @@ impl<'s> System<'s> for RenderSystem {
 				layer: sprite.layer,
 				position: Point::new(transform.position.x as i32, transform.position.y as i32)
 					- image.center,
-				render_variant: RenderVariant::Texture(image.texture_index),
+				render_variant: RenderVariant::Texture(
+					image.texture_index,
+					sprite.flip_horizontal,
+					sprite.flip_vertical,
+				),
 			});
 		}
 
