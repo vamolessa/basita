@@ -36,7 +36,7 @@ impl<'a> System<'a> for PlayerSystem {
 				physic_body.velocity.y -= jump_impulse;
 			}
 
-			physic_body.acceleration.y = 60.0;
+			physic_body.acceleration.y = 100.0;
 		}
 	}
 }
