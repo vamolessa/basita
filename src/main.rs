@@ -6,6 +6,7 @@ use std::time::Duration;
 use basita::sdl2::event::Event;
 use basita::specs::{DispatcherBuilder, World};
 
+use basita::core::resources::Time;
 use basita::input::Input;
 use basita::physics::systems::{ColliderRenderSystem, PhysicsSystem};
 use basita::renderer::systems::RenderSystem;
@@ -69,9 +70,11 @@ pub fn main() {
 		dispatcher.dispatch(&mut world.res);
 
 		renderer::render(&world, &mut sdl_context, &sdl_storage);
-
 		world.maintain();
 
 		thread::sleep(Duration::new(0, 1_000_000_000u32 / frames_per_second));
+
+		let mut time = world.write_resource::<Time>();
+		time.delta_time = 1.0 / frames_per_second as f32;
 	}
 }

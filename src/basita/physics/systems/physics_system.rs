@@ -111,7 +111,7 @@ fn get_static_response(
 	restitution: f32,
 	penetration: Vector2,
 ) -> CollisionResponse {
-	let impulse_magnitude = Vector2::dot(penetration, p.velocity) * (1.0 + restitution);
+	let impulse_magnitude = -Vector2::dot(penetration, p.velocity) * (1.0 + restitution);
 	let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
 
 	CollisionResponse {

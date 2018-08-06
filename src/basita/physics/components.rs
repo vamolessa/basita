@@ -10,7 +10,7 @@ pub struct PhysicBody {
 }
 
 impl PhysicBody {
-	pub fn new(inverted_mass: f32) -> Self {
+	pub fn with_inverted_mass(inverted_mass: f32) -> Self {
 		PhysicBody {
 			velocity: Vector2::zero(),
 			acceleration: Vector2::zero(),

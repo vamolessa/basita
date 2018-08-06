@@ -38,6 +38,6 @@ pub fn new<'a, 'b>(
 			..Default::default()
 		})
 		.with(Collider::new_box(Vector2::new(16.0, 16.0)))
-		.with(PhysicBody::new(1.0))
+		.with(PhysicBody::with_inverted_mass(1.0))
 		.build();
 }
