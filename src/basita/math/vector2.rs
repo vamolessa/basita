@@ -31,19 +31,21 @@ impl Vector2 {
 		self.y = y;
 	}
 
-	pub fn sqr_magnitude(&self) -> f32 {
+	pub fn sqr_magnitude(self) -> f32 {
 		self.x * self.x + self.y * self.y
 	}
 
-	/*
-	pub fn one() -> Vector2 {
-		Vector2 { x: 1.0, y: 1.0 }
-	}
-
-	pub fn magnitude(&self) -> f32 {
+	pub fn magnitude(self) -> f32 {
 		self.sqr_magnitude().sqrt()
 	}
-	*/
+
+	pub fn normalized(self) -> Self {
+		let magnitude = self.magnitude();
+		Vector2 {
+			x: self.x / magnitude,
+			y: self.y / magnitude,
+		}
+	}
 }
 
 impl Add<Vector2> for Vector2 {
@@ -116,8 +118,8 @@ impl Div<f32> for Vector2 {
 
 	fn div(self, value: f32) -> Self::Output {
 		Vector2 {
-			x: self.x * value,
-			y: self.y * value,
+			x: self.x / value,
+			y: self.y / value,
 		}
 	}
 }

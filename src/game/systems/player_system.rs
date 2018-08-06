@@ -38,7 +38,7 @@ impl<'a> System<'a> for PlayerSystem {
 
 			physic_body.acceleration.y = 60.0;
 
-			println!("{:?} {:?}", physic_body.velocity, _transform.position);
+			//println!("{:?} {:?}", physic_body.velocity, _transform.position);
 		}
 	}
 }

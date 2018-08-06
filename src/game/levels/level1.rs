@@ -12,7 +12,7 @@ pub fn load<'a, 'b>(
 ) {
 	player::new(world, sdl_loader, sdl_storage, Vector2::new(80.0, 100.0));
 
-	block::new(world, sdl_loader, sdl_storage, Vector2::new(150.0, 110.0));
+	block::new(world, sdl_loader, sdl_storage, Vector2::new(200.0, 110.0));
 
 	let hw = 16.0;
 	let x0 = hw;
