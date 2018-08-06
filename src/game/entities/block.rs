@@ -4,7 +4,7 @@ use basita::specs::World;
 
 use basita::core::components::Transform;
 use basita::math::Vector2;
-use basita::physics::components::new_box_collider;
+use basita::physics::components::Collider;
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::Images;
 
@@ -26,7 +26,6 @@ pub fn new<'a, 'b>(
 
 		let _image = images.get(image_handle);
 	}
-
 	let _block = world
 		.create_entity()
 		.with(Transform { position: position })
@@ -34,6 +33,6 @@ pub fn new<'a, 'b>(
 			image: image_handle,
 			..Default::default()
 		})
-		.with(new_box_collider(Vector2::new(16.0, 16.0)))
+		.with(Collider::new_box(Vector2::new(16.0, 16.0)))
 		.build();
 }

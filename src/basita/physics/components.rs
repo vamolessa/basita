@@ -6,18 +6,15 @@ use math::Vector2;
 pub struct PhysicBody {
 	pub velocity: Vector2,
 	pub acceleration: Vector2,
-
 	pub inverted_mass: f32,
-	pub bounciness: f32,
 }
 
 impl PhysicBody {
-	pub fn new(inverted_mass: f32, bounciness: f32) -> Self {
+	pub fn new(inverted_mass: f32) -> Self {
 		PhysicBody {
 			velocity: Vector2::zero(),
 			acceleration: Vector2::zero(),
 			inverted_mass: inverted_mass,
-			bounciness: bounciness,
 		}
 	}
 }
@@ -31,6 +28,20 @@ pub struct Collider {
 	pub shape: Shape,
 	pub offset: Vector2,
 	pub is_trigger: bool,
+	pub bounciness: f32,
+}
+
+impl Collider {
+	pub fn new_box(half_size: Vector2) -> Self {
+		Collider {
+			shape: Shape::Box(BoxShape {
+				half_size: half_size,
+			}),
+			offset: Vector2::zero(),
+			is_trigger: false,
+			bounciness: 0.0,
+		}
+	}
 }
 
 impl Component for Collider {
@@ -51,14 +62,4 @@ impl Default for Shape {
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct BoxShape {
 	pub half_size: Vector2,
-}
-
-pub fn new_box_collider(half_size: Vector2) -> Collider {
-	Collider {
-		shape: Shape::Box(BoxShape {
-			half_size: half_size,
-		}),
-		offset: Vector2::zero(),
-		is_trigger: false,
-	}
 }

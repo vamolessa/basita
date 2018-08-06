@@ -47,7 +47,8 @@ impl<'a> System<'a> for PhysicsSystem {
 				}
 
 				if let Some(penetration) = collide(ac, at, bc, bt) {
-					let (ar, br) = get_dynamic_response(ap, bp, penetration);
+					let restitution = (ac.bounciness * bc.bounciness).sqrt();
+					let (ar, br) = get_dynamic_response(ap, bp, restitution, penetration);
 
 					self.collision_responses.push((ae, ar));
 					self.collision_responses.push((be, br));
@@ -56,7 +57,8 @@ impl<'a> System<'a> for PhysicsSystem {
 
 			for (bc, bt, ()) in (&colliders, &transforms, !&physic_bodies).join() {
 				if let Some(penetration) = collide(ac, at, bc, bt) {
-					let ar = get_static_response(ap, penetration);
+					let restitution = (ac.bounciness * bc.bounciness).sqrt();
+					let ar = get_static_response(ap, restitution, penetration);
 					self.collision_responses.push((ae, ar));
 				}
 			}
@@ -76,6 +78,7 @@ impl<'a> System<'a> for PhysicsSystem {
 fn get_dynamic_response(
 	ap: &PhysicBody,
 	bp: &PhysicBody,
+	restitution: f32,
 	penetration: Vector2,
 ) -> (CollisionResponse, CollisionResponse) {
 	let total_inverted_mass = ap.inverted_mass + bp.inverted_mass;
@@ -85,8 +88,6 @@ fn get_dynamic_response(
 
 	let a_weight = ap.inverted_mass / total_inverted_mass;
 	let b_weight = bp.inverted_mass / total_inverted_mass;
-
-	let restitution = (ap.bounciness * bp.bounciness).sqrt();
 
 	let impulse_magnitude =
 		Vector2::dot(penetration, bp.velocity - ap.velocity) * (1.0 + restitution);
@@ -105,9 +106,11 @@ fn get_dynamic_response(
 	(a_response, b_response)
 }
 
-fn get_static_response(p: &PhysicBody, penetration: Vector2) -> CollisionResponse {
-	let restitution = p.bounciness;
-
+fn get_static_response(
+	p: &PhysicBody,
+	restitution: f32,
+	penetration: Vector2,
+) -> CollisionResponse {
 	let impulse_magnitude = Vector2::dot(penetration, p.velocity) * (1.0 + restitution);
 	let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
 
