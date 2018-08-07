@@ -25,4 +25,16 @@ pub fn load<'a, 'b>(
 			Vector2::new(x0 + i as f32 * hw * 2.0, y0),
 		);
 	}
+
+	let hw = 16.0;
+	let x0 = hw;
+	let y0 = hw;
+	for i in 0..(300 / hw as i32) {
+		block::new(
+			world,
+			sdl_loader,
+			sdl_storage,
+			Vector2::new(x0, y0 + i as f32 * hw * 2.0),
+		);
+	}
 }

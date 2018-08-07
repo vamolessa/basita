@@ -1,5 +1,7 @@
 use specs::{Entities, Entity, Join, Read, ReadStorage, System, WriteStorage};
 
+use fxhash::FxHashMap;
+
 use super::super::components::{Collider, PhysicBody};
 use super::super::helpers::collide;
 use core::components::Transform;
@@ -14,7 +16,7 @@ struct CollisionResponse {
 
 #[derive(Default)]
 pub struct PhysicsSystem {
-	collision_responses: Vec<(Entity, CollisionResponse)>,
+	collision_responses: FxHashMap<Entity, Vec<CollisionResponse>>,
 }
 
 impl<'a> System<'a> for PhysicsSystem {
@@ -50,8 +52,8 @@ impl<'a> System<'a> for PhysicsSystem {
 					let restitution = (ac.bounciness * bc.bounciness).sqrt();
 					let (ar, br) = get_dynamic_response(ap, bp, restitution, penetration);
 
-					self.collision_responses.push((ae, ar));
-					self.collision_responses.push((be, br));
+					self.collision_responses.entry(ae).or_default().push(ar);
+					self.collision_responses.entry(be).or_default().push(br);
 				}
 			}
 
@@ -59,18 +61,22 @@ impl<'a> System<'a> for PhysicsSystem {
 				if let Some(penetration) = collide(ac, at, bc, bt) {
 					let restitution = (ac.bounciness * bc.bounciness).sqrt();
 					let ar = get_static_response(ap, restitution, penetration);
-					self.collision_responses.push((ae, ar));
+					self.collision_responses.entry(ae).or_default().push(ar);
 				}
 			}
 		}
 
 		// respond to collisions
-		for &(ref entity, ref response) in &self.collision_responses {
+		for (entity, responses) in &self.collision_responses {
 			let transform = transforms.get_mut(*entity).unwrap();
 			let physic_body = physic_bodies.get_mut(*entity).unwrap();
 
-			transform.position += response.position_offset;
-			physic_body.velocity += response.velocity_offset;
+			let weight = 1.0 / responses.len() as f32;
+			let weight = 1.0;
+			for response in responses {
+				transform.position += response.position_offset * weight;
+				physic_body.velocity += response.velocity_offset * weight;
+			}
 		}
 	}
 }
