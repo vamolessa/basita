@@ -20,7 +20,7 @@ pub struct PhysicsSystem {
 }
 
 impl PhysicsSystem {
-	pub fn new(iteration_count: usize) -> Self {
+	pub fn with_iteration_count(iteration_count: usize) -> Self {
 		PhysicsSystem {
 			iteration_count: iteration_count,
 			collision_responses: Default::default(),
