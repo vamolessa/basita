@@ -34,5 +34,6 @@ pub fn new<'a, 'b>(
 			..Default::default()
 		})
 		.with(Collider::new_box(Vector2::new(16.0, 16.0)))
+		//.with(::basita::physics::components::PhysicBody::with_inverted_mass(0.0))
 		.build();
 }

@@ -119,9 +119,15 @@ fn get_dynamic_response(
 	let a_weight = ap.inverted_mass / total_inverted_mass;
 	let b_weight = bp.inverted_mass / total_inverted_mass;
 
-	let impulse_magnitude =
-		Vector2::dot(penetration, bp.velocity - ap.velocity) * (1.0 + restitution);
-	let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
+	let relative_velocity = bp.velocity - ap.velocity;
+
+	let impulse = if Vector2::dot(relative_velocity, penetration) >= 0.0 {
+		let impulse_magnitude =
+			Vector2::dot(penetration, bp.velocity - ap.velocity) * (1.0 + restitution);
+		(penetration * impulse_magnitude) / penetration.sqr_magnitude()
+	} else {
+		Vector2::zero()
+	};
 
 	let a_response = CollisionResponse {
 		position_offset: penetration * (a_weight),
@@ -141,8 +147,14 @@ fn get_static_response(
 	restitution: f32,
 	penetration: Vector2,
 ) -> CollisionResponse {
-	let impulse_magnitude = -Vector2::dot(penetration, p.velocity) * (1.0 + restitution);
-	let impulse = (penetration * impulse_magnitude) / penetration.sqr_magnitude();
+	let relative_velocity = -p.velocity;
+
+	let impulse = if Vector2::dot(relative_velocity, penetration) >= 0.0 {
+		let impulse_magnitude = Vector2::dot(penetration, relative_velocity) * (1.0 + restitution);
+		(penetration * impulse_magnitude) / penetration.sqr_magnitude()
+	} else {
+		Vector2::zero()
+	};
 
 	CollisionResponse {
 		position_offset: penetration,
