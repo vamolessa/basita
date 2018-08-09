@@ -14,9 +14,33 @@ struct CollisionResponse {
 	velocity_offset: Vector2,
 }
 
-#[derive(Default)]
 pub struct PhysicsSystem {
-	collision_responses: FxHashMap<Entity, Vec<CollisionResponse>>,
+	pub iteration_count: usize,
+	collision_responses: FxHashMap<Entity, CollisionResponse>,
+}
+
+impl PhysicsSystem {
+	pub fn new(iteration_count: usize) -> Self {
+		PhysicsSystem {
+			iteration_count: iteration_count,
+			collision_responses: Default::default(),
+		}
+	}
+
+	fn replace_response_if_bigger(&mut self, entity: Entity, response: CollisionResponse) {
+		use std::collections::hash_map::Entry;
+
+		match self.collision_responses.entry(entity) {
+			Entry::Occupied(mut entry) => if response.position_offset.sqr_magnitude()
+				> entry.get().position_offset.sqr_magnitude()
+			{
+				entry.insert(response);
+			},
+			Entry::Vacant(entry) => {
+				entry.insert(response);
+			}
+		};
+	}
 }
 
 impl<'a> System<'a> for PhysicsSystem {
@@ -39,43 +63,43 @@ impl<'a> System<'a> for PhysicsSystem {
 			physic_body.acceleration.set(0.0, 0.0);
 		}
 
-		self.collision_responses.clear();
-
 		// check collisions
-		for (ae, ac, at, ap) in (&*entities, &colliders, &transforms, &physic_bodies).join() {
-			for (be, bc, bt, bp) in (&*entities, &colliders, &transforms, &physic_bodies).join() {
-				if ae.id() <= be.id() {
-					continue;
+		for _iteration in 0..self.iteration_count {
+			self.collision_responses.clear();
+
+			for (ae, ac, at, ap) in (&*entities, &colliders, &transforms, &physic_bodies).join() {
+				for (be, bc, bt, bp) in (&*entities, &colliders, &transforms, &physic_bodies).join()
+				{
+					if ae.id() <= be.id() {
+						continue;
+					}
+
+					if let Some(penetration) = collide(ac, at, bc, bt) {
+						let restitution = (ac.bounciness * bc.bounciness).sqrt();
+						let (ar, br) = get_dynamic_response(ap, bp, restitution, penetration);
+
+						self.replace_response_if_bigger(ae, ar);
+						self.replace_response_if_bigger(be, br);
+					}
 				}
 
-				if let Some(penetration) = collide(ac, at, bc, bt) {
-					let restitution = (ac.bounciness * bc.bounciness).sqrt();
-					let (ar, br) = get_dynamic_response(ap, bp, restitution, penetration);
+				for (bc, bt, ()) in (&colliders, &transforms, !&physic_bodies).join() {
+					if let Some(penetration) = collide(ac, at, bc, bt) {
+						let restitution = (ac.bounciness * bc.bounciness).sqrt();
+						let ar = get_static_response(ap, restitution, penetration);
 
-					self.collision_responses.entry(ae).or_default().push(ar);
-					self.collision_responses.entry(be).or_default().push(br);
+						self.replace_response_if_bigger(ae, ar);
+					}
 				}
 			}
 
-			for (bc, bt, ()) in (&colliders, &transforms, !&physic_bodies).join() {
-				if let Some(penetration) = collide(ac, at, bc, bt) {
-					let restitution = (ac.bounciness * bc.bounciness).sqrt();
-					let ar = get_static_response(ap, restitution, penetration);
-					self.collision_responses.entry(ae).or_default().push(ar);
-				}
-			}
-		}
+			// respond to collisions
+			for (entity, response) in &self.collision_responses {
+				let transform = transforms.get_mut(*entity).unwrap();
+				let physic_body = physic_bodies.get_mut(*entity).unwrap();
 
-		// respond to collisions
-		for (entity, responses) in &self.collision_responses {
-			let transform = transforms.get_mut(*entity).unwrap();
-			let physic_body = physic_bodies.get_mut(*entity).unwrap();
-
-			let weight = 1.0 / responses.len() as f32;
-			let weight = 1.0;
-			for response in responses {
-				transform.position += response.position_offset * weight;
-				physic_body.velocity += response.velocity_offset * weight;
+				transform.position += response.position_offset;
+				physic_body.velocity += response.velocity_offset;
 			}
 		}
 	}
