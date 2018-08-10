@@ -93,6 +93,10 @@ impl<'a> System<'a> for PhysicsSystem {
 				}
 			}
 
+			if self.collision_responses.len() == 0 {
+				break;
+			}
+
 			// respond to collisions
 			for (entity, response) in &self.collision_responses {
 				let transform = transforms.get_mut(*entity).unwrap();
