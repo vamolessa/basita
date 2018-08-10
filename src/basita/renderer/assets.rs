@@ -34,11 +34,11 @@ impl<'a> AssetLoader<'a, Image> for SdlLoader {
 
 pub struct Font {
 	pub index: usize,
-	pub size: usize,
+	pub size: u16,
 }
 
 impl Asset for Font {
-	type Id = (String, usize);
+	type Id = (String, u16);
 }
 
 impl<'a> AssetLoader<'a, Font> for SdlLoader {

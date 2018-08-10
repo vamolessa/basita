@@ -10,5 +10,6 @@ pub fn init(world: &mut ::specs::World) {
 	world.register::<components::Sprite>();
 
 	world.add_resource(resources::Images::default());
+	world.add_resource(resources::Fonts::default());
 	world.add_resource(resources::RenderCommands::default());
 }

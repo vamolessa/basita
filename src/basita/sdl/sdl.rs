@@ -29,11 +29,6 @@ impl SdlContext {
 
 		let _image_context = sdl2::image::init(INIT_PNG | INIT_JPG).unwrap();
 
-		if false {
-			let _ttf = sdl2::ttf::init().unwrap();
-			let _font = _ttf.load_font("", 32).unwrap();
-		}
-
 		SdlContext {
 			event_pump: sdl.event_pump().unwrap(),
 			_sdl: sdl,
@@ -44,7 +39,7 @@ impl SdlContext {
 
 pub struct SdlLoader {
 	pub texture_creator: TextureCreator<WindowContext>,
-	pub ttf_context: Sdl2TtfContext,
+	pub font_context: Sdl2TtfContext,
 }
 
 use core::assets::AssetLoadError;
@@ -53,7 +48,7 @@ impl SdlLoader {
 	pub fn new(sdl_context: &SdlContext) -> Self {
 		SdlLoader {
 			texture_creator: sdl_context.canvas.texture_creator(),
-			ttf_context: ttf::init().unwrap(),
+			font_context: ttf::init().unwrap(),
 		}
 	}
 
@@ -71,11 +66,11 @@ impl SdlLoader {
 	pub fn load_font<'a>(
 		&'a self,
 		path: &str,
-		_size: usize,
+		size: u16,
 		storage: &mut SdlStorage<'a>,
 	) -> Result<usize, AssetLoadError> {
-		match self.texture_creator.load_texture(path) {
-			Ok(texture) => Ok(storage.texture_storage.add(texture)),
+		match self.font_context.load_font(path, size) {
+			Ok(font) => Ok(storage.font_storage.add(font)),
 			Err(message) => Err(AssetLoadError::new(message)),
 		}
 	}
