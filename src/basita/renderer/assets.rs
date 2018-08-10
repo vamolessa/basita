@@ -38,7 +38,7 @@ pub struct Font {
 }
 
 impl Asset for Font {
-	type Id = String;
+	type Id = (String, usize);
 }
 
 impl<'a> AssetLoader<'a, Font> for SdlLoader {
@@ -46,12 +46,12 @@ impl<'a> AssetLoader<'a, Font> for SdlLoader {
 
 	fn load(
 		&'a self,
-		path: &<Font as Asset>::Id,
+		&(ref path, size): &<Font as Asset>::Id,
 		storage: &mut Self::Storage,
 	) -> Result<Font, AssetLoadError> {
-		self.load_font(path, 32, storage).map(|index| Font {
+		self.load_font(path, size, storage).map(|index| Font {
 			index: index,
-			size: 32,
+			size: size,
 		})
 	}
 }

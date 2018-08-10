@@ -122,19 +122,24 @@ impl<A: Asset> AssetCollection<A> {
 		match self.cache_map.get(id).cloned() {
 			Some(handle) => Ok(handle),
 			None => {
-				let handle = AssetHandle {
-					index: self.assets.len(),
-					_phantom: PhantomData,
-				};
-
-				self.cache_map.insert(id.clone(), handle);
-
 				let asset = loader.load(id, storage)?;
-				self.assets.push(asset);
+				let handle = self.add(asset);
+				self.cache_map.insert(id.clone(), handle);
 
 				Ok(handle)
 			}
 		}
+	}
+
+	pub fn add(&mut self, asset: A) -> AssetHandle<A> {
+		let handle = AssetHandle {
+			index: self.assets.len(),
+			_phantom: PhantomData,
+		};
+
+		self.assets.push(asset);
+
+		handle
 	}
 
 	pub fn get(&self, handle: AssetHandle<A>) -> &A {
