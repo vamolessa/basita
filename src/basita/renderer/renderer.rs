@@ -28,7 +28,6 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 					texture_query.height,
 				);
 
-				//canvas.copy(texture, None, rect).unwrap();
 				canvas
 					.copy_ex(
 						texture,

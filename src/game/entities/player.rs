@@ -22,8 +22,8 @@ pub fn new<'a, 'b>(
 
 		image_handle = images.load(
 			&String::from("assets/images/player.png"),
-			&sdl_loader.texture_loader,
-			&mut sdl_storage.texture_storage,
+			sdl_loader,
+			sdl_storage,
 		);
 
 		let _image = images.get(image_handle);
