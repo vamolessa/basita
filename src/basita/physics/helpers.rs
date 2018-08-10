@@ -1,44 +1,39 @@
-use super::components::{BoxShape, Collider, Shape};
-use core::components::Transform;
+use super::components::{BoxShape, Shape};
 use math::Vector2;
 
 pub fn collide(
-	a: &Collider,
-	a_transform: &Transform,
-	b: &Collider,
-	b_transform: &Transform,
+	a: Shape,
+	a_position: Vector2,
+	b: Shape,
+	b_position: Vector2,
 ) -> Option<Vector2> {
-	match a.shape {
-		Shape::Box(box_shape) => {
-			collide_box(&box_shape, a_transform.position + a.offset, b, b_transform)
-		}
+	match a {
+		Shape::Box(box_shape) => collide_box(box_shape, a_position, b, b_position),
 	}
 }
 
 fn collide_box(
-	a: &BoxShape,
-	a_center: Vector2,
-	b: &Collider,
-	b_transform: &Transform,
+	a: BoxShape,
+	a_position: Vector2,
+	b: Shape,
+	b_position: Vector2,
 ) -> Option<Vector2> {
-	match b.shape {
-		Shape::Box(box_shape) => {
-			collide_box_box(a, a_center, &box_shape, b_transform.position + b.offset)
-		}
+	match b {
+		Shape::Box(box_shape) => collide_box_box(a, a_position, box_shape, b_position),
 	}
 }
 
 fn collide_box_box(
-	a: &BoxShape,
-	a_center: Vector2,
-	b: &BoxShape,
-	b_center: Vector2,
+	a: BoxShape,
+	a_position: Vector2,
+	b: BoxShape,
+	b_position: Vector2,
 ) -> Option<Vector2> {
-	let a_min = a_center - a.half_size;
-	let a_max = a_center + a.half_size;
+	let a_min = a_position - a.half_size;
+	let a_max = a_position + a.half_size;
 
-	let b_min = b_center - b.half_size;
-	let b_max = b_center + b.half_size;
+	let b_min = b_position - b.half_size;
+	let b_max = b_position + b.half_size;
 
 	let min_to_max = b_max - a_min;
 	let max_to_min = b_min - a_max;

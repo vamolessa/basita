@@ -74,7 +74,12 @@ impl<'a> System<'a> for PhysicsSystem {
 						continue;
 					}
 
-					if let Some(penetration) = collide(ac, at, bc, bt) {
+					if let Some(penetration) = collide(
+						ac.shape,
+						at.position + ac.offset,
+						bc.shape,
+						bt.position + bc.offset,
+					) {
 						let restitution = (ac.bounciness * bc.bounciness).sqrt();
 						let (ar, br) = get_dynamic_response(ap, bp, restitution, penetration);
 
@@ -84,7 +89,12 @@ impl<'a> System<'a> for PhysicsSystem {
 				}
 
 				for (bc, bt, ()) in (&colliders, &transforms, !&physic_bodies).join() {
-					if let Some(penetration) = collide(ac, at, bc, bt) {
+					if let Some(penetration) = collide(
+						ac.shape,
+						at.position + ac.offset,
+						bc.shape,
+						bt.position + bc.offset,
+					) {
 						let restitution = (ac.bounciness * bc.bounciness).sqrt();
 						let ar = get_static_response(ap, restitution, penetration);
 

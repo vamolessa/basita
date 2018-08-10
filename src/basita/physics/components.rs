@@ -27,7 +27,6 @@ impl Component for PhysicBody {
 pub struct Collider {
 	pub shape: Shape,
 	pub offset: Vector2,
-	pub is_trigger: bool,
 	pub bounciness: f32,
 }
 
@@ -38,7 +37,6 @@ impl Collider {
 				half_size: half_size,
 			}),
 			offset: Vector2::zero(),
-			is_trigger: false,
 			bounciness: 0.0,
 		}
 	}
