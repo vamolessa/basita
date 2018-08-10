@@ -1,9 +1,12 @@
 use std::collections::HashMap;
 use std::error::Error;
 use std::fmt;
+use std::hash::Hash;
 use std::marker::PhantomData;
 
-pub trait Asset {}
+pub trait Asset {
+	type Id: fmt::Debug + Hash + Eq + Clone;
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct AssetHandle<T: Asset> {
@@ -55,9 +58,9 @@ impl<T: Asset> fmt::Debug for AssetHandle<T> {
 unsafe impl<T: Asset> Send for AssetHandle<T> {}
 unsafe impl<T: Asset> Sync for AssetHandle<T> {}
 
-pub trait AssetLoader<'a, T> {
+pub trait AssetLoader<'a, T: Asset> {
 	type Storage;
-	fn load(&'a self, path: &str, storage: &mut Self::Storage) -> Result<T, AssetLoadError>;
+	fn load(&'a self, id: &T::Id, storage: &mut Self::Storage) -> Result<T, AssetLoadError>;
 }
 
 pub struct AssetLoadError {
@@ -88,23 +91,23 @@ impl fmt::Display for AssetLoadError {
 	}
 }
 
-pub struct AssetCollection<T: Asset> {
-	path_map: HashMap<String, AssetHandle<T>>,
-	assets: Vec<T>,
+pub struct AssetCollection<A: Asset> {
+	cache_map: HashMap<A::Id, AssetHandle<A>>,
+	assets: Vec<A>,
 }
 
-impl<T: Asset> AssetCollection<T> {
+impl<A: Asset> AssetCollection<A> {
 	pub fn load<'a, S>(
 		&mut self,
-		path: &String,
-		loader: &'a AssetLoader<'a, T, Storage = S>,
+		id: &A::Id,
+		loader: &'a AssetLoader<'a, A, Storage = S>,
 		storage: &mut S,
-	) -> AssetHandle<T> {
-		match self.try_load(path, loader, storage) {
+	) -> AssetHandle<A> {
+		match self.try_load(id, loader, storage) {
 			Ok(handle) => handle,
 			Err(error) => panic!(
-				"Could not load resource at '{}'. Error: '{}'",
-				path,
+				"Could not load resource '{:?}'. Error: '{}'",
+				id,
 				error.description()
 			),
 		}
@@ -112,11 +115,11 @@ impl<T: Asset> AssetCollection<T> {
 
 	pub fn try_load<'a, S>(
 		&mut self,
-		path: &String,
-		loader: &'a AssetLoader<'a, T, Storage = S>,
+		id: &A::Id,
+		loader: &'a AssetLoader<'a, A, Storage = S>,
 		storage: &mut S,
-	) -> Result<AssetHandle<T>, AssetLoadError> {
-		match self.path_map.get(path).cloned() {
+	) -> Result<AssetHandle<A>, AssetLoadError> {
+		match self.cache_map.get(id).cloned() {
 			Some(handle) => Ok(handle),
 			None => {
 				let handle = AssetHandle {
@@ -124,9 +127,9 @@ impl<T: Asset> AssetCollection<T> {
 					_phantom: PhantomData,
 				};
 
-				self.path_map.insert(path.clone(), handle);
+				self.cache_map.insert(id.clone(), handle);
 
-				let asset = loader.load(path, storage)?;
+				let asset = loader.load(id, storage)?;
 				self.assets.push(asset);
 
 				Ok(handle)
@@ -134,19 +137,13 @@ impl<T: Asset> AssetCollection<T> {
 		}
 	}
 
-	pub fn get(&self, handle: AssetHandle<T>) -> &T {
-		if !handle.is_valid() {
-			panic!("Invalid handle");
-		}
-
+	pub fn get(&self, handle: AssetHandle<A>) -> &A {
+		assert!(handle.is_valid());
 		&self.assets[handle.index]
 	}
 
-	pub fn get_mut(&mut self, handle: AssetHandle<T>) -> &mut T {
-		if !handle.is_valid() {
-			panic!("Invalid handle");
-		}
-
+	pub fn get_mut(&mut self, handle: AssetHandle<A>) -> &mut A {
+		assert!(handle.is_valid());
 		&mut self.assets[handle.index]
 	}
 }
@@ -154,7 +151,7 @@ impl<T: Asset> AssetCollection<T> {
 impl<T: Asset> Default for AssetCollection<T> {
 	fn default() -> Self {
 		AssetCollection {
-			path_map: HashMap::default(),
+			cache_map: HashMap::default(),
 			assets: Vec::default(),
 		}
 	}
