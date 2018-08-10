@@ -10,8 +10,8 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 	let canvas = &mut sdl_context.canvas;
 	let textures = &sdl_storage.texture_storage;
 
-	canvas.set_draw_color(Color::RGB(0, 0, 0));
-	canvas.clear();
+	//canvas.set_draw_color(Color::RGB(0, 0, 0));
+	//canvas.clear();
 
 	let commands = world.read_resource::<RenderCommands>();
 
