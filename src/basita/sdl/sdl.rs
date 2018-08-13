@@ -1,11 +1,9 @@
 use sdl2;
-use sdl2::image::{LoadTexture, INIT_JPG, INIT_PNG};
+use sdl2::image::{INIT_JPG, INIT_PNG};
 use sdl2::render::Canvas;
-use sdl2::render::TextureCreator;
-use sdl2::ttf::{self, Sdl2TtfContext};
-use sdl2::video::{Window, WindowContext};
+use sdl2::video::Window;
 
-use super::{FontStorage, TextureStorage};
+use super::{FontLoader, FontStorage, TextureLoader, TextureStorage};
 
 pub struct SdlContext {
 	_sdl: sdl2::Sdl,
@@ -38,40 +36,15 @@ impl SdlContext {
 }
 
 pub struct SdlLoader {
-	pub texture_creator: TextureCreator<WindowContext>,
-	pub font_context: Sdl2TtfContext,
+	pub texture_loader: TextureLoader,
+	pub font_loader: FontLoader,
 }
-
-use core::assets::AssetLoadError;
 
 impl SdlLoader {
 	pub fn new(sdl_context: &SdlContext) -> Self {
 		SdlLoader {
-			texture_creator: sdl_context.canvas.texture_creator(),
-			font_context: ttf::init().unwrap(),
-		}
-	}
-
-	pub fn load_texture<'a>(
-		&'a self,
-		path: &str,
-		storage: &mut SdlStorage<'a>,
-	) -> Result<usize, AssetLoadError> {
-		match self.texture_creator.load_texture(path) {
-			Ok(texture) => Ok(storage.texture_storage.add(texture)),
-			Err(message) => Err(AssetLoadError::new(message)),
-		}
-	}
-
-	pub fn load_font<'a>(
-		&'a self,
-		path: &str,
-		size: u16,
-		storage: &mut SdlStorage<'a>,
-	) -> Result<usize, AssetLoadError> {
-		match self.font_context.load_font(path, size) {
-			Ok(font) => Ok(storage.font_storage.add(font)),
-			Err(message) => Err(AssetLoadError::new(message)),
+			texture_loader: TextureLoader::new(sdl_context),
+			font_loader: FontLoader::new(),
 		}
 	}
 }

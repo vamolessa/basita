@@ -1,3 +1,4 @@
+use fxhash::FxHashMap;
 use sdl2::rect::Point;
 
 use core::assets::{Asset, AssetLoadError, AssetLoader};
@@ -20,7 +21,7 @@ impl<'a> AssetLoader<'a, Image> for SdlLoader {
 		path: &<Image as Asset>::Id,
 		storage: &mut Self::Storage,
 	) -> Result<Image, AssetLoadError> {
-		self.load_texture(path, storage).map(|index| {
+		self.texture_loader.load(path, storage).map(|index| {
 			let texture = storage.texture_storage.at(index);
 			let query = texture.query();
 
@@ -35,6 +36,7 @@ impl<'a> AssetLoader<'a, Image> for SdlLoader {
 pub struct Font {
 	pub index: usize,
 	pub size: u16,
+	pub glyphs: FxHashMap<char, usize>,
 }
 
 impl Asset for Font {
@@ -49,9 +51,12 @@ impl<'a> AssetLoader<'a, Font> for SdlLoader {
 		&(ref path, size): &<Font as Asset>::Id,
 		storage: &mut Self::Storage,
 	) -> Result<Font, AssetLoadError> {
-		self.load_font(path, size, storage).map(|index| Font {
-			index: index,
-			size: size,
-		})
+		self.font_loader
+			.load(path, size, &self.texture_loader, storage)
+			.map(|(index, glyphs)| Font {
+				index: index,
+				size: size,
+				glyphs: glyphs,
+			})
 	}
 }

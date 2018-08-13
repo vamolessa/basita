@@ -1,5 +1,8 @@
 mod sdl;
 pub use self::sdl::*;
 
-mod assets;
-pub use self::assets::*;
+mod textures;
+pub use self::textures::*;
+
+mod fonts;
+pub use self::fonts::*;

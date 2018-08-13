@@ -89,6 +89,7 @@ pub fn main() {
 				.blended(::basita::sdl2::pixels::Color::RGBA(255, 0, 0, 255))
 				.unwrap();
 			let texture = sdl_loader
+				.texture_loader
 				.texture_creator
 				.create_texture_from_surface(&surface)
 				.unwrap();
