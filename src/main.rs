@@ -69,35 +69,6 @@ pub fn main() {
 
 		dispatcher.dispatch(&mut world.res);
 
-		{
-			sdl_context
-				.canvas
-				.set_draw_color(::basita::sdl2::pixels::Color::RGB(0, 0, 0));
-			sdl_context.canvas.clear();
-
-			let mut fonts = world.write_resource::<::basita::renderer::resources::Fonts>();
-			let font_handle = fonts.load(
-				&(String::from("assets/fonts/consola.ttf"), 28),
-				&sdl_loader,
-				&mut sdl_storage,
-			);
-			let font_asset = fonts.get(font_handle);
-			let font = sdl_storage.font_storage.at(font_asset.index);
-
-			let surface = font
-				.render("Hello Rust!")
-				.blended(::basita::sdl2::pixels::Color::RGBA(255, 0, 0, 255))
-				.unwrap();
-			let texture = sdl_loader
-				.texture_loader
-				.texture_creator
-				.create_texture_from_surface(&surface)
-				.unwrap();
-			let query = texture.query();
-			let rect = ::basita::sdl2::rect::Rect::new(200, 0, query.width, query.height);
-			sdl_context.canvas.copy(&texture, None, rect).unwrap();
-		}
-
 		renderer::render(&world, &mut sdl_context, &sdl_storage);
 		world.maintain();
 

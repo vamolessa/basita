@@ -1,5 +1,7 @@
 use fxhash::FxHashMap;
 use sdl2::pixels::Color;
+use sdl2::rect::{Point, Rect};
+use sdl2::render::{Canvas, RenderTarget};
 use sdl2::ttf::{self, Font, Sdl2TtfContext};
 
 use super::{SdlStorage, TextureLoader};
@@ -66,4 +68,29 @@ impl<'a, 'b> FontStorage<'a, 'b> {
 	pub fn at(&self, index: usize) -> &Font<'a, 'b> {
 		&self.fonts[index]
 	}
+}
+
+pub fn font_print<RT>(
+	canvas: &mut Canvas<RT>,
+	sdl_storage: &SdlStorage,
+	mut position: Point,
+	text: &String,
+	glyphs: &FxHashMap<char, usize>,
+) -> Result<(), String>
+where
+	RT: RenderTarget,
+{
+	for c in text.chars() {
+		if let Some(&texture_index) = glyphs.get(&c) {
+			let texture = sdl_storage.texture_storage.at(texture_index);
+			let query = texture.query();
+			let rect = Rect::new(position.x, position.y, query.width, query.height);
+
+			canvas.copy(texture, None, rect)?;
+
+			position.x += query.width as i32;
+		}
+	}
+
+	Ok(())
 }

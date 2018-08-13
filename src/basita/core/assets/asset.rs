@@ -151,6 +151,14 @@ impl<A: Asset> AssetCollection<A> {
 		assert!(handle.is_valid());
 		&mut self.assets[handle.index]
 	}
+
+	pub fn asset_iter<'a>(&'a self) -> impl Iterator<Item = &'a A> {
+		self.assets.iter()
+	}
+
+	pub fn asset_iter_mut<'a>(&'a mut self) -> impl Iterator<Item = &'a mut A> {
+		self.assets.iter_mut()
+	}
 }
 
 impl<T: Asset> Default for AssetCollection<T> {

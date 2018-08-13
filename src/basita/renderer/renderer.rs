@@ -1,17 +1,17 @@
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 
-use sdl::{SdlContext, SdlStorage};
+use sdl::{font_print, SdlContext, SdlStorage};
 use specs::World;
 
-use super::resources::{RenderCommands, RenderVariant};
+use super::resources::{Fonts, RenderCommands, RenderVariant};
 
 pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &SdlStorage<'a>) {
 	let canvas = &mut sdl_context.canvas;
 	let textures = &sdl_storage.texture_storage;
 
-	//canvas.set_draw_color(Color::RGB(0, 0, 0));
-	//canvas.clear();
+	canvas.set_draw_color(Color::RGB(0, 0, 0));
+	canvas.clear();
 
 	let commands = world.read_resource::<RenderCommands>();
 
@@ -52,6 +52,19 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 					.unwrap();
 			}
 		}
+	}
+
+	use sdl2::rect::Point;
+
+	let fonts = world.read_resource::<Fonts>();
+	for font in fonts.asset_iter() {
+		font_print(
+			canvas,
+			sdl_storage,
+			Point::new(100, 0),
+			&String::from("Hello"),
+			&font.glyphs,
+		).unwrap();
 	}
 
 	canvas.present();
