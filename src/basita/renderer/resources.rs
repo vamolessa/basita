@@ -9,12 +9,14 @@ pub type Fonts = AssetCollection<Font>;
 pub type RenderCommands = Vec<RenderCommand>;
 
 pub enum RenderVariant {
-	Texture(usize, bool, bool),
-	Rect(Color, u32, u32),
+	Texture(usize),
+	TextureEx(usize, bool, bool),
+	Rect(u32, u32),
 }
 
 pub struct RenderCommand {
 	pub layer: usize,
 	pub position: Point,
-	pub render_variant: RenderVariant,
+	pub color: Color,
+	pub variant: RenderVariant,
 }

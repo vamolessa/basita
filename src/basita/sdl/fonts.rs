@@ -1,11 +1,17 @@
 use fxhash::FxHashMap;
 use sdl2::pixels::Color;
-use sdl2::rect::{Point, Rect};
-use sdl2::render::{Canvas, RenderTarget};
 use sdl2::ttf::{self, Font, Sdl2TtfContext};
 
-use super::{SdlStorage, TextureLoader};
+use super::{SdlAssetStorage, SdlStorage, TextureLoader};
 use core::assets::AssetLoadError;
+
+pub struct FontGlyph {
+	pub texture_index: usize,
+	pub width: u32,
+	pub height: u32,
+}
+
+pub type FontStorage<'a, 'b> = SdlAssetStorage<Font<'a, 'b>>;
 
 pub struct FontLoader {
 	pub context: Sdl2TtfContext,
@@ -24,7 +30,7 @@ impl FontLoader {
 		size: u16,
 		loader: &'a TextureLoader,
 		storage: &mut SdlStorage<'a>,
-	) -> Result<(usize, FxHashMap<char, usize>), AssetLoadError> {
+	) -> Result<(usize, FxHashMap<char, FontGlyph>), AssetLoadError> {
 		match self.context.load_font(path, size) {
 			Ok(font) => {
 				let alphabet = String::from(
@@ -41,9 +47,16 @@ impl FontLoader {
 						.texture_creator
 						.create_texture_from_surface(&surface)
 						.unwrap();
+					let texture_query = texture.query();
 
-					let glyph_index = storage.texture_storage.add(texture);
-					glyphs.insert(c, glyph_index);
+					glyphs.insert(
+						c,
+						FontGlyph {
+							texture_index: storage.texture_storage.add(texture),
+							width: texture_query.width,
+							height: texture_query.height,
+						},
+					);
 				}
 
 				Ok((storage.font_storage.add(font), glyphs))
@@ -51,46 +64,4 @@ impl FontLoader {
 			Err(message) => Err(AssetLoadError::new(message)),
 		}
 	}
-}
-
-#[derive(Default)]
-pub struct FontStorage<'a, 'b> {
-	fonts: Vec<Font<'a, 'b>>,
-}
-
-impl<'a, 'b> FontStorage<'a, 'b> {
-	pub fn add(&mut self, font: Font<'a, 'b>) -> usize {
-		let index = self.fonts.len();
-		self.fonts.push(font);
-		index
-	}
-
-	pub fn at(&self, index: usize) -> &Font<'a, 'b> {
-		&self.fonts[index]
-	}
-}
-
-pub fn font_print<RT>(
-	canvas: &mut Canvas<RT>,
-	sdl_storage: &SdlStorage,
-	mut position: Point,
-	text: &String,
-	glyphs: &FxHashMap<char, usize>,
-) -> Result<(), String>
-where
-	RT: RenderTarget,
-{
-	for c in text.chars() {
-		if let Some(&texture_index) = glyphs.get(&c) {
-			let texture = sdl_storage.texture_storage.at(texture_index);
-			let query = texture.query();
-			let rect = Rect::new(position.x, position.y, query.width, query.height);
-
-			canvas.copy(texture, None, rect)?;
-
-			position.x += query.width as i32;
-		}
-	}
-
-	Ok(())
 }

@@ -2,7 +2,7 @@ use fxhash::FxHashMap;
 use sdl2::rect::Point;
 
 use core::assets::{Asset, AssetLoadError, AssetLoader};
-use sdl::{SdlLoader, SdlStorage};
+use sdl::{FontGlyph, SdlLoader, SdlStorage};
 
 pub struct Image {
 	pub index: usize,
@@ -36,7 +36,7 @@ impl<'a> AssetLoader<'a, Image> for SdlLoader {
 pub struct Font {
 	pub index: usize,
 	pub size: u16,
-	pub glyphs: FxHashMap<char, usize>,
+	pub glyphs: FxHashMap<char, FontGlyph>,
 }
 
 impl Asset for Font {

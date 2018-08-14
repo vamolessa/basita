@@ -28,8 +28,8 @@ impl<'s> System<'s> for ColliderRenderSystem {
 							(position.x + collider.offset.x - box_shape.half_size.x) as i32,
 							(position.y + collider.offset.y - box_shape.half_size.y) as i32,
 						),
-						render_variant: RenderVariant::Rect(
-							Color::RGB(0, 255, 0),
+						color: Color::RGB(0, 255, 0),
+						variant: RenderVariant::Rect(
 							(box_shape.half_size.x as u32) * 2,
 							(box_shape.half_size.y as u32) * 2,
 						),

@@ -54,3 +54,31 @@ pub struct SdlStorage<'a> {
 	pub texture_storage: TextureStorage<'a>,
 	pub font_storage: FontStorage<'a, 'a>,
 }
+
+pub struct SdlAssetStorage<A> {
+	assets: Vec<A>,
+}
+
+impl<A> SdlAssetStorage<A> {
+	pub fn add(&mut self, asset: A) -> usize {
+		let index = self.assets.len();
+		self.assets.push(asset);
+		index
+	}
+
+	pub fn at(&self, index: usize) -> &A {
+		&self.assets[index]
+	}
+
+	pub fn at_mut(&mut self, index: usize) -> &mut A {
+		&mut self.assets[index]
+	}
+}
+
+impl<A> Default for SdlAssetStorage<A> {
+	fn default() -> Self {
+		SdlAssetStorage {
+			assets: Vec::default(),
+		}
+	}
+}

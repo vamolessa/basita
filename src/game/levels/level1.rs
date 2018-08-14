@@ -10,6 +10,38 @@ pub fn load<'a, 'b>(
 	sdl_loader: &'a SdlLoader,
 	sdl_storage: &'b mut SdlStorage<'a>,
 ) {
+	{
+		use basita::core::components::Transform;
+		use basita::renderer::components::Text;
+		use basita::renderer::resources::Fonts;
+		use basita::specs::Builder;
+
+		let font_handle;
+		{
+			let mut fonts = world.write_resource::<Fonts>();
+
+			font_handle = fonts.load(
+				&(String::from("assets/fonts/consola.ttf"), 32),
+				sdl_loader,
+				sdl_storage,
+			);
+
+			let _font = fonts.get(font_handle);
+		}
+
+		let _text = world
+			.create_entity()
+			.with(Text {
+				font: font_handle,
+				text: String::from("Hello Text"),
+				..Default::default()
+			})
+			.with(Transform {
+				position: Vector2::new(100.0, 0.0),
+			})
+			.build();
+	}
+
 	player::new(world, sdl_loader, sdl_storage, Vector2::new(80.0, 100.0));
 
 	block::new(world, sdl_loader, sdl_storage, Vector2::new(200.0, 110.0));

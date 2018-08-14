@@ -1,14 +1,13 @@
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 
-use sdl::{font_print, SdlContext, SdlStorage};
+use sdl::{SdlContext, SdlStorage};
 use specs::World;
 
-use super::resources::{Fonts, RenderCommands, RenderVariant};
+use super::resources::{RenderCommands, RenderVariant};
 
-pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &SdlStorage<'a>) {
+pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &mut SdlStorage<'a>) {
 	let canvas = &mut sdl_context.canvas;
-	let textures = &sdl_storage.texture_storage;
 
 	canvas.set_draw_color(Color::RGB(0, 0, 0));
 	canvas.clear();
@@ -16,10 +15,29 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 	let commands = world.read_resource::<RenderCommands>();
 
 	for command in commands.iter() {
-		match command.render_variant {
-			RenderVariant::Texture(texture_index, flip_horizontal, flip_vertical) => {
-				let texture = textures.at(texture_index);
+		match command.variant {
+			RenderVariant::Texture(texture_index) => {
+				let texture = sdl_storage.texture_storage.at_mut(texture_index);
 				let texture_query = texture.query();
+
+				texture.set_color_mod(command.color.r, command.color.g, command.color.b);
+				texture.set_alpha_mod(command.color.a);
+
+				let rect = Rect::new(
+					command.position.x,
+					command.position.y,
+					texture_query.width,
+					texture_query.height,
+				);
+
+				canvas.copy(texture, None, rect).unwrap();
+			}
+			RenderVariant::TextureEx(texture_index, flip_horizontal, flip_vertical) => {
+				let texture = sdl_storage.texture_storage.at_mut(texture_index);
+				let texture_query = texture.query();
+
+				texture.set_color_mod(command.color.r, command.color.g, command.color.b);
+				texture.set_alpha_mod(command.color.a);
 
 				let rect = Rect::new(
 					command.position.x,
@@ -40,8 +58,8 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 					)
 					.unwrap();
 			}
-			RenderVariant::Rect(color, width, height) => {
-				canvas.set_draw_color(color);
+			RenderVariant::Rect(width, height) => {
+				canvas.set_draw_color(command.color);
 				canvas
 					.draw_rect(Rect::new(
 						command.position.x,
@@ -52,19 +70,6 @@ pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &Sdl
 					.unwrap();
 			}
 		}
-	}
-
-	use sdl2::rect::Point;
-
-	let fonts = world.read_resource::<Fonts>();
-	for font in fonts.asset_iter() {
-		font_print(
-			canvas,
-			sdl_storage,
-			Point::new(100, 0),
-			&String::from("Hello"),
-			&font.glyphs,
-		).unwrap();
 	}
 
 	canvas.present();
