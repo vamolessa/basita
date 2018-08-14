@@ -1,4 +1,3 @@
-use sdl2::pixels::Color;
 use sdl2::rect::Point;
 
 use specs::{Join, Read, ReadStorage, System, Write};
@@ -29,7 +28,7 @@ impl<'s> System<'s> for RenderSystem {
 				layer: sprite.layer,
 				position: Point::new(transform.position.x as i32, transform.position.y as i32)
 					- image.center,
-				color: Color::RGB(255, 255, 255),
+				color: sprite.color,
 				variant: RenderVariant::TextureEx(
 					image.index,
 					sprite.flip_horizontal,
@@ -50,7 +49,7 @@ impl<'s> System<'s> for RenderSystem {
 							transform.position.x as i32 + x_offset as i32,
 							transform.position.y as i32,
 						),
-						color: Color::RGB(255, 255, 255),
+						color: text.color,
 						variant: RenderVariant::Texture(glyph.texture_index),
 					});
 

@@ -14,6 +14,7 @@ pub fn load<'a, 'b>(
 		use basita::core::components::Transform;
 		use basita::renderer::components::Text;
 		use basita::renderer::resources::Fonts;
+		use basita::sdl2::pixels::Color;
 		use basita::specs::Builder;
 
 		let font_handle;
@@ -32,6 +33,7 @@ pub fn load<'a, 'b>(
 		let _text = world
 			.create_entity()
 			.with(Text {
+				color: Color::RGB(255, 128, 0),
 				font: font_handle,
 				text: String::from("Hello Text"),
 				..Default::default()
