@@ -1,4 +1,4 @@
-use basita::sdl::{SdlLoader, SdlStorage};
+use basita::sdl2::pixels::Color;
 use basita::specs::Builder;
 use basita::specs::World;
 
@@ -7,6 +7,7 @@ use basita::math::Vector2;
 use basita::physics::components::Collider;
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::Images;
+use basita::sdl::{SdlLoader, SdlStorage};
 
 pub fn new<'a, 'b>(
 	world: &mut World,
@@ -26,10 +27,12 @@ pub fn new<'a, 'b>(
 
 		let _image = images.get(image_handle);
 	}
+
 	let _block = world
 		.create_entity()
 		.with(Transform { position: position })
 		.with(Sprite {
+			color: Color::RGB(128, 128, 200),
 			image: image_handle,
 			..Default::default()
 		})
