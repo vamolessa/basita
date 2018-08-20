@@ -2,10 +2,14 @@ use sdl2::pixels::Color;
 use sdl2::rect::Point;
 
 use super::assets::{Font, Image};
-use core::assets::AssetCollection;
+use core::assets::{AssetCollection, AssetLoadRequests};
 
 pub type Images = AssetCollection<Image>;
+pub type ImageLoadRequests = AssetLoadRequests<Image>;
+
 pub type Fonts = AssetCollection<Font>;
+pub type FontLoadRequests = AssetLoadRequests<Font>;
+
 pub type RenderCommands = Vec<RenderCommand>;
 
 pub enum RenderVariant {

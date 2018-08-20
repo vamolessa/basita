@@ -11,6 +11,10 @@ pub fn init(world: &mut ::specs::World) {
 	world.register::<components::Text>();
 
 	world.add_resource(resources::Images::default());
+	world.add_resource(resources::ImageLoadRequests::default());
+
 	world.add_resource(resources::Fonts::default());
+	world.add_resource(resources::FontLoadRequests::default());
+
 	world.add_resource(resources::RenderCommands::default());
 }
