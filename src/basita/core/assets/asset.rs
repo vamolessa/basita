@@ -11,12 +11,12 @@ pub trait Asset: Sync + Send + 'static {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct AssetHandle<T: Asset> {
+pub struct AssetHandle<A: Asset> {
 	index: usize,
-	_phantom: PhantomData<T>,
+	_phantom: PhantomData<A>,
 }
 
-impl<T: Asset> AssetHandle<T> {
+impl<A: Asset> AssetHandle<A> {
 	fn new(index: usize) -> Self {
 		AssetHandle {
 			index: index,
@@ -29,40 +29,40 @@ impl<T: Asset> AssetHandle<T> {
 	}
 }
 
-impl<T: Asset> Default for AssetHandle<T> {
+impl<A: Asset> Default for AssetHandle<A> {
 	fn default() -> Self {
 		AssetHandle::new(usize::max_value())
 	}
 }
 
-impl<T: Asset> Clone for AssetHandle<T> {
+impl<A: Asset> Clone for AssetHandle<A> {
 	fn clone(&self) -> Self {
 		AssetHandle::new(self.index)
 	}
 }
 
-impl<T: Asset> Copy for AssetHandle<T> {}
+impl<A: Asset> Copy for AssetHandle<A> {}
 
-impl<T: Asset> PartialEq for AssetHandle<T> {
+impl<A: Asset> PartialEq for AssetHandle<A> {
 	fn eq(&self, other: &Self) -> bool {
 		self.index == other.index
 	}
 }
 
-impl<T: Asset> Eq for AssetHandle<T> {}
+impl<A: Asset> Eq for AssetHandle<A> {}
 
-impl<T: Asset> fmt::Debug for AssetHandle<T> {
+impl<A: Asset> fmt::Debug for AssetHandle<A> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		write!(f, "AssetHandle [{}]", self.index)
 	}
 }
 
-unsafe impl<T: Asset> Send for AssetHandle<T> {}
-unsafe impl<T: Asset> Sync for AssetHandle<T> {}
+unsafe impl<A: Asset> Send for AssetHandle<A> {}
+unsafe impl<A: Asset> Sync for AssetHandle<A> {}
 
-pub trait AssetLoader<'a, T: Asset> {
+pub trait AssetLoader<'a, A: Asset> {
 	type Storage;
-	fn load(&'a self, id: &T::Id, storage: &mut Self::Storage) -> Result<T, AssetLoadError>;
+	fn load(&'a self, id: &A::Id, storage: &mut Self::Storage) -> Result<A, AssetLoadError>;
 }
 
 pub struct AssetLoadError {
@@ -172,16 +172,18 @@ impl<A: Asset> Default for AssetCollection<A> {
 	}
 }
 
-pub struct AssetLoadRequest<A: Asset>(A::Id, Box<FnMut(&mut World, AssetHandle<A>) -> ()>);
+pub struct AssetLoadRequest<A: Asset>(
+	A::Id,
+	Box<FnMut(&mut World, AssetHandle<A>) -> () + Send + Sync>,
+);
 
 pub struct AssetLoadRequests<A: Asset> {
-	//requests: Vec<AssetLoadRequest<A>>,
-	requests: Vec<::std::marker::PhantomData<A>>,
+	requests: Vec<AssetLoadRequest<A>>,
 }
 
 impl<A: Asset> AssetLoadRequests<A> {
 	pub fn add(&mut self, request: AssetLoadRequest<A>) {
-		//self.requests.push(request);
+		self.requests.push(request);
 	}
 
 	pub fn load<'a, S>(
@@ -190,7 +192,6 @@ impl<A: Asset> AssetLoadRequests<A> {
 		loader: &'a AssetLoader<'a, A, Storage = S>,
 		storage: &mut S,
 	) {
-		/*
 		for AssetLoadRequest(id, on_load) in &mut self.requests {
 			let handle;
 			{
@@ -202,7 +203,6 @@ impl<A: Asset> AssetLoadRequests<A> {
 		}
 
 		self.requests.clear();
-		*/
 	}
 }
 
