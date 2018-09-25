@@ -37,11 +37,9 @@ pub fn load<'a, 'b>(
 				font: font_handle,
 				text: String::from("Hello Text"),
 				..Default::default()
-			})
-			.with(Transform {
+			}).with(Transform {
 				position: Vector2::new(100.0, 0.0),
-			})
-			.build();
+			}).build();
 	}
 
 	player::new(world, sdl_loader, sdl_storage, Vector2::new(80.0, 100.0));
@@ -50,7 +48,7 @@ pub fn load<'a, 'b>(
 
 	let hw = 16.0;
 	let x0 = hw;
-	let y0 = 250.0 - hw;
+	let y0 = 256.0 - hw;
 	for i in 0..(400 / hw as i32) {
 		block::new(
 			world,
