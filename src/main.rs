@@ -17,7 +17,6 @@ mod game;
 use game::*;
 
 pub fn main() {
-	println!("oieee");
 	let frames_per_second = 60;
 
 	let mut sdl_context = SdlContext::new("game", 400, 300);
