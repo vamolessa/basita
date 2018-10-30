@@ -40,20 +40,20 @@ impl<'s> System<'s> for RenderSystem {
 		for (transform, text) in (&transforms, &texts).join() {
 			let font = fonts.get(text.font);
 
-			let mut x_offset: u32 = 0;
+			let mut x_offset: i32 = 0;
 			for c in text.text.chars() {
 				if let Some(glyph) = font.glyphs.get(&c) {
 					commands.push(RenderCommand {
 						layer: text.layer,
 						position: Point::new(
-							transform.position.x as i32 + x_offset as i32,
+							transform.position.x as i32 + x_offset,
 							transform.position.y as i32,
 						),
 						color: text.color,
 						variant: RenderVariant::Texture(glyph.texture_index),
 					});
 
-					x_offset += glyph.width;
+					x_offset += glyph.width as i32;
 				}
 			}
 		}
