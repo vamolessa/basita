@@ -69,7 +69,7 @@ pub fn main() {
 
 		dispatcher.dispatch(&mut world.res);
 
-		renderer::render(&world, &mut sdl_context, &mut sdl_storage);
+		renderer::render(&mut world, &mut sdl_context, &mut sdl_storage);
 		world.maintain();
 
 		thread::sleep(Duration::new(0, 1_000_000_000u32 / frames_per_second));

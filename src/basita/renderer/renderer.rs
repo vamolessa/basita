@@ -6,13 +6,18 @@ use specs::World;
 
 use super::resources::{RenderCommands, RenderVariant};
 
-pub fn render<'a>(world: &World, sdl_context: &mut SdlContext, sdl_storage: &mut SdlStorage<'a>) {
+pub fn render<'a>(
+	world: &mut World,
+	sdl_context: &mut SdlContext,
+	sdl_storage: &mut SdlStorage<'a>,
+) {
 	let canvas = &mut sdl_context.canvas;
 
 	canvas.set_draw_color(Color::RGB(0, 0, 0));
 	canvas.clear();
 
-	let commands = world.read_resource::<RenderCommands>();
+	let mut commands = world.write_resource::<RenderCommands>();
+	commands.sort_by_key(|c| c.layer);
 
 	for command in commands.iter() {
 		match command.variant {

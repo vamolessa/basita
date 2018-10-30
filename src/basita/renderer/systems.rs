@@ -57,7 +57,5 @@ impl<'s> System<'s> for RenderSystem {
 				}
 			}
 		}
-
-		commands.sort_by_key(|c| c.layer);
 	}
 }
