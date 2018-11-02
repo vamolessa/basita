@@ -6,9 +6,8 @@ pub mod systems;
 mod renderer;
 pub use self::renderer::*;
 
-pub fn init(world: &mut ::specs::World) {
+pub fn init(world: &mut specs::World) {
 	world.register::<components::Sprite>();
-	world.register::<components::Text>();
 
 	world.add_resource(resources::Images::default());
 	world.add_resource(resources::ImageLoadRequests::default());

@@ -34,7 +34,7 @@ pub fn main() {
 	gui::init(&mut world);
 
 	// Player
-	world.register::<components::Player>();
+	init(&mut world);
 
 	// DISPATCHER
 	let mut dispatcher = DispatcherBuilder::new()
