@@ -97,4 +97,5 @@ pub fn render<'a>(
 	}
 
 	canvas.present();
+	commands.clear();
 }

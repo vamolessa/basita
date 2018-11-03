@@ -1,6 +1,5 @@
 use basita::sdl2::pixels::Color;
-use basita::specs::Builder;
-use basita::specs::World;
+use basita::specs::{Builder, World};
 
 use basita::core::components::Transform;
 use basita::math::Vector2;

@@ -1,7 +1,8 @@
 use basita::sdl::{SdlLoader, SdlStorage};
-use basita::specs::World;
+use basita::specs::{Builder, World};
 
 use basita::math::Vector2;
+use basita::renderer::components::Camera;
 use basita::renderer::resources::Fonts;
 
 use entities::{block, player};
@@ -21,6 +22,13 @@ pub fn load<'a, 'b>(
 			sdl_storage,
 		);
 	}
+
+	let _camera = world
+		.create_entity()
+		.with(Camera {
+			position: Vector2::new(0.0, 0.0),
+		})
+		.build();
 
 	player::new(world, sdl_loader, sdl_storage, Vector2::new(80.0, 100.0));
 	block::new(world, sdl_loader, sdl_storage, Vector2::new(200.0, 110.0));

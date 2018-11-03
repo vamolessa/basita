@@ -1,8 +1,19 @@
 use sdl2::pixels::Color;
-use specs::{Component, VecStorage};
+use specs::{Component, DenseVecStorage, VecStorage};
+
+use core::assets::AssetHandle;
+use math::Vector2;
 
 use super::assets::Image;
-use core::assets::AssetHandle;
+
+#[derive(Default, Clone, Copy, Debug)]
+pub struct Camera {
+	pub position: Vector2,
+}
+
+impl Component for Camera {
+	type Storage = DenseVecStorage<Self>;
+}
 
 #[derive(Clone, Copy, Debug)]
 pub struct Sprite {

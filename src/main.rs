@@ -41,7 +41,7 @@ pub fn main() {
 		// Engine
 		.with(PhysicsSystem::with_iteration_count(2), "physics", &[])
 		.with(RenderSystem, "render", &[])
-		.with(ColliderRenderSystem, "collider_render", &["render"])
+		.with(ColliderRenderSystem, "collider_render", &[])
 		// Player
 		.with(systems::PlayerSystem, "player", &[])
 		.build();
