@@ -2,7 +2,7 @@ use sdl2::pixels::Color;
 use sdl2::rect::{Point, Rect};
 
 use math::Vector2;
-use renderer::assets::Font;
+use renderer::assets::{Font, Image};
 use renderer::resources::{RenderCommand, RenderCommands, RenderVariant};
 
 pub struct Gui<'a> {
@@ -52,5 +52,14 @@ impl<'a> Gui<'a> {
 		}
 
 		Rect::new(position.x, position.y, width, height)
+	}
+
+	pub fn image(&mut self, position: Point, image: &Image) {
+		self.render_commands.push(RenderCommand {
+			layer: self.layer,
+			position: position - image.center,
+			color: self.color,
+			variant: RenderVariant::Texture(image.index),
+		});
 	}
 }
