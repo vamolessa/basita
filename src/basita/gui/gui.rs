@@ -62,4 +62,40 @@ impl<'a> Gui<'a> {
 			variant: RenderVariant::Texture(image.index),
 		});
 	}
+
+	pub fn rect(&mut self, position: Point, width: u32, height: u32) {
+		self.render_commands.push(RenderCommand {
+			layer: self.layer,
+			position: position,
+			color: self.color,
+			variant: RenderVariant::Rect(width, height),
+		});
+	}
+
+	pub fn rect_fill(&mut self, position: Point, width: u32, height: u32) {
+		self.render_commands.push(RenderCommand {
+			layer: self.layer,
+			position: position,
+			color: self.color,
+			variant: RenderVariant::RectFill(width, height),
+		});
+	}
+
+	pub fn line(&mut self, position: Point, to_position: Point) {
+		self.render_commands.push(RenderCommand {
+			layer: self.layer,
+			position: position,
+			color: self.color,
+			variant: RenderVariant::Line(to_position),
+		});
+	}
+
+	pub fn point(&mut self, position: Point) {
+		self.render_commands.push(RenderCommand {
+			layer: self.layer,
+			position: position,
+			color: self.color,
+			variant: RenderVariant::Point,
+		});
+	}
 }
