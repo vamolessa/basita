@@ -6,6 +6,7 @@ use basita::specs::{Join, Read, ReadStorage, System, Write, WriteStorage};
 use basita::core::components::Transform;
 use basita::gui::Gui;
 use basita::input::Input;
+use basita::math::Vector2;
 use basita::physics::components::PhysicBody;
 use basita::renderer::resources::{Fonts, RenderCommands};
 
@@ -53,6 +54,6 @@ impl<'a> System<'a> for PlayerSystem {
 		let consola_32_font = fonts.get(game_fonts.consola_32);
 		let mut gui = Gui::new(&mut render_commands, &consola_32_font);
 		gui.color = Color::RGB(255, 100, 100);
-		gui.label(Point::new(10, 10), "Coe, lek");
+		gui.label(Point::new(10, 10), "Coe, lek", Vector2::new(0.5, 0.5));
 	}
 }
