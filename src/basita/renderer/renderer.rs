@@ -74,6 +74,25 @@ pub fn render<'a>(
 					))
 					.unwrap();
 			}
+			RenderVariant::RectFill(width, height) => {
+				canvas.set_draw_color(command.color);
+				canvas
+					.fill_rect(Rect::new(
+						command.position.x,
+						command.position.y,
+						width,
+						height,
+					))
+					.unwrap();
+			}
+			RenderVariant::Line(to_position) => {
+				canvas.set_draw_color(command.color);
+				canvas.draw_line(command.position, to_position).unwrap();
+			}
+			RenderVariant::Point => {
+				canvas.set_draw_color(command.color);
+				canvas.draw_point(command.position).unwrap();
+			}
 		}
 	}
 

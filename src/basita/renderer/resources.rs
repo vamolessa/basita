@@ -16,6 +16,9 @@ pub enum RenderVariant {
 	Texture(usize),
 	TextureEx(usize, bool, bool),
 	Rect(u32, u32),
+	RectFill(u32, u32),
+	Line(Point),
+	Point,
 }
 
 pub struct RenderCommand {
