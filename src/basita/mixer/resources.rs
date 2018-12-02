@@ -1,3 +1,7 @@
+use std::time::Duration;
+
+use sdl2::mixer::MAX_VOLUME;
+
 use super::assets::{Bgm, Sfx};
 use core::assets::{AssetCollection, AssetHandle};
 
@@ -6,7 +10,7 @@ pub type Bgms = AssetCollection<Bgm>;
 
 pub enum SfxVariant {
 	Play,
-	Volume(u8),
+	Volume(i32),
 	Pan(u8, u8),
 }
 
@@ -31,7 +35,7 @@ impl SfxCommands {
 	pub fn add_volume(&mut self, sfx_handle: AssetHandle<Sfx>, volume: u8) {
 		self.commands.push(SfxCommand {
 			sfx_handle: sfx_handle,
-			variant: SfxVariant::Volume(volume),
+			variant: SfxVariant::Volume(to_volume(volume)),
 		})
 	}
 
@@ -43,7 +47,33 @@ impl SfxCommands {
 	}
 }
 
+pub enum MusicCommand {
+	Play(usize, i32),
+	Stop(i32),
+	Volume(i32),
+}
+
 #[derive(Default)]
 pub struct MusicCommands {
-	pub commands: Vec<()>,
+	pub commands: Vec<MusicCommand>,
+}
+
+impl MusicCommands {
+	pub fn add_play(&mut self, music_index: usize, fade_in: Duration) {
+		self.commands
+			.push(MusicCommand::Play(music_index, fade_in.as_millis() as i32));
+	}
+
+	pub fn add_stop(&mut self, fade_out: Duration) {
+		self.commands
+			.push(MusicCommand::Stop(fade_out.as_millis() as i32));
+	}
+
+	pub fn add_volume(&mut self, volume: u8) {
+		self.commands.push(MusicCommand::Volume(to_volume(volume)));
+	}
+}
+
+fn to_volume(volume: u8) -> i32 {
+	(volume as i32) * MAX_VOLUME / (u8::max_value() as i32)
 }
