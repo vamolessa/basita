@@ -1,6 +1,5 @@
 # TODO
 
-- audio
 - respostas de colisão
 - carregar TMX (Tiled)
 - tilemap
