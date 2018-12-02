@@ -1,4 +1,5 @@
 #![feature(vec_resize_default)]
+#![feature(fnbox)]
 
 // external
 pub extern crate sdl2;
@@ -14,10 +15,10 @@ pub extern crate fxhash;
 
 // local
 pub mod core;
+pub mod gui;
 pub mod input;
 pub mod physics;
 pub mod renderer;
-pub mod gui;
 
 pub mod math;
 

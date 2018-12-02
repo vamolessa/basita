@@ -28,7 +28,15 @@ impl<'a> System<'a> for PlayerSystem {
 
 	fn run(
 		&mut self,
-		(input, players, mut physic_bodies, mut transforms, fonts, mut render_commands, game_fonts): Self::SystemData,
+		(
+			input,
+			players,
+			mut physic_bodies,
+			mut transforms,
+			fonts,
+			mut render_commands,
+			game_fonts,
+		): Self::SystemData,
 	) {
 		let move_velocity = 60.0;
 		let jump_impulse = 100.0;

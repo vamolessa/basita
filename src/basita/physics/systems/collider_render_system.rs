@@ -18,14 +18,14 @@ impl<'s> System<'s> for ColliderRenderSystem {
 		Write<'s, RenderCommands>,
 	);
 
-	fn run(&mut self, (transforms, cameras, colliders, mut commands): Self::SystemData) {
+	fn run(&mut self, (transforms, cameras, colliders, mut render_commands): Self::SystemData) {
 		for camera in cameras.join() {
 			for (transform, collider) in (&transforms, &colliders).join() {
 				let position = transform.position + collider.offset - camera.position;
 
 				match collider.shape {
 					Shape::Box(box_shape) => {
-						commands.push(RenderCommand {
+						render_commands.commands.push(RenderCommand {
 							layer: 999,
 							position: Point::new(
 								(position.x + collider.offset.x - box_shape.half_size.x) as i32,

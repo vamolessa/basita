@@ -40,7 +40,7 @@ impl<'a> Gui<'a> {
 
 		for c in text.chars() {
 			if let Some(glyph) = self.font.glyphs.get(&c) {
-				self.render_commands.push(RenderCommand {
+				self.render_commands.commands.push(RenderCommand {
 					layer: self.layer,
 					position: Point::new(position.x + x_offset, position.y),
 					color: self.color,
@@ -55,47 +55,27 @@ impl<'a> Gui<'a> {
 	}
 
 	pub fn image(&mut self, position: Point, image: &Image) {
-		self.render_commands.push(RenderCommand {
-			layer: self.layer,
-			position: position - image.center,
-			color: self.color,
-			variant: RenderVariant::Texture(image.index),
-		});
+		self.render_commands
+			.add_texture(self.layer, self.color, position, image.index);
 	}
 
 	pub fn rect(&mut self, position: Point, width: u32, height: u32) {
-		self.render_commands.push(RenderCommand {
-			layer: self.layer,
-			position: position,
-			color: self.color,
-			variant: RenderVariant::Rect(width, height),
-		});
+		self.render_commands
+			.add_rect(self.layer, self.color, position, width, height);
 	}
 
 	pub fn rect_fill(&mut self, position: Point, width: u32, height: u32) {
-		self.render_commands.push(RenderCommand {
-			layer: self.layer,
-			position: position,
-			color: self.color,
-			variant: RenderVariant::RectFill(width, height),
-		});
+		self.render_commands
+			.add_rect_fill(self.layer, self.color, position, width, height);
 	}
 
 	pub fn line(&mut self, position: Point, to_position: Point) {
-		self.render_commands.push(RenderCommand {
-			layer: self.layer,
-			position: position,
-			color: self.color,
-			variant: RenderVariant::Line(to_position),
-		});
+		self.render_commands
+			.add_line(self.layer, self.color, position, to_position);
 	}
 
 	pub fn point(&mut self, position: Point) {
-		self.render_commands.push(RenderCommand {
-			layer: self.layer,
-			position: position,
-			color: self.color,
-			variant: RenderVariant::Point,
-		});
+		self.render_commands
+			.add_point(self.layer, self.color, position);
 	}
 }

@@ -16,10 +16,10 @@ pub fn render<'a>(
 	canvas.set_draw_color(Color::RGB(0, 0, 0));
 	canvas.clear();
 
-	let mut commands = world.write_resource::<RenderCommands>();
-	commands.sort_by_key(|c| c.layer);
+	let mut render_commands = world.write_resource::<RenderCommands>();
+	render_commands.commands.sort_by_key(|c| c.layer);
 
-	for command in commands.iter() {
+	for command in render_commands.commands.iter() {
 		match command.variant {
 			RenderVariant::Texture(texture_index) => {
 				let texture = sdl_storage.texture_storage.at_mut(texture_index);
@@ -97,5 +97,5 @@ pub fn render<'a>(
 	}
 
 	canvas.present();
-	commands.clear();
+	render_commands.commands.clear();
 }
