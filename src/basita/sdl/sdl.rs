@@ -3,6 +3,7 @@ use sdl2::image::{INIT_JPG, INIT_PNG};
 use sdl2::mixer::{AUDIO_S16LSB, DEFAULT_CHANNELS, INIT_FLAC, INIT_MOD, INIT_MP3, INIT_OGG};
 use sdl2::render::Canvas;
 use sdl2::video::Window;
+use sdl2::AudioSubsystem;
 
 use super::{
 	ChunkLoader, ChunkStorage, FontLoader, FontStorage, MusicLoader, MusicStorage, TextureLoader,
@@ -10,10 +11,11 @@ use super::{
 };
 
 pub struct SdlContext {
-	_sdl: sdl2::Sdl,
+	pub _sdl: sdl2::Sdl,
 
 	pub canvas: Canvas<Window>,
 	pub event_pump: sdl2::EventPump,
+	pub _audio: AudioSubsystem,
 }
 
 impl SdlContext {
@@ -37,8 +39,10 @@ impl SdlContext {
 		let _image_context = sdl2::image::init(INIT_PNG | INIT_JPG).unwrap();
 
 		// Audio
+		let audio;
 		{
-			let _audio = sdl.audio().unwrap();
+			audio = sdl.audio().unwrap();
+
 			let frequency = 44_100;
 			let format = AUDIO_S16LSB; // signed 16 bit samples, in little-endian byte order
 			let channels = DEFAULT_CHANNELS; // Stereo
@@ -53,6 +57,7 @@ impl SdlContext {
 			event_pump: sdl.event_pump().unwrap(),
 			_sdl: sdl,
 			canvas: canvas,
+			_audio: audio,
 		}
 	}
 }

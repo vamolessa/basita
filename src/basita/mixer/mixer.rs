@@ -15,12 +15,10 @@ pub fn mix<'a>(world: &mut World, sdl_storage: &mut SdlStorage<'a>) {
 				let sfx = sfxs.get_mut(command.sfx_handle);
 				let chunk = sdl_storage.chunk_storage.at_mut(sfx.chunk_index);
 
-				if let Ok(channel) = Channel::all().play(&chunk, 1) {
-					//channel.unregister_all_effects().unwrap();
-					//channel.set_volume(MAX_VOLUME);
+				if let Ok(channel) = Channel::all().play(chunk, 0) {
+					channel.unregister_all_effects().unwrap();
+					channel.set_volume(MAX_VOLUME);
 					sfx.channel = Some(channel);
-
-					std::thread::sleep(std::time::Duration::new(5, 0));
 				}
 			}
 			SfxVariant::Volume(volume) => {
