@@ -1,14 +1,13 @@
 use basita::sdl2::keyboard::Keycode;
 use basita::sdl2::pixels::Color;
 use basita::sdl2::rect::Point;
-use basita::specs::{Join, Read, ReadStorage, System, Write, WriteStorage};
+use basita::specs::{Join, Read, ReadStorage, System, WriteStorage};
 
 use basita::core::components::Transform;
 use basita::gui::Gui;
 use basita::input::Input;
 use basita::math::Vector2;
 use basita::physics::components::PhysicBody;
-use basita::renderer::resources::{Fonts, RenderCommands};
 
 use components::Player;
 use resources::GameFonts;
@@ -21,22 +20,13 @@ impl<'a> System<'a> for PlayerSystem {
 		ReadStorage<'a, Player>,
 		WriteStorage<'a, PhysicBody>,
 		WriteStorage<'a, Transform>,
-		Read<'a, Fonts>,
-		Write<'a, RenderCommands>,
+		Gui<'a>,
 		Read<'a, GameFonts>,
 	);
 
 	fn run(
 		&mut self,
-		(
-			input,
-			players,
-			mut physic_bodies,
-			mut transforms,
-			fonts,
-			mut render_commands,
-			game_fonts,
-		): Self::SystemData,
+		(input, players, mut physic_bodies, mut transforms, mut gui, game_fonts): Self::SystemData,
 	) {
 		let move_velocity = 60.0;
 		let jump_impulse = 100.0;
@@ -59,8 +49,7 @@ impl<'a> System<'a> for PlayerSystem {
 			physic_body.acceleration.y = 100.0;
 		}
 
-		let consola_32_font = fonts.get(game_fonts.consola_32);
-		let mut gui = Gui::new(&mut render_commands, &consola_32_font);
+		gui.font_handle = game_fonts.consola_32;
 		gui.layer = 100;
 		gui.color = Color::RGB(255, 100, 100);
 		gui.label(Point::new(10, 10), "Coe, lek", Vector2::zero());

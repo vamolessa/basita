@@ -1,34 +1,32 @@
 use sdl2::pixels::Color;
 use sdl2::rect::{Point, Rect};
 
+use specs::shred::ResourceId;
+use specs::{Read, Resources, SystemData, Write};
+
+use core::assets::AssetHandle;
 use math::Vector2;
 use renderer::assets::{Font, Image};
-use renderer::resources::RenderCommands;
+use renderer::resources::{Fonts, RenderCommands};
 
 pub struct Gui<'a> {
-	pub render_commands: &'a mut RenderCommands,
+	pub render_commands: Write<'a, RenderCommands>,
+	pub fonts: Read<'a, Fonts>,
 	pub layer: usize,
 	pub color: Color,
-	pub font: &'a Font,
+	pub font_handle: AssetHandle<Font>,
 }
 
 impl<'a> Gui<'a> {
-	pub fn new(render_commands: &'a mut RenderCommands, font: &'a Font) -> Self {
-		Gui {
-			render_commands: render_commands,
-			layer: 0,
-			color: Color::RGBA(255, 255, 255, 255),
-			font: font,
-		}
-	}
-
 	pub fn label(&mut self, position: Point, text: &str, anchor: Vector2) -> Rect {
 		let mut width: u32 = 0;
 		let mut height: u32 = 0;
 		let mut x_offset: i32 = 0;
 
+		let font = self.fonts.get(self.font_handle);
+
 		for c in text.chars() {
-			if let Some(glyph) = self.font.glyphs.get(&c) {
+			if let Some(glyph) = font.glyphs.get(&c) {
 				width += glyph.width;
 				height = height.max(glyph.height);
 			}
@@ -39,7 +37,7 @@ impl<'a> Gui<'a> {
 		position.y -= (height as f32 * anchor.y) as i32;
 
 		for c in text.chars() {
-			if let Some(glyph) = self.font.glyphs.get(&c) {
+			if let Some(glyph) = font.glyphs.get(&c) {
 				self.render_commands.add_texture(
 					self.layer,
 					self.color,
@@ -77,5 +75,30 @@ impl<'a> Gui<'a> {
 	pub fn point(&mut self, position: Point) {
 		self.render_commands
 			.add_point(self.layer, self.color, position);
+	}
+}
+
+impl<'a> SystemData<'a> for Gui<'a> {
+	fn setup(res: &mut Resources) {
+		res.entry().or_insert(RenderCommands::default());
+		res.entry().or_insert(Fonts::default());
+	}
+
+	fn fetch(res: &'a Resources) -> Self {
+		Gui {
+			render_commands: SystemData::fetch(res),
+			fonts: SystemData::fetch(res),
+			layer: 0,
+			color: Color::RGBA(255, 255, 255, 255),
+			font_handle: AssetHandle::default(),
+		}
+	}
+
+	fn reads() -> Vec<ResourceId> {
+		vec![ResourceId::new::<Fonts>()]
+	}
+
+	fn writes() -> Vec<ResourceId> {
+		vec![ResourceId::new::<RenderCommands>()]
 	}
 }
