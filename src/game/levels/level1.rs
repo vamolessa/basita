@@ -2,19 +2,30 @@ use basita::specs::Builder;
 
 use basita::core::resources::LazyEvaluations;
 use basita::math::Vector2;
+use basita::mixer::resources::Sfxs;
 use basita::renderer::components::Camera;
 use basita::renderer::resources::Fonts;
 
 use entities::{block, player};
-use resources::GameFonts;
+use resources::{GameFonts, GameSfxs};
 
 pub fn load(lazy: &mut LazyEvaluations) {
 	lazy.add(move |world, sdl_loader, sdl_storage| {
 		{
-			let mut fonts = world.write_resource::<Fonts>();
 			let mut game_fonts = world.write_resource::<GameFonts>();
+			let mut fonts = world.write_resource::<Fonts>();
 			game_fonts.consola_32 = fonts.load(
 				&(String::from("assets/fonts/consola.ttf"), 32),
+				sdl_loader,
+				sdl_storage,
+			);
+		}
+
+		{
+			let mut game_sfxs = world.write_resource::<GameSfxs>();
+			let mut sfxs = world.write_resource::<Sfxs>();
+			game_sfxs.hit = sfxs.load(
+				&String::from("assets/audios/hit.wav"),
 				sdl_loader,
 				sdl_storage,
 			);

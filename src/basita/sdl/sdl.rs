@@ -4,7 +4,10 @@ use sdl2::mixer::{AUDIO_S16LSB, DEFAULT_CHANNELS, INIT_FLAC, INIT_MOD, INIT_MP3,
 use sdl2::render::Canvas;
 use sdl2::video::Window;
 
-use super::{ChunkStorage, FontLoader, FontStorage, MusicStorage, TextureLoader, TextureStorage};
+use super::{
+	ChunkLoader, ChunkStorage, FontLoader, FontStorage, MusicLoader, MusicStorage, TextureLoader,
+	TextureStorage,
+};
 
 pub struct SdlContext {
 	_sdl: sdl2::Sdl,
@@ -21,8 +24,8 @@ impl SdlContext {
 		simultaneous_audio_count: u8,
 	) -> Self {
 		let sdl = sdl2::init().unwrap();
-		let video_subsystem = sdl.video().unwrap();
 
+		let video_subsystem = sdl.video().unwrap();
 		let window = video_subsystem
 			.window(window_title, window_width, window_height)
 			.position_centered()
@@ -57,6 +60,8 @@ impl SdlContext {
 pub struct SdlLoader {
 	pub texture_loader: TextureLoader,
 	pub font_loader: FontLoader,
+	pub chunk_loader: ChunkLoader,
+	pub music_loader: MusicLoader,
 }
 
 impl SdlLoader {
@@ -64,6 +69,8 @@ impl SdlLoader {
 		SdlLoader {
 			texture_loader: TextureLoader::new(sdl_context),
 			font_loader: FontLoader::new(),
+			chunk_loader: ChunkLoader {},
+			music_loader: MusicLoader {},
 		}
 	}
 }

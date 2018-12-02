@@ -19,8 +19,6 @@ pub fn new<'a, 'b>(lazy: &mut LazyEvaluations, position: Vector2) {
 				sdl_loader,
 				sdl_storage,
 			);
-
-			let _image = images.get(image_handle);
 		}
 
 		let _block = world

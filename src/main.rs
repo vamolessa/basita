@@ -10,7 +10,7 @@ use basita::input::Input;
 use basita::physics::systems::{ColliderRenderSystem, PhysicsSystem};
 use basita::renderer::systems::RenderSystem;
 use basita::sdl::{SdlContext, SdlLoader, SdlStorage};
-use basita::{core, gui, input, physics, renderer};
+use basita::{core, gui, input, mixer, physics, renderer};
 
 mod game;
 use game::*;
@@ -30,6 +30,7 @@ pub fn main() {
 	input::init(&mut world);
 	renderer::init(&mut world);
 	physics::init(&mut world);
+	mixer::init(&mut world);
 	gui::init(&mut world);
 
 	// Player
@@ -73,6 +74,7 @@ pub fn main() {
 		dispatcher.dispatch(&mut world.res);
 
 		renderer::render(&mut world, &mut sdl_context, &mut sdl_storage);
+		mixer::mix(&mut world, &mut sdl_storage);
 		world.maintain();
 
 		world

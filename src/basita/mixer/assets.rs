@@ -20,7 +20,7 @@ impl<'a> AssetLoader<'a, Sfx> for SdlLoader {
 		path: &<Sfx as Asset>::Id,
 		storage: &mut Self::Storage,
 	) -> Result<Sfx, AssetLoadError> {
-		self.texture_loader
+		self.chunk_loader
 			.load(path, storage)
 			.map(|chunk_index| Sfx {
 				chunk_index: chunk_index,
@@ -45,7 +45,7 @@ impl<'a> AssetLoader<'a, Bgm> for SdlLoader {
 		path: &<Bgm as Asset>::Id,
 		storage: &mut Self::Storage,
 	) -> Result<Bgm, AssetLoadError> {
-		self.texture_loader
+		self.music_loader
 			.load(path, storage)
 			.map(|music_index| Bgm {
 				music_index: music_index,
