@@ -1,5 +1,4 @@
 #![feature(vec_resize_default)]
-#![feature(fnbox)]
 
 // external
 pub extern crate sdl2;

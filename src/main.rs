@@ -47,7 +47,7 @@ pub fn main() {
 		.build();
 
 	// LOAD LEVEL
-	levels::level1::load(&mut world, &sdl_loader, &mut sdl_storage);
+	levels::level1::load(&mut world.write_resource::<LazyEvaluations>());
 
 	// MAIN LOOP
 	'main: loop {
@@ -68,10 +68,10 @@ pub fn main() {
 			}
 		}
 
+		LazyEvaluations::evaluate(&mut world, &sdl_loader, &mut sdl_storage);
 		dispatcher.dispatch(&mut world.res);
 
 		renderer::render(&mut world, &mut sdl_context, &mut sdl_storage);
-		LazyEvaluations::evaluate(&mut world, &sdl_loader, &mut sdl_storage);
 		world.maintain();
 
 		thread::sleep(Duration::new(0, 1_000_000_000u32 / frames_per_second));
