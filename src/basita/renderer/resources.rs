@@ -53,14 +53,14 @@ impl RenderCommands {
 		color: Color,
 		position: Point,
 		texture_index: usize,
-		flip_horizontally: bool,
-		flip_vertically: bool,
+		flip_horizontal: bool,
+		flip_vertical: bool,
 	) {
 		self.commands.push(RenderCommand {
 			layer: layer,
 			color: color,
 			position: position,
-			variant: RenderVariant::TextureEx(texture_index, flip_horizontally, flip_vertically),
+			variant: RenderVariant::TextureEx(texture_index, flip_horizontal, flip_vertical),
 		})
 	}
 

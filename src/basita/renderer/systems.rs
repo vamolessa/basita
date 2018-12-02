@@ -3,7 +3,7 @@ use sdl2::rect::Point;
 use specs::{Join, Read, ReadStorage, System, Write};
 
 use super::components::{Camera, Sprite};
-use super::resources::{Images, RenderCommand, RenderCommands, RenderVariant};
+use super::resources::{Images, RenderCommands};
 use core::components::Transform;
 
 pub struct RenderSystem;
@@ -27,16 +27,14 @@ impl<'s> System<'s> for RenderSystem {
 
 				let position = transform.position - camera.position;
 
-				render_commands.commands.push(RenderCommand {
-					layer: sprite.layer,
-					position: Point::new(position.x as i32, position.y as i32) - image.center,
-					color: sprite.color,
-					variant: RenderVariant::TextureEx(
-						image.index,
-						sprite.flip_horizontal,
-						sprite.flip_vertical,
-					),
-				});
+				render_commands.add_texture_ex(
+					sprite.layer,
+					sprite.color,
+					Point::new(position.x as i32, position.y as i32) - image.center,
+					image.index,
+					sprite.flip_horizontal,
+					sprite.flip_vertical,
+				);
 			}
 		}
 	}

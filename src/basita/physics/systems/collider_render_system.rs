@@ -6,7 +6,7 @@ use specs::{Join, ReadStorage, System, Write};
 use super::super::components::{Collider, Shape};
 use core::components::Transform;
 use renderer::components::Camera;
-use renderer::resources::{RenderCommand, RenderCommands, RenderVariant};
+use renderer::resources::RenderCommands;
 
 pub struct ColliderRenderSystem;
 
@@ -25,18 +25,16 @@ impl<'s> System<'s> for ColliderRenderSystem {
 
 				match collider.shape {
 					Shape::Box(box_shape) => {
-						render_commands.commands.push(RenderCommand {
-							layer: 999,
-							position: Point::new(
+						render_commands.add_rect(
+							999,
+							Color::RGB(0, 255, 0),
+							Point::new(
 								(position.x + collider.offset.x - box_shape.half_size.x) as i32,
 								(position.y + collider.offset.y - box_shape.half_size.y) as i32,
 							),
-							color: Color::RGB(0, 255, 0),
-							variant: RenderVariant::Rect(
-								(box_shape.half_size.x as u32) * 2,
-								(box_shape.half_size.y as u32) * 2,
-							),
-						});
+							(box_shape.half_size.x as u32) * 2,
+							(box_shape.half_size.y as u32) * 2,
+						);
 					}
 				}
 			}
