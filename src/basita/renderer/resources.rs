@@ -24,6 +24,7 @@ pub struct RenderCommand {
 	pub color: Color,
 	pub position: Point,
 	pub variant: RenderVariant,
+	_internal: (),
 }
 
 #[derive(Default)]
@@ -44,6 +45,7 @@ impl RenderCommands {
 			color: color,
 			position: position,
 			variant: RenderVariant::Texture(texture_index),
+			_internal: (),
 		})
 	}
 
@@ -61,6 +63,7 @@ impl RenderCommands {
 			color: color,
 			position: position,
 			variant: RenderVariant::TextureEx(texture_index, flip_horizontal, flip_vertical),
+			_internal: (),
 		})
 	}
 
@@ -77,6 +80,7 @@ impl RenderCommands {
 			color: color,
 			position: position,
 			variant: RenderVariant::Rect(width, height),
+			_internal: (),
 		})
 	}
 
@@ -93,6 +97,7 @@ impl RenderCommands {
 			color: color,
 			position: position,
 			variant: RenderVariant::RectFill(width, height),
+			_internal: (),
 		})
 	}
 
@@ -102,6 +107,7 @@ impl RenderCommands {
 			color: color,
 			position: position,
 			variant: RenderVariant::Line(to),
+			_internal: (),
 		})
 	}
 
@@ -111,6 +117,7 @@ impl RenderCommands {
 			color: color,
 			position: position,
 			variant: RenderVariant::Point,
+			_internal: (),
 		})
 	}
 }

@@ -3,7 +3,7 @@ use sdl2::rect::{Point, Rect};
 
 use math::Vector2;
 use renderer::assets::{Font, Image};
-use renderer::resources::{RenderCommand, RenderCommands, RenderVariant};
+use renderer::resources::RenderCommands;
 
 pub struct Gui<'a> {
 	pub render_commands: &'a mut RenderCommands,
@@ -40,12 +40,12 @@ impl<'a> Gui<'a> {
 
 		for c in text.chars() {
 			if let Some(glyph) = self.font.glyphs.get(&c) {
-				self.render_commands.commands.push(RenderCommand {
-					layer: self.layer,
-					position: Point::new(position.x + x_offset, position.y),
-					color: self.color,
-					variant: RenderVariant::Texture(glyph.texture_index),
-				});
+				self.render_commands.add_texture(
+					self.layer,
+					self.color,
+					Point::new(position.x + x_offset, position.y),
+					glyph.texture_index,
+				);
 
 				x_offset += glyph.width as i32;
 			}
