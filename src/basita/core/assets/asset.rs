@@ -4,8 +4,6 @@ use std::fmt;
 use std::hash::Hash;
 use std::marker::PhantomData;
 
-use specs::World;
-
 pub trait Asset: Sync + Send + 'static {
 	type Id: fmt::Debug + Hash + Eq + Clone + Sync + Send;
 }
@@ -168,48 +166,6 @@ impl<A: Asset> Default for AssetCollection<A> {
 		AssetCollection {
 			cache_map: HashMap::default(),
 			assets: Vec::default(),
-		}
-	}
-}
-
-pub struct AssetLoadRequest<A: Asset>(
-	A::Id,
-	Box<FnMut(&mut World, AssetHandle<A>) -> () + Send + Sync>,
-);
-
-pub struct AssetLoadRequests<A: Asset> {
-	requests: Vec<AssetLoadRequest<A>>,
-}
-
-impl<A: Asset> AssetLoadRequests<A> {
-	pub fn add(&mut self, request: AssetLoadRequest<A>) {
-		self.requests.push(request);
-	}
-
-	pub fn load<'a, S>(
-		&mut self,
-		world: &mut World,
-		loader: &'a AssetLoader<'a, A, Storage = S>,
-		storage: &mut S,
-	) {
-		for AssetLoadRequest(id, on_load) in &mut self.requests {
-			let handle;
-			{
-				let mut collection = world.write_resource::<AssetCollection<A>>();
-				handle = collection.load(&id, loader, storage);
-			}
-
-			on_load(world, handle);
-		}
-
-		self.requests.clear();
-	}
-}
-
-impl<A: Asset> Default for AssetLoadRequests<A> {
-	fn default() -> Self {
-		AssetLoadRequests {
-			requests: Vec::default(),
 		}
 	}
 }

@@ -18,7 +18,7 @@ use game::*;
 pub fn main() {
 	let frames_per_second = 60;
 
-	let mut sdl_context = SdlContext::new("game", 400, 300);
+	let mut sdl_context = SdlContext::new("game", 400, 300, 8);
 	let sdl_loader = SdlLoader::new(&sdl_context);
 	let mut sdl_storage = SdlStorage::default();
 

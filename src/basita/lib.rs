@@ -16,6 +16,7 @@ pub extern crate fxhash;
 pub mod core;
 pub mod gui;
 pub mod input;
+pub mod mixer;
 pub mod physics;
 pub mod renderer;
 

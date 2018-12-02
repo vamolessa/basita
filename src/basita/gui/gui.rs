@@ -54,7 +54,7 @@ impl<'a> Gui<'a> {
 
 	pub fn image(&mut self, position: Point, image: &Image) {
 		self.render_commands
-			.add_texture(self.layer, self.color, position, image.index);
+			.add_texture(self.layer, self.color, position, image.texture_index);
 	}
 
 	pub fn rect(&mut self, position: Point, width: u32, height: u32) {

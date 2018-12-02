@@ -31,7 +31,7 @@ impl<'s> System<'s> for RenderSystem {
 					sprite.layer,
 					sprite.color,
 					Point::new(position.x as i32, position.y as i32) - image.center,
-					image.index,
+					image.texture_index,
 					sprite.flip_horizontal,
 					sprite.flip_vertical,
 				);

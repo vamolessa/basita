@@ -5,7 +5,7 @@ use core::assets::{Asset, AssetLoadError, AssetLoader};
 use sdl::{FontGlyph, SdlLoader, SdlStorage};
 
 pub struct Image {
-	pub index: usize,
+	pub texture_index: usize,
 	pub center: Point,
 }
 
@@ -21,12 +21,12 @@ impl<'a> AssetLoader<'a, Image> for SdlLoader {
 		path: &<Image as Asset>::Id,
 		storage: &mut Self::Storage,
 	) -> Result<Image, AssetLoadError> {
-		self.texture_loader.load(path, storage).map(|index| {
-			let texture = storage.texture_storage.at(index);
+		self.texture_loader.load(path, storage).map(|texture_index| {
+			let texture = storage.texture_storage.at(texture_index);
 			let query = texture.query();
 
 			Image {
-				index: index,
+				texture_index: texture_index,
 				center: Point::new(query.width as i32 / 2, query.height as i32 / 2),
 			}
 		})
@@ -34,7 +34,7 @@ impl<'a> AssetLoader<'a, Image> for SdlLoader {
 }
 
 pub struct Font {
-	pub index: usize,
+	pub font_index: usize,
 	pub size: u16,
 	pub glyphs: FxHashMap<char, FontGlyph>,
 }
@@ -53,8 +53,8 @@ impl<'a> AssetLoader<'a, Font> for SdlLoader {
 	) -> Result<Font, AssetLoadError> {
 		self.font_loader
 			.load(path, size, &self.texture_loader, storage)
-			.map(|(index, glyphs)| Font {
-				index: index,
+			.map(|(font_index, glyphs)| Font {
+				font_index: font_index,
 				size: size,
 				glyphs: glyphs,
 			})
