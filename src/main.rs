@@ -1,7 +1,6 @@
 extern crate basita;
 
-use std::thread;
-use std::time::Duration;
+use std::time::Instant;
 
 use basita::sdl2::event::Event;
 use basita::specs::{DispatcherBuilder, World};
@@ -51,6 +50,8 @@ pub fn main() {
 
 	// MAIN LOOP
 	'main: loop {
+		let frame_start_instant = Instant::now();
+
 		{
 			let mut input = world.write_resource::<Input>();
 			input.update();
@@ -74,9 +75,8 @@ pub fn main() {
 		renderer::render(&mut world, &mut sdl_context, &mut sdl_storage);
 		world.maintain();
 
-		thread::sleep(Duration::new(0, 1_000_000_000u32 / frames_per_second));
-
-		let mut time = world.write_resource::<Time>();
-		time.delta_time = 1.0 / frames_per_second as f32;
+		world
+			.write_resource::<Time>()
+			.sleep_rest_of_frame(frames_per_second, &frame_start_instant);
 	}
 }
