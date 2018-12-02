@@ -3,9 +3,12 @@ use std::mem;
 use sdl::{SdlLoader, SdlStorage};
 use specs::World;
 
+type LazyEvaluation = Box<for<'a, 'b> Fn(&mut World, &'a SdlLoader, &'b mut SdlStorage<'a>)>;
+
 #[derive(Default)]
 pub struct LazyEvaluations {
-	pub evaluations: Vec<Box<for<'a, 'b> Fn(&mut World, &'a SdlLoader, &'b mut SdlStorage<'a>)>>,
+	pub evaluations: Vec<LazyEvaluation>,
+	pub evaluations_backbuffer: Vec<LazyEvaluation>,
 }
 
 impl LazyEvaluations {
@@ -14,9 +17,21 @@ impl LazyEvaluations {
 		sdl_loader: &'a SdlLoader,
 		sdl_storage: &'b mut SdlStorage<'a>,
 	) {
-		let evaluations = mem::replace(&mut world.write_resource::<Self>().evaluations, Vec::new());
+		let mut evaluations;
+		{
+			let mut this = world.write_resource::<Self>();
+			let evaluations_backbuffer = mem::replace(&mut this.evaluations_backbuffer, Vec::new());
+			evaluations = mem::replace(&mut this.evaluations, evaluations_backbuffer);
+		}
+
 		for evaluation in &evaluations {
 			(*evaluation)(world, sdl_loader, sdl_storage);
+		}
+		evaluations.clear();
+
+		{
+			let mut this = world.write_resource::<Self>();
+			mem::replace(&mut this.evaluations_backbuffer, evaluations);
 		}
 	}
 
