@@ -4,9 +4,9 @@ use fxhash::FxHashMap;
 
 use super::super::components::{Collider, PhysicBody};
 use super::super::helpers::collide;
-use core::components::Transform;
-use core::resources::Time;
-use math::Vector2;
+use crate::core::components::Transform;
+use crate::core::resources::Time;
+use crate::math::Vector2;
 
 #[derive(Default)]
 struct CollisionResponse {

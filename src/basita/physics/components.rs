@@ -1,6 +1,6 @@
 use specs::{Component, VecStorage};
 
-use math::Vector2;
+use crate::math::Vector2;
 
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct PhysicBody {

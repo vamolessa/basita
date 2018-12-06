@@ -1,8 +1,8 @@
 use fxhash::FxHashMap;
 use sdl2::rect::Point;
 
-use core::assets::{Asset, AssetLoadError, AssetLoader};
-use sdl::{FontGlyph, SdlLoader, SdlStorage};
+use crate::core::assets::{Asset, AssetLoadError, AssetLoader};
+use crate::sdl::{FontGlyph, SdlLoader, SdlStorage};
 
 pub struct Image {
 	pub texture_index: usize,

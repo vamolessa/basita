@@ -1,5 +1,3 @@
-extern crate basita;
-
 use std::time::Instant;
 
 use basita::sdl2::event::Event;
@@ -13,7 +11,7 @@ use basita::sdl::{SdlContext, SdlLoader, SdlStorage};
 use basita::{core, gui, input, mixer, physics, renderer};
 
 mod game;
-use game::*;
+use crate::game::*;
 
 pub fn main() {
 	let frames_per_second = 60;

@@ -1,7 +1,8 @@
 use sdl2::mixer::{Channel, Music, MAX_VOLUME};
 
-use sdl::SdlStorage;
 use specs::World;
+
+use crate::sdl::SdlStorage;
 
 use super::resources::{MusicCommand, MusicCommands, SfxCommands, SfxVariant, Sfxs};
 

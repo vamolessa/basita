@@ -1,5 +1,5 @@
 use super::components::{BoxShape, Shape};
-use math::Vector2;
+use crate::math::Vector2;
 
 pub fn collide(
 	a: Shape,

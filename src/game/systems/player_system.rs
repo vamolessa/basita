@@ -10,8 +10,8 @@ use basita::math::Vector2;
 use basita::mixer::resources::SfxCommands;
 use basita::physics::components::PhysicBody;
 
-use components::Player;
-use resources::{GameFonts, GameSfxs};
+use crate::game::components::Player;
+use crate::game::resources::{GameFonts, GameSfxs};
 
 pub struct PlayerSystem;
 

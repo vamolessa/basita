@@ -2,16 +2,12 @@
 #![feature(duration_as_u128)]
 
 // external
-pub extern crate sdl2;
+pub use sdl2;
+pub use specs;
 
-pub extern crate serde;
+//pub use serde_derive::{Deserialize, Serialize};
 #[macro_use]
 pub extern crate serde_derive;
-pub extern crate serde_json;
-
-pub extern crate specs;
-
-pub extern crate fxhash;
 
 // local
 pub mod core;

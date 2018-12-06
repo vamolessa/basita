@@ -4,7 +4,7 @@ use specs::{Join, Read, ReadStorage, System, Write};
 
 use super::components::{Camera, Sprite};
 use super::resources::{Images, RenderCommands};
-use core::components::Transform;
+use crate::core::components::Transform;
 
 pub struct RenderSystem;
 

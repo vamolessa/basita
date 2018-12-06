@@ -4,10 +4,10 @@ use sdl2::rect::{Point, Rect};
 use specs::shred::ResourceId;
 use specs::{Read, Resources, SystemData, Write};
 
-use core::assets::AssetHandle;
-use math::Vector2;
-use renderer::assets::{Font, Image};
-use renderer::resources::{Fonts, RenderCommands};
+use crate::core::assets::AssetHandle;
+use crate::math::Vector2;
+use crate::renderer::assets::{Font, Image};
+use crate::renderer::resources::{Fonts, RenderCommands};
 
 pub struct Gui<'a> {
 	pub render_commands: Write<'a, RenderCommands>,

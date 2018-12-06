@@ -1,7 +1,7 @@
 use sdl2::mixer::Music;
 
 use super::{SdlAssetStorage, SdlContext, SdlStorage};
-use core::assets::AssetLoadError;
+use crate::core::assets::AssetLoadError;
 
 pub type MusicStorage<'a> = SdlAssetStorage<Music<'a>>;
 

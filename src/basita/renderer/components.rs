@@ -1,8 +1,8 @@
 use sdl2::pixels::Color;
 use specs::{Component, DenseVecStorage, VecStorage};
 
-use core::assets::AssetHandle;
-use math::Vector2;
+use crate::core::assets::AssetHandle;
+use crate::math::Vector2;
 
 use super::assets::Image;
 

@@ -3,7 +3,7 @@ use sdl2::render::{Texture, TextureCreator};
 use sdl2::video::WindowContext;
 
 use super::{SdlAssetStorage, SdlContext, SdlStorage};
-use core::assets::AssetLoadError;
+use crate::core::assets::AssetLoadError;
 
 pub type TextureStorage<'a> = SdlAssetStorage<Texture<'a>>;
 

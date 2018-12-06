@@ -4,9 +4,9 @@ use sdl2::rect::Point;
 use specs::{Join, ReadStorage, System, Write};
 
 use super::super::components::{Collider, Shape};
-use core::components::Transform;
-use renderer::components::Camera;
-use renderer::resources::RenderCommands;
+use crate::core::components::Transform;
+use crate::renderer::components::Camera;
+use crate::renderer::resources::RenderCommands;
 
 pub struct ColliderRenderSystem;
 

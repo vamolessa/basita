@@ -2,7 +2,7 @@ use sdl2::pixels::Color;
 use sdl2::rect::Point;
 
 use super::assets::{Font, Image};
-use core::assets::AssetCollection;
+use crate::core::assets::AssetCollection;
 
 pub type Images = AssetCollection<Image>;
 pub type Fonts = AssetCollection<Font>;

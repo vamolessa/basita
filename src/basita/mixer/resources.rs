@@ -3,7 +3,7 @@ use std::time::Duration;
 use sdl2::mixer::MAX_VOLUME;
 
 use super::assets::{Bgm, Sfx};
-use core::assets::{AssetCollection, AssetHandle};
+use crate::core::assets::{AssetCollection, AssetHandle};
 
 pub type Sfxs = AssetCollection<Sfx>;
 pub type Bgms = AssetCollection<Bgm>;

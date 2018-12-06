@@ -1,8 +1,9 @@
 use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 
-use sdl::{SdlContext, SdlStorage};
 use specs::World;
+
+use crate::sdl::{SdlContext, SdlStorage};
 
 use super::resources::{RenderCommands, RenderVariant};
 

@@ -7,7 +7,7 @@ use basita::physics::components::{Collider, PhysicBody};
 use basita::renderer::components::Sprite;
 use basita::renderer::resources::Images;
 
-use components::Player;
+use crate::game::components::Player;
 
 pub fn new<'a, 'b>(lazy: &mut LazyEvaluations, position: Vector2) {
 	lazy.add(move |world, sdl_loader, sdl_storage| {

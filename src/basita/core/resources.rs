@@ -2,8 +2,9 @@ use std::mem;
 use std::thread;
 use std::time::{Duration, Instant};
 
-use sdl::{SdlLoader, SdlStorage};
 use specs::World;
+
+use crate::sdl::{SdlLoader, SdlStorage};
 
 type LazyEvaluation = Box<for<'a, 'b> Fn(&mut World, &'a SdlLoader, &'b mut SdlStorage<'a>)>;
 

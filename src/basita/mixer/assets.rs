@@ -1,7 +1,7 @@
 use sdl2::mixer::Channel;
 
-use core::assets::{Asset, AssetLoadError, AssetLoader};
-use sdl::{SdlLoader, SdlStorage};
+use crate::core::assets::{Asset, AssetLoadError, AssetLoader};
+use crate::sdl::{SdlLoader, SdlStorage};
 
 pub struct Sfx {
 	pub chunk_index: usize,

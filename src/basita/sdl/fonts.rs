@@ -3,7 +3,7 @@ use sdl2::pixels::Color;
 use sdl2::ttf::{self, Font, Sdl2TtfContext};
 
 use super::{SdlAssetStorage, SdlStorage, TextureLoader};
-use core::assets::AssetLoadError;
+use crate::core::assets::AssetLoadError;
 
 pub struct FontGlyph {
 	pub texture_index: usize,

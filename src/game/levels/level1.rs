@@ -6,8 +6,8 @@ use basita::mixer::resources::Sfxs;
 use basita::renderer::components::Camera;
 use basita::renderer::resources::Fonts;
 
-use entities::{block, player};
-use resources::{GameFonts, GameSfxs};
+use crate::game::entities::{block, player};
+use crate::game::resources::{GameFonts, GameSfxs};
 
 pub fn load(lazy: &mut LazyEvaluations) {
 	lazy.add(move |world, sdl_loader, sdl_storage| {
