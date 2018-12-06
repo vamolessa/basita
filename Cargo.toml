@@ -1,7 +1,8 @@
 [package]
-name = "platformer-maker"
+name = "basita"
 version = "0.1.0"
-authors = ["Matheus Lessa <matheuslessarodrigues@gmail.com>"]
+authors = ["Matheus Lessa <matheus@fastmail.com>"]
+edition = "2018"
 build = "build.rs"
 
 [lib]
@@ -9,7 +10,7 @@ name = "basita"
 path = "src/basita/lib.rs"
 
 [[bin]]
-name = "platformer-maker"
+name = "basita-test"
 path = "src/main.rs"
 
 [dependencies]
