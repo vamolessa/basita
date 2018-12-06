@@ -3,11 +3,8 @@
 
 // external
 pub use sdl2;
+pub use serde_derive;
 pub use specs;
-
-//pub use serde_derive::{Deserialize, Serialize};
-#[macro_use]
-pub extern crate serde_derive;
 
 // local
 pub mod core;

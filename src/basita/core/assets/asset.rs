@@ -4,6 +4,8 @@ use std::fmt;
 use std::hash::Hash;
 use std::marker::PhantomData;
 
+use serde_derive::{Deserialize, Serialize};
+
 pub trait Asset: Sync + Send + 'static {
 	type Id: fmt::Debug + Hash + Eq + Clone + Sync + Send;
 }

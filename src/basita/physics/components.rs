@@ -1,3 +1,4 @@
+use serde_derive::{Deserialize, Serialize};
 use specs::{Component, VecStorage};
 
 use crate::math::Vector2;
