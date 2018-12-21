@@ -49,6 +49,8 @@ impl LazyEvaluations {
 unsafe impl Send for LazyEvaluations {}
 unsafe impl Sync for LazyEvaluations {}
 
+// Maybe implement this?
+// https://gafferongames.com/post/fix_your_timestep/
 #[derive(Default)]
 pub struct Time {
 	pub delta_time: f32,
