@@ -54,7 +54,7 @@ pub trait Game: Sized {
 		GameSettings::default()
 	}
 
-	fn update(&mut self) {}
+	fn update(&mut self, _resources: &mut GameResources) {}
 
 	fn run(&mut self, context: &mut GameContext) {
 		let mut resources = GameResources::default();
@@ -74,7 +74,7 @@ pub trait Game: Sized {
 				};
 			}
 
-			self.update();
+			self.update(&mut resources);
 			resources
 				.renderer
 				.render(&mut context.sdl_context, &mut context.sdl_storage);
