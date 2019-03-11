@@ -3,7 +3,7 @@ use std::time::Instant;
 use crate::sdl2::event::Event;
 
 use crate::{
-	core::resources::Time,
+	core::resources::{LazyEvaluations, Time},
 	input::Input,
 	mixer::Mixer,
 	//renderer::systems::RenderSystem,
@@ -32,12 +32,24 @@ impl Default for GameSettings {
 	}
 }
 
-#[derive(Default)]
-pub struct GameResources {
+pub struct GameResources<G: Game> {
 	pub time: Time,
 	pub input: Input,
 	pub renderer: Renderer,
 	pub mixer: Mixer,
+	pub lazy_evaluations: LazyEvaluations<G>,
+}
+
+impl<G: Game> Default for GameResources<G> {
+	fn default() -> Self {
+		GameResources {
+			time: Time::default(),
+			input: Input::default(),
+			renderer: Renderer::default(),
+			mixer: Mixer::default(),
+			lazy_evaluations: LazyEvaluations::default(),
+		}
+	}
 }
 
 pub struct GameContext<'a> {
@@ -54,7 +66,7 @@ pub trait Game: Sized {
 		GameSettings::default()
 	}
 
-	fn update(&mut self, _resources: &mut GameResources) {}
+	fn update(&mut self, _resources: &mut GameResources<Self>) {}
 
 	fn run(&mut self, context: &mut GameContext) {
 		let mut resources = GameResources::default();

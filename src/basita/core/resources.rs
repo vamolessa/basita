@@ -1,53 +1,49 @@
+use std::mem;
 use std::thread;
 use std::time::{Duration, Instant};
 
-/*
-use std::mem;
+use crate::game::GameContext;
 
-use crate::sdl::{SdlLoader, SdlStorage};
+type LazyEvaluation<G> = Box<for<'a> Fn(&mut GameContext<'a>, &mut G)>;
 
-type LazyEvaluation = Box<for<'a, 'b> Fn(&mut World, &'a SdlLoader, &'b mut SdlStorage<'a>)>;
-
-#[derive(Default)]
-pub struct LazyEvaluations {
-	pub evaluations: Vec<LazyEvaluation>,
-	pub evaluations_backbuffer: Vec<LazyEvaluation>,
+pub struct LazyEvaluations<G> {
+	pub evaluations: Vec<LazyEvaluation<G>>,
+	pub evaluations_backbuffer: Vec<LazyEvaluation<G>>,
 }
 
-impl LazyEvaluations {
-	pub fn evaluate<'a, 'b>(
-		world: &mut World,
-		sdl_loader: &'a SdlLoader,
-		sdl_storage: &'b mut SdlStorage<'a>,
-	) {
+impl<G> LazyEvaluations<G> {
+	pub fn evaluate<'a, 'b>(&mut self, context: &mut GameContext<'a>, game: &mut G) {
 		let mut evaluations;
 		{
-			let mut this = world.write_resource::<Self>();
-			let evaluations_backbuffer = mem::replace(&mut this.evaluations_backbuffer, Vec::new());
-			evaluations = mem::replace(&mut this.evaluations, evaluations_backbuffer);
+			let evaluations_backbuffer = mem::replace(&mut self.evaluations_backbuffer, Vec::new());
+			evaluations = mem::replace(&mut self.evaluations, evaluations_backbuffer);
 		}
 
 		for evaluation in &evaluations {
-			(*evaluation)(world, sdl_loader, sdl_storage);
+			(*evaluation)(context, game);
 		}
 
 		{
-			let mut this = world.write_resource::<Self>();
-			mem::replace(&mut this.evaluations_backbuffer, evaluations);
+			mem::replace(&mut self.evaluations_backbuffer, evaluations);
 		}
 	}
 
 	pub fn add<F>(&mut self, evaluation: F)
 	where
-		F: 'static + for<'a, 'b> Fn(&mut World, &'a SdlLoader, &'b mut SdlStorage<'a>),
+		F: 'static + for<'a> Fn(&mut GameContext<'a>, &mut G),
 	{
 		self.evaluations.push(Box::new(evaluation));
 	}
 }
 
-unsafe impl Send for LazyEvaluations {}
-unsafe impl Sync for LazyEvaluations {}
-*/
+impl<G> Default for LazyEvaluations<G> {
+	fn default() -> Self {
+		LazyEvaluations {
+			evaluations: Vec::default(),
+			evaluations_backbuffer: Vec::default(),
+		}
+	}
+}
 
 // Maybe implement this?
 // https://gafferongames.com/post/fix_your_timestep/

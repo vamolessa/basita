@@ -1,5 +1,4 @@
 use serde_derive::{Deserialize, Serialize};
-use specs::{Component, VecStorage};
 
 use crate::math::Vector2;
 
@@ -20,10 +19,6 @@ impl PhysicBody {
 	}
 }
 
-impl Component for PhysicBody {
-	type Storage = VecStorage<Self>;
-}
-
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct Collider {
 	pub shape: Shape,
@@ -41,10 +36,6 @@ impl Collider {
 			bounciness: 0.0,
 		}
 	}
-}
-
-impl Component for Collider {
-	type Storage = VecStorage<Self>;
 }
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]

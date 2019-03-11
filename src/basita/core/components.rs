@@ -1,5 +1,4 @@
 use serde_derive::{Deserialize, Serialize};
-use specs::{Component, VecStorage};
 
 use crate::math::Vector2;
 
@@ -24,8 +23,4 @@ impl Default for Transform {
 	fn default() -> Self {
 		Transform::identity()
 	}
-}
-
-impl Component for Transform {
-	type Storage = VecStorage<Self>;
 }

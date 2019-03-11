@@ -1,5 +1,4 @@
 use basita::sdl2::pixels::Color;
-use basita::specs::Builder;
 
 use basita::core::components::Transform;
 use basita::core::resources::LazyEvaluations;

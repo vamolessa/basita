@@ -31,11 +31,13 @@ impl PhysicsSystem {
 		use std::collections::hash_map::Entry;
 
 		match self.collision_responses.entry(entity) {
-			Entry::Occupied(mut entry) => if response.position_offset.sqr_magnitude()
-				> entry.get().position_offset.sqr_magnitude()
-			{
-				entry.insert(response);
-			},
+			Entry::Occupied(mut entry) => {
+				if response.position_offset.sqr_magnitude()
+					> entry.get().position_offset.sqr_magnitude()
+				{
+					entry.insert(response);
+				}
+			}
 			Entry::Vacant(entry) => {
 				entry.insert(response);
 			}
@@ -109,13 +111,11 @@ impl<'a> System<'a> for PhysicsSystem {
 
 			// respond to collisions
 			for (entity, response) in &self.collision_responses {
-				try {
-					let transform = transforms.get_mut(*entity)?;
-					let physic_body = physic_bodies.get_mut(*entity)?;
+				let transform = transforms.get_mut(*entity).unwrap();
+				let physic_body = physic_bodies.get_mut(*entity).unwrap();
 
-					transform.position += response.position_offset;
-					physic_body.velocity += response.velocity_offset;
-				}
+				transform.position += response.position_offset;
+				physic_body.velocity += response.velocity_offset;
 			}
 		}
 	}

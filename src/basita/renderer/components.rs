@@ -1,5 +1,4 @@
 use sdl2::pixels::Color;
-use specs::{Component, DenseVecStorage, VecStorage};
 
 use crate::core::assets::AssetHandle;
 use crate::math::Vector2;
@@ -11,10 +10,6 @@ pub struct Camera {
 	pub position: Vector2,
 }
 
-impl Component for Camera {
-	type Storage = DenseVecStorage<Self>;
-}
-
 #[derive(Clone, Copy, Debug)]
 pub struct Sprite {
 	pub layer: usize,
@@ -22,10 +17,6 @@ pub struct Sprite {
 	pub image: AssetHandle<Image>,
 	pub flip_horizontal: bool,
 	pub flip_vertical: bool,
-}
-
-impl Component for Sprite {
-	type Storage = VecStorage<Self>;
 }
 
 impl Default for Sprite {

@@ -1,7 +1,7 @@
 use basita::game::*;
 
-//mod game;
-//use crate::game::*;
+mod game;
+use crate::game::*;
 
 /* Quase funciona uma struct que engloba tudo (sdl_loader precisa ficar de fora)
 struct Test<'a> {
@@ -38,7 +38,7 @@ impl Game for MyGame {
 		MyGame {}
 	}
 
-	fn update(&mut self, resources: &mut GameResources) {
+	fn update(&mut self, resources: &mut GameResources<MyGame>) {
 		resources.renderer.render_commands.add_rect_fill(
 			0,
 			Color::RGB(255, 0, 0),
