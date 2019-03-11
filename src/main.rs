@@ -1,41 +1,36 @@
-use basita::game::*;
+use basita::{
+	game::*,
+	mixer::resources::Sfxs,
+	renderer::resources::{Fonts, Images},
+};
 
 mod game;
-use crate::game::*;
-
-/* Quase funciona uma struct que engloba tudo (sdl_loader precisa ficar de fora)
-struct Test<'a> {
-	context: SdlContext,
-	loader: &'a SdlLoader,
-	storage: SdlStorage<'a>,
-}
-
-pub fn test() {
-	let sdl_context = SdlContext::new("game", 400, 300, 8);
-	let sdl_loader = SdlLoader::new(&sdl_context); // drop 1
-	let sdl_storage = SdlStorage::default(); // drop 2
-
-	let mut sdl = Test {
-		context: sdl_context,
-		loader: &sdl_loader,
-		storage: sdl_storage,
-	};
-
-	{
-		let mut world = World::new();
-		LazyEvaluations::evaluate(&mut world, &sdl.loader, &mut sdl.storage);
-	}
-}
-*/
+use crate::game::{
+	entities::{block::*, camera::*, player::*},
+	levels::*,
+	resources::{GameFonts, GameSfxs},
+};
 
 use sdl2::pixels::Color;
 use sdl2::rect::Point;
 
-pub struct MyGame {}
+#[derive(Default)]
+pub struct MyGame {
+	pub images: Images,
+	pub fonts: Fonts,
+	pub sfxs: Sfxs,
+
+	pub game_fonts: GameFonts,
+	pub game_sfxs: GameSfxs,
+
+	pub cameras: Vec<CameraEntity>,
+	pub players: Vec<PlayerEntity>,
+	pub blocks: Vec<BlockEntity>,
+}
 
 impl Game for MyGame {
 	fn create(_context: &mut GameContext) -> Self {
-		MyGame {}
+		MyGame::default()
 	}
 
 	fn update(&mut self, resources: &mut GameResources<MyGame>) {

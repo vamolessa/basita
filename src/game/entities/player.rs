@@ -1,37 +1,38 @@
-use basita::specs::Builder;
+use basita::{
+	core::{components::Transform, resources::LazyEvaluations},
+	math::Vector2,
+	physics::components::{Collider, PhysicBody},
+	renderer::components::Sprite,
+};
 
-use basita::core::components::Transform;
-use basita::core::resources::LazyEvaluations;
-use basita::math::Vector2;
-use basita::physics::components::{Collider, PhysicBody};
-use basita::renderer::components::Sprite;
-use basita::renderer::resources::Images;
+use crate::MyGame;
 
-use crate::game::components::Player;
+pub struct PlayerEntity {
+	pub transform: Transform,
+	pub sprite: Sprite,
+	pub collider: Collider,
+	pub physic_body: PhysicBody,
+}
 
-pub fn new<'a, 'b>(lazy: &mut LazyEvaluations, position: Vector2) {
-	lazy.add(move |world, sdl_loader, sdl_storage| {
+pub fn new(lazy: &mut LazyEvaluations<MyGame>, position: Vector2) {
+	lazy.add(move |context, game| {
 		let image_handle;
 		{
-			let mut images = world.write_resource::<Images>();
-
-			image_handle = images.load(
+			image_handle = game.images.load(
 				&String::from("assets/images/player.png"),
-				sdl_loader,
-				sdl_storage,
+				context.sdl_loader,
+				&mut context.sdl_storage,
 			);
 		}
 
-		let _player = world
-			.create_entity()
-			.with(Player)
-			.with(Transform { position: position })
-			.with(Sprite {
+		game.players.push(PlayerEntity {
+			transform: Transform { position: position },
+			sprite: Sprite {
 				image: image_handle,
 				..Default::default()
-			})
-			.with(Collider::new_box(Vector2::new(16.0, 16.0)))
-			.with(PhysicBody::with_inverted_mass(1.0))
-			.build();
+			},
+			collider: Collider::new_box(Vector2::new(16.0, 16.0)),
+			physic_body: PhysicBody::with_inverted_mass(1.0),
+		});
 	});
 }

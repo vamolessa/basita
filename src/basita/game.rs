@@ -53,11 +53,11 @@ impl<G: Game> Default for GameResources<G> {
 }
 
 pub struct GameContext<'a> {
-	settings: GameSettings,
+	pub settings: GameSettings,
 
-	sdl_context: SdlContext,
-	sdl_loader: &'a mut SdlLoader,
-	sdl_storage: SdlStorage<'a>,
+	pub sdl_context: SdlContext,
+	pub sdl_loader: &'a mut SdlLoader,
+	pub sdl_storage: SdlStorage<'a>,
 }
 
 pub trait Game: Sized {
