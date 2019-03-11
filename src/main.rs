@@ -46,14 +46,14 @@ pub fn main() {
 	let mut sdl_storage = SdlStorage::default();
 
 	// DECLARE RESOURCES
-	let mut world = World::new();
+	let mixer = crate::mixer::Mixer::default();
 
 	// Engine
 	core::init(&mut world);
 	input::init(&mut world);
 	renderer::init(&mut world);
 	physics::init(&mut world);
-	mixer::init(&mut world);
+	mixer::init();
 	gui::init(&mut world);
 
 	// Player
@@ -97,7 +97,7 @@ pub fn main() {
 		dispatcher.dispatch(&mut world.res);
 
 		renderer::render(&mut world, &mut sdl_context, &mut sdl_storage);
-		mixer::mix(&mut world, &mut sdl_storage);
+		mixer.mix(&mut sdl_storage);
 		world.maintain();
 
 		world

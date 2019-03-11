@@ -1,14 +1,36 @@
 use sdl2::mixer::{Channel, Music, MAX_VOLUME};
 
-use specs::World;
-
 use crate::sdl::SdlStorage;
 
-use super::resources::{MusicCommand, MusicCommands, SfxCommands, SfxVariant, Sfxs};
+use super::resources::{Bgms, MusicCommand, MusicCommands, SfxCommands, SfxVariant, Sfxs};
 
-pub fn mix<'a>(world: &mut World, sdl_storage: &mut SdlStorage<'a>) {
-	let mut sfx_commands = world.write_resource::<SfxCommands>();
-	let mut sfxs = world.write_resource::<Sfxs>();
+#[derive(Default)]
+pub struct Mixer {
+	pub sfxs: Sfxs,
+	pub bgms: Bgms,
+	pub sfx_commands: SfxCommands,
+	pub music_commands: MusicCommands,
+}
+
+impl Mixer {
+	pub fn mix<'a>(&mut self, sdl_storage: &mut SdlStorage<'a>) {
+		mix(
+			&mut self.sfxs,
+			&mut self.bgms,
+			&mut self.sfx_commands,
+			&mut self.music_commands,
+			sdl_storage,
+		);
+	}
+}
+
+pub fn mix<'a>(
+	sfxs: &mut Sfxs,
+	bgms: &mut Bgms,
+	sfx_commands: &mut SfxCommands,
+	music_commands: &mut MusicCommands,
+	sdl_storage: &mut SdlStorage<'a>,
+) {
 	for command in sfx_commands.commands.iter() {
 		match command.variant {
 			SfxVariant::Play => {
@@ -22,13 +44,13 @@ pub fn mix<'a>(world: &mut World, sdl_storage: &mut SdlStorage<'a>) {
 				}
 			}
 			SfxVariant::Volume(volume) => {
-				let sfx = sfxs.get_mut(command.sfx_handle);
+				let sfx = sfxs.get(command.sfx_handle);
 				if let Some(channel) = sfx.channel {
 					channel.set_volume(volume);
 				}
 			}
 			SfxVariant::Pan(left, right) => {
-				let sfx = sfxs.get_mut(command.sfx_handle);
+				let sfx = sfxs.get(command.sfx_handle);
 				if let Some(channel) = sfx.channel {
 					channel.set_panning(left, right).unwrap();
 				}
@@ -37,11 +59,11 @@ pub fn mix<'a>(world: &mut World, sdl_storage: &mut SdlStorage<'a>) {
 	}
 	sfx_commands.commands.clear();
 
-	let mut music_commands = world.write_resource::<MusicCommands>();
 	for command in music_commands.commands.iter() {
 		match *command {
-			MusicCommand::Play(music_index, fade_in) => {
-				let music = sdl_storage.music_storage.at(music_index);
+			MusicCommand::Play(bgm_handle, fade_in) => {
+				let bgm = bgms.get(bgm_handle);
+				let music = sdl_storage.music_storage.at(bgm.music_index);
 				if let Ok(_) = music.fade_in(0, fade_in) {}
 			}
 			MusicCommand::Stop(fade_out) => if let Ok(_) = Music::fade_out(fade_out) {},

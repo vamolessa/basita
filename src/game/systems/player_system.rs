@@ -7,7 +7,6 @@ use basita::core::components::Transform;
 use basita::gui::Gui;
 use basita::input::Input;
 use basita::math::Vector2;
-use basita::mixer::resources::SfxCommands;
 use basita::physics::components::PhysicBody;
 
 use crate::game::components::Player;
@@ -22,7 +21,6 @@ impl<'a> System<'a> for PlayerSystem {
 		WriteStorage<'a, PhysicBody>,
 		WriteStorage<'a, Transform>,
 		Gui<'a>,
-		Write<'a, SfxCommands>,
 		Read<'a, GameFonts>,
 		Read<'a, GameSfxs>,
 	);
@@ -35,7 +33,6 @@ impl<'a> System<'a> for PlayerSystem {
 			mut physic_bodies,
 			mut transforms,
 			mut gui,
-			mut sfx_commands,
 			game_fonts,
 			game_sfxs,
 		): Self::SystemData,
@@ -56,7 +53,6 @@ impl<'a> System<'a> for PlayerSystem {
 
 			if input.key(Keycode::Up).just_pressed() {
 				physic_body.velocity.y -= jump_impulse;
-				sfx_commands.add_play(game_sfxs.hit);
 			}
 
 			physic_body.acceleration.y = 100.0;

@@ -48,7 +48,7 @@ impl SfxCommands {
 }
 
 pub enum MusicCommand {
-	Play(usize, i32),
+	Play(AssetHandle<Bgm>, i32),
 	Stop(i32),
 	Volume(i32),
 }
@@ -59,9 +59,9 @@ pub struct MusicCommands {
 }
 
 impl MusicCommands {
-	pub fn add_play(&mut self, music_index: usize, fade_in: Duration) {
+	pub fn add_play(&mut self, bgm_handle: AssetHandle<Bgm>, fade_in: Duration) {
 		self.commands
-			.push(MusicCommand::Play(music_index, fade_in.as_millis() as i32));
+			.push(MusicCommand::Play(bgm_handle, fade_in.as_millis() as i32));
 	}
 
 	pub fn add_stop(&mut self, fade_out: Duration) {

@@ -1,5 +1,4 @@
 #![feature(vec_resize_default)]
-#![feature(duration_as_u128)]
 
 // external
 pub use sdl2;
