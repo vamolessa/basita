@@ -28,11 +28,24 @@ pub fn test() {
 }
 */
 
+use sdl2::pixels::Color;
+use sdl2::rect::Point;
+
 pub struct MyGame {}
 
 impl Game for MyGame {
 	fn create(_context: &mut GameContext) -> Self {
 		MyGame {}
+	}
+
+	fn update(&mut self, resources: &mut GameResources) {
+		resources.renderer.render_commands.add_rect_fill(
+			0,
+			Color::RGB(255, 0, 0),
+			Point::new(100, 100),
+			200,
+			150,
+		);
 	}
 }
 

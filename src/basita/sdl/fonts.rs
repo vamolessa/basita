@@ -42,11 +42,21 @@ impl FontLoader {
 					let surface = font
 						.render_char(c)
 						.blended(Color::RGBA(255, 255, 255, 255))
-						.unwrap();
+						.map_err(|e| {
+							AssetLoadError::new(format!(
+								"Could not create surface for char '{}' with font at '{}'",
+								c, path
+							))
+						})?;
 					let texture = loader
 						.texture_creator
 						.create_texture_from_surface(&surface)
-						.unwrap();
+						.map_err(|e| {
+							AssetLoadError::new(format!(
+								"Could not create texture for char '{}' with font at '{}'",
+								c, path
+							))
+						})?;
 					let texture_query = texture.query();
 
 					glyphs.insert(

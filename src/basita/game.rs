@@ -77,8 +77,9 @@ pub trait Game: Sized {
 			self.update(&mut resources);
 			resources
 				.renderer
-				.render(&mut context.sdl_context, &mut context.sdl_storage);
-			resources.mixer.mix(&mut context.sdl_storage);
+				.render(&mut context.sdl_context, &mut context.sdl_storage)
+				.unwrap();
+			resources.mixer.mix(&mut context.sdl_storage).unwrap();
 			resources.input.update();
 
 			resources

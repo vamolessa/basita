@@ -11,8 +11,12 @@ pub struct Renderer {
 }
 
 impl Renderer {
-	pub fn render<'a>(&mut self, sdl_context: &mut SdlContext, sdl_storage: &mut SdlStorage<'a>) {
-		render(&mut self.render_commands, sdl_context, sdl_storage).unwrap();
+	pub fn render<'a>(
+		&mut self,
+		sdl_context: &mut SdlContext,
+		sdl_storage: &mut SdlStorage<'a>,
+	) -> Result<(), String> {
+		render(&mut self.render_commands, sdl_context, sdl_storage)
 	}
 }
 
