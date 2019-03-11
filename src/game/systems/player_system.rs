@@ -34,7 +34,7 @@ impl<'a> System<'a> for PlayerSystem {
 			mut transforms,
 			mut gui,
 			game_fonts,
-			game_sfxs,
+			_game_sfxs,
 		): Self::SystemData,
 	) {
 		let move_velocity = 60.0;

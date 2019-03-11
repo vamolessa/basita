@@ -1,8 +1,8 @@
-use std::mem;
 use std::thread;
 use std::time::{Duration, Instant};
 
-use specs::World;
+/*
+use std::mem;
 
 use crate::sdl::{SdlLoader, SdlStorage};
 
@@ -30,7 +30,6 @@ impl LazyEvaluations {
 		for evaluation in &evaluations {
 			(*evaluation)(world, sdl_loader, sdl_storage);
 		}
-		evaluations.clear();
 
 		{
 			let mut this = world.write_resource::<Self>();
@@ -48,6 +47,7 @@ impl LazyEvaluations {
 
 unsafe impl Send for LazyEvaluations {}
 unsafe impl Sync for LazyEvaluations {}
+*/
 
 // Maybe implement this?
 // https://gafferongames.com/post/fix_your_timestep/

@@ -39,18 +39,22 @@ impl Input {
 		match event {
 			Event::KeyDown {
 				keycode, repeat, ..
-			} => if !repeat {
-				if let Some(keycode) = keycode {
-					self.handle_key_change(keycode, true)
+			} => {
+				if !repeat {
+					if let Some(keycode) = keycode {
+						self.handle_key_change(keycode, true)
+					}
 				}
-			},
+			}
 			Event::KeyUp {
 				keycode, repeat, ..
-			} => if !repeat {
-				if let Some(keycode) = keycode {
-					self.handle_key_change(keycode, false)
+			} => {
+				if !repeat {
+					if let Some(keycode) = keycode {
+						self.handle_key_change(keycode, false)
+					}
 				}
-			},
+			}
 			_ => (),
 		};
 	}
@@ -60,8 +64,4 @@ impl Input {
 		key.is_pressed = is_pressed;
 		key.just_changed = true;
 	}
-}
-
-pub fn init(world: &mut ::specs::World) {
-	world.add_resource(Input::default());
 }
