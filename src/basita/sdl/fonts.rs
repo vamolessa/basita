@@ -18,10 +18,10 @@ pub struct FontLoader {
 }
 
 impl FontLoader {
-	pub fn new() -> Self {
-		FontLoader {
-			context: ttf::init().unwrap(),
-		}
+	pub fn new() -> Result<Self, String> {
+		Ok(FontLoader {
+			context: ttf::init().map_err(|_e| format!("Could not init ttf"))?,
+		})
 	}
 
 	pub fn load<'a>(
@@ -42,7 +42,7 @@ impl FontLoader {
 					let surface = font
 						.render_char(c)
 						.blended(Color::RGBA(255, 255, 255, 255))
-						.map_err(|e| {
+						.map_err(|_e| {
 							AssetLoadError::new(format!(
 								"Could not create surface for char '{}' with font at '{}'",
 								c, path
@@ -51,7 +51,7 @@ impl FontLoader {
 					let texture = loader
 						.texture_creator
 						.create_texture_from_surface(&surface)
-						.map_err(|e| {
+						.map_err(|_e| {
 							AssetLoadError::new(format!(
 								"Could not create texture for char '{}' with font at '{}'",
 								c, path

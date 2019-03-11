@@ -96,8 +96,9 @@ pub trait Game: Sized {
 			settings.screen_width as u32,
 			settings.screen_height as u32,
 			settings.simultaneous_audio_count,
-		);
-		let mut sdl_loader = SdlLoader::new(&sdl_context);
+		)
+		.unwrap();
+		let mut sdl_loader = SdlLoader::new(&sdl_context).unwrap();
 		let sdl_storage = SdlStorage::default();
 
 		let mut context = GameContext {

@@ -24,41 +24,45 @@ impl SdlContext {
 		window_width: u32,
 		window_height: u32,
 		simultaneous_audio_count: u8,
-	) -> Self {
-		let sdl = sdl2::init().unwrap();
+	) -> Result<Self, String> {
+		let sdl = sdl2::init()?;
 
-		let video_subsystem = sdl.video().unwrap();
+		let video_subsystem = sdl.video()?;
 		let window = video_subsystem
 			.window(window_title, window_width, window_height)
 			.position_centered()
 			.build()
-			.unwrap();
+			.map_err(|_e| format!("Could not create window {}x{}", window_width, window_height))?;
 
-		let canvas = window.into_canvas().build().unwrap();
+		let canvas = window.into_canvas().build().map_err(|_e| {
+			format!(
+				"Could not build canvas from window {}x{}",
+				window_width, window_height
+			)
+		})?;
 
-		let _image_context = sdl2::image::init(INIT_PNG | INIT_JPG).unwrap();
+		let _image_context = sdl2::image::init(INIT_PNG | INIT_JPG)?;
 
 		// Audio
 		let audio;
 		{
-			audio = sdl.audio().unwrap();
+			audio = sdl.audio()?;
 
 			let frequency = 44_100;
 			let format = AUDIO_S16LSB; // signed 16 bit samples, in little-endian byte order
 			let channels = DEFAULT_CHANNELS; // Stereo
 			let chunk_size = 1_024;
-			sdl2::mixer::open_audio(frequency, format, channels, chunk_size).unwrap();
-			let _mixer_context =
-				sdl2::mixer::init(INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_OGG).unwrap();
+			sdl2::mixer::open_audio(frequency, format, channels, chunk_size)?;
+			let _mixer_context = sdl2::mixer::init(INIT_MP3 | INIT_FLAC | INIT_MOD | INIT_OGG)?;
 			sdl2::mixer::allocate_channels(simultaneous_audio_count as i32);
 		}
 
-		SdlContext {
-			event_pump: sdl.event_pump().unwrap(),
+		Ok(SdlContext {
+			event_pump: sdl.event_pump()?,
 			_sdl: sdl,
 			canvas: canvas,
 			_audio: audio,
-		}
+		})
 	}
 }
 
@@ -70,13 +74,13 @@ pub struct SdlLoader {
 }
 
 impl SdlLoader {
-	pub fn new(sdl_context: &SdlContext) -> Self {
-		SdlLoader {
+	pub fn new(sdl_context: &SdlContext) -> Result<Self, String> {
+		Ok(SdlLoader {
 			texture_loader: TextureLoader::new(sdl_context),
-			font_loader: FontLoader::new(),
+			font_loader: FontLoader::new()?,
 			chunk_loader: ChunkLoader {},
 			music_loader: MusicLoader {},
-		}
+		})
 	}
 }
 

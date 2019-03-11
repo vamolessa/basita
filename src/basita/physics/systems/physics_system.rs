@@ -109,11 +109,13 @@ impl<'a> System<'a> for PhysicsSystem {
 
 			// respond to collisions
 			for (entity, response) in &self.collision_responses {
-				let transform = transforms.get_mut(*entity).unwrap();
-				let physic_body = physic_bodies.get_mut(*entity).unwrap();
+				try {
+					let transform = transforms.get_mut(*entity)?;
+					let physic_body = physic_bodies.get_mut(*entity)?;
 
-				transform.position += response.position_offset;
-				physic_body.velocity += response.velocity_offset;
+					transform.position += response.position_offset;
+					physic_body.velocity += response.velocity_offset;
+				}
 			}
 		}
 	}
