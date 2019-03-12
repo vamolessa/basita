@@ -3,7 +3,7 @@ use basita::{core::resources::LazyEvaluations, math::Vector2, renderer::componen
 use crate::MyGame;
 
 pub struct CameraEntity {
-	camera: Camera,
+	pub camera: Camera,
 }
 
 pub fn new(lazy: &mut LazyEvaluations<MyGame>, position: Vector2) {
