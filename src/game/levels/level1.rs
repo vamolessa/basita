@@ -46,7 +46,5 @@ pub fn load(lazy: &mut LazyEvaluations<MyGame>) {
 				Vector2::new(x0, y0 + i as f32 * hw * 2.0),
 			);
 		}
-
-		dbg!("level1 load");
 	});
 }

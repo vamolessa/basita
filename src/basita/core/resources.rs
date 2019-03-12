@@ -23,6 +23,7 @@ impl<T> LazyEvaluations<T> {
 		for evaluation in &evaluations {
 			(*evaluation)(context, arg);
 		}
+		evaluations.clear();
 
 		{
 			let this = selector(arg);
