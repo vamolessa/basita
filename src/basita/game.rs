@@ -30,15 +30,9 @@ pub struct GameContext<'a, 'b> {
 
 pub trait Game: Sized {
 	fn create(_context: &mut GameContext) -> Self;
-	fn settings() -> GameSettings {
-		GameSettings::default()
-	}
-
 	fn run(&mut self, context: &mut GameContext);
 
-	fn play() {
-		let settings = Self::settings();
-
+	fn play(settings: GameSettings) {
 		let mut sdl_context = SdlContext::new(
 			&settings.title[..],
 			settings.screen_width as u32,

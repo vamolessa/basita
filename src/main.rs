@@ -53,12 +53,11 @@ impl MyGame {
 		let jump_impulse = 100.0;
 
 		for e in &mut self.players {
-			e.transform.position.x += 0.1;
+			e.transform.position.x += 1.0;
 
 			e.physic_body.velocity.x = 0.0;
 			if self.input.key(Keycode::Left).is_pressed {
-				//e.physic_body.velocity.x -= move_velocity;
-				e.transform.position.x -= 0.1;
+				e.physic_body.velocity.x -= move_velocity;
 			}
 			if self.input.key(Keycode::Right).is_pressed {
 				e.physic_body.velocity.x += move_velocity;
@@ -70,6 +69,8 @@ impl MyGame {
 
 			e.physic_body.acceleration.y = 100.0;
 		}
+
+		println!("update");
 	}
 
 	fn draw(&mut self) {
@@ -203,5 +204,8 @@ fn draw_collider(
 }
 
 pub fn main() {
-	MyGame::play();
+	MyGame::play(GameSettings {
+		frames_per_second: 60,
+		..GameSettings::default()
+	});
 }
