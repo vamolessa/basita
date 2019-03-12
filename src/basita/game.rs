@@ -1,16 +1,4 @@
-use std::time::Instant;
-
-use crate::sdl2::event::Event;
-
-use crate::{
-	core::resources::{LazyEvaluations, Time},
-	input::Input,
-	mixer::Mixer,
-	//renderer::systems::RenderSystem,
-	//physics::systems::{ColliderRenderSystem, PhysicsSystem},
-	renderer::Renderer,
-	sdl::{SdlContext, SdlLoader, SdlStorage},
-};
+use crate::sdl::{SdlContext, SdlLoader, SdlStorage};
 
 pub struct GameSettings {
 	pub title: String,
@@ -32,26 +20,6 @@ impl Default for GameSettings {
 	}
 }
 
-pub struct GameResources<G: Game> {
-	pub time: Time,
-	pub input: Input,
-	pub renderer: Renderer,
-	pub mixer: Mixer,
-	pub lazy_evaluations: LazyEvaluations<G>,
-}
-
-impl<G: Game> Default for GameResources<G> {
-	fn default() -> Self {
-		GameResources {
-			time: Time::default(),
-			input: Input::default(),
-			renderer: Renderer::default(),
-			mixer: Mixer::default(),
-			lazy_evaluations: LazyEvaluations::default(),
-		}
-	}
-}
-
 pub struct GameContext<'a> {
 	pub settings: GameSettings,
 
@@ -66,39 +34,7 @@ pub trait Game: Sized {
 		GameSettings::default()
 	}
 
-	fn update(&mut self, _resources: &mut GameResources<Self>) {}
-
-	fn run(&mut self, context: &mut GameContext) {
-		let mut resources = GameResources::default();
-
-		'main: loop {
-			let frame_start_instant = Instant::now();
-
-			let event_pump = &mut context.sdl_context.event_pump;
-			for event in event_pump.poll_iter() {
-				match event {
-					Event::Quit { .. } => {
-						break 'main;
-					}
-					e => {
-						resources.input.handle_event(e);
-					}
-				};
-			}
-
-			self.update(&mut resources);
-			resources
-				.renderer
-				.render(&mut context.sdl_context, &mut context.sdl_storage)
-				.unwrap();
-			resources.mixer.mix(&mut context.sdl_storage).unwrap();
-			resources.input.update();
-
-			resources
-				.time
-				.sleep_rest_of_frame(context.settings.frames_per_second, &frame_start_instant);
-		}
-	}
+	fn run(&mut self, context: &mut GameContext);
 
 	fn play() {
 		let settings = Self::settings();

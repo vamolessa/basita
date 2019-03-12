@@ -4,15 +4,15 @@ use std::time::{Duration, Instant};
 
 use crate::game::GameContext;
 
-type LazyEvaluation<G> = Box<for<'a> Fn(&mut GameContext<'a>, &mut G)>;
+type LazyEvaluation<T> = Box<for<'a> Fn(&mut GameContext<'a>, &mut T)>;
 
-pub struct LazyEvaluations<G> {
-	pub evaluations: Vec<LazyEvaluation<G>>,
-	pub evaluations_backbuffer: Vec<LazyEvaluation<G>>,
+pub struct LazyEvaluations<T> {
+	pub evaluations: Vec<LazyEvaluation<T>>,
+	pub evaluations_backbuffer: Vec<LazyEvaluation<T>>,
 }
 
-impl<G> LazyEvaluations<G> {
-	pub fn evaluate<'a, 'b>(&mut self, context: &mut GameContext<'a>, game: &mut G) {
+impl<T> LazyEvaluations<T> {
+	pub fn evaluate<'a, 'b>(&mut self, context: &mut GameContext<'a>, arg: &mut T) {
 		let mut evaluations;
 		{
 			let evaluations_backbuffer = mem::replace(&mut self.evaluations_backbuffer, Vec::new());
@@ -20,7 +20,7 @@ impl<G> LazyEvaluations<G> {
 		}
 
 		for evaluation in &evaluations {
-			(*evaluation)(context, game);
+			(*evaluation)(context, arg);
 		}
 
 		{
@@ -28,15 +28,17 @@ impl<G> LazyEvaluations<G> {
 		}
 	}
 
-	pub fn add<F>(&mut self, evaluation: F)
+	pub fn add(&mut self, _evaluation: for<'a> fn(&mut GameContext<'a>, &mut T)) {}
+
+	pub fn add2<F>(&mut self, evaluation: F)
 	where
-		F: 'static + for<'a> Fn(&mut GameContext<'a>, &mut G),
+		F: 'static + for<'a> Fn(&mut GameContext<'a>, &mut T),
 	{
 		self.evaluations.push(Box::new(evaluation));
 	}
 }
 
-impl<G> Default for LazyEvaluations<G> {
+impl<T> Default for LazyEvaluations<T> {
 	fn default() -> Self {
 		LazyEvaluations {
 			evaluations: Vec::default(),

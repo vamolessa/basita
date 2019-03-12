@@ -6,7 +6,7 @@ use crate::{
 };
 
 pub fn load(lazy: &mut LazyEvaluations<MyGame>) {
-	lazy.add(move |context, game| {
+	lazy.add(|context, game| {
 		{
 			game.game_fonts.consola_32 = game.fonts.load(
 				&(String::from("assets/fonts/consola.ttf"), 32),
