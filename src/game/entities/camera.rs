@@ -7,11 +7,9 @@ pub struct CameraEntity {
 }
 
 pub fn new(lazy: &mut LazyEvaluations<MyGame>, position: Vector2) {
-	/*
-	lazy.add(move |context, game| {
+	lazy.add(move |_context, game| {
 		game.cameras.push(CameraEntity {
 			camera: Camera { position: position },
 		});
 	});
-	*/
 }

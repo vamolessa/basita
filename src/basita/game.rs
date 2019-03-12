@@ -20,12 +20,12 @@ impl Default for GameSettings {
 	}
 }
 
-pub struct GameContext<'a> {
+pub struct GameContext<'a, 'b> {
 	pub settings: GameSettings,
 
-	pub sdl_context: SdlContext,
-	pub sdl_loader: &'a mut SdlLoader,
-	pub sdl_storage: SdlStorage<'a>,
+	pub sdl_context: &'a mut SdlContext,
+	pub sdl_loader: &'a SdlLoader,
+	pub sdl_storage: &'b mut SdlStorage<'a>,
 }
 
 pub trait Game: Sized {
@@ -39,21 +39,21 @@ pub trait Game: Sized {
 	fn play() {
 		let settings = Self::settings();
 
-		let sdl_context = SdlContext::new(
+		let mut sdl_context = SdlContext::new(
 			&settings.title[..],
 			settings.screen_width as u32,
 			settings.screen_height as u32,
 			settings.simultaneous_audio_count,
 		)
 		.unwrap();
-		let mut sdl_loader = SdlLoader::new(&sdl_context).unwrap();
-		let sdl_storage = SdlStorage::default();
+		let sdl_loader = SdlLoader::new(&sdl_context).unwrap();
+		let mut sdl_storage = SdlStorage::default();
 
 		let mut context = GameContext {
 			settings: settings,
-			sdl_context: sdl_context,
-			sdl_loader: &mut sdl_loader,
-			sdl_storage: sdl_storage,
+			sdl_context: &mut sdl_context,
+			sdl_loader: &sdl_loader,
+			sdl_storage: &mut sdl_storage,
 		};
 
 		let mut game = Self::create(&mut context);

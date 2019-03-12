@@ -15,7 +15,6 @@ pub struct PlayerEntity {
 }
 
 pub fn new(lazy: &mut LazyEvaluations<MyGame>, position: Vector2) {
-	/*
 	lazy.add(move |context, game| {
 		let image_handle;
 		{
@@ -36,5 +35,4 @@ pub fn new(lazy: &mut LazyEvaluations<MyGame>, position: Vector2) {
 			physic_body: PhysicBody::with_inverted_mass(1.0),
 		});
 	});
-	*/
 }

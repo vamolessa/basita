@@ -16,7 +16,6 @@ pub struct BlockEntity {
 }
 
 pub fn new(lazy: &mut LazyEvaluations<MyGame>, position: Vector2) {
-	/*
 	lazy.add(move |context, game| {
 		let image_handle;
 		{
@@ -37,5 +36,4 @@ pub fn new(lazy: &mut LazyEvaluations<MyGame>, position: Vector2) {
 			collider: Collider::new_box(Vector2::new(16.0, 16.0)),
 		});
 	});
-	*/
 }

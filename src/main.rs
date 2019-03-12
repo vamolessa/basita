@@ -42,9 +42,8 @@ pub struct MyGame {
 
 impl Game for MyGame {
 	fn create(_context: &mut GameContext) -> Self {
-		let game = MyGame::default();
-
-		//level1::load(lazy: &mut LazyEvaluations<MyGame>);
+		let mut game = MyGame::default();
+		level1::load(&mut game.lazy_evaluations);
 
 		game
 	}
@@ -67,6 +66,7 @@ impl Game for MyGame {
 
 			// update
 
+			LazyEvaluations::evaluate(context, self, |g| &mut g.lazy_evaluations);
 			self.renderer
 				.render(&mut context.sdl_context, &mut context.sdl_storage)
 				.unwrap();
