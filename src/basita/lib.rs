@@ -3,7 +3,6 @@
 // external
 pub use sdl2;
 pub use serde_derive;
-pub use specs;
 
 // local
 pub mod core;
